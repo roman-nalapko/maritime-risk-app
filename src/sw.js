@@ -1,5 +1,5 @@
-const CACHE = "searisk-ua-v0.1.1";
-const APP_SHELL = ["./", "./index.html", "./styles.css", "./app.js", "./model.js", "./coefficients.js", "./manifest.webmanifest", "./icons/searisk.svg", "./data/incidents.sample.json"];
+const CACHE = "searisk-ua-v0.1.2";
+const APP_SHELL = ["./", "./index.html", "./styles.css", "./app.js", "./model.js", "./coefficients.js", "./manifest.webmanifest", "./icons/searisk.svg", "./data/incidents.sample.json", "./data/release-manifest.json"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(APP_SHELL)));

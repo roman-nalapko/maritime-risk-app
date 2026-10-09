@@ -95,7 +95,7 @@ assert.throws(() => normalizeTables({ occurrences: occurrenceFixture, vessels: v
 const publicRelease = await runReleaseChecks(path.join(root, "src/data"));
 assert.equal(publicRelease.datasetsChecked, 1);
 const releaseEntry = {
-  id: "test", file: "test.json", releaseMode: "aggregate",
+  id: "test", datasetVersion: "1.0.0", file: "test.json", releaseMode: "aggregate", reportingPeriod: { from: 2024, to: 2025 },
   source: { publisher: "test", url: "https://example.invalid", retrievedOn: "2026-10-09" },
   license: { id: "test", status: "approved", attribution: "test" },
   privacy: { status: "reviewed", directIdentifiersRemoved: true, containsRealPeople: false },
@@ -113,6 +113,9 @@ assert.match(html, /дослідницькою оцінкою/i, "visible resear
 assert.match(html, /Синтетична DEMO-вибірка/i, "demo data label is required");
 assert.match(html, /Демонстраційний індекс прототипу/i, "prototype output must be labelled as an index");
 assert.match(html, /Реєстр 0\.1\.0/i, "coefficient registry version must be visible");
+assert.match(html, /event-chart-meta/, "event chart must expose source and filter metadata");
+assert.match(html, /severity-chart-meta/, "severity chart must expose source and filter metadata");
 assert.doesNotMatch(html, /випадок на/i, "prototype must not express an unsupported one-in-N probability");
 assert.match(serviceWorker, /\.\/coefficients\.js/, "offline app shell must include the coefficient registry");
+assert.match(serviceWorker, /\.\/data\/release-manifest\.json/, "offline app shell must include dataset provenance");
 console.log("All repository checks passed.");
