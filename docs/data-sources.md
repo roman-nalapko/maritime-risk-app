@@ -27,6 +27,8 @@ All imports must preserve original source values and map role, vessel, operation
 
 Candidate workforce, fleet, arrival, and passenger denominators are inventoried in [the exposure and uncertainty review](methodology/exposure-and-uncertainty.md). None is currently compatible with a MAIB-derived personal worker rate.
 
+The field-level import contract, controlled value crosswalk, and measured coverage are defined in [MAIB public data mapping v1.0.0](methodology/maib-field-mapping.md). Its unresolved values remain `unknown` pending specialist review.
+
 ## Prototype data
 
 `src/data/incidents.sample.json` is synthetic demonstration data. It exists to validate interaction and presentation and must not be used for empirical conclusions.

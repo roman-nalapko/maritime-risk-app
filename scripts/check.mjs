@@ -61,6 +61,19 @@ assert.ok(Object.values(taxonomy.prototypeMappings.roles).every((value) => taxon
 assert.ok(Object.values(taxonomy.prototypeMappings.vessels).every((value) => taxonomy.axes.vessels.includes(value)), "prototype vessel mappings must target known categories");
 assert.ok(Object.values(taxonomy.prototypeMappings.eventsToOperations).every((value) => taxonomy.axes.operations.includes(value)), "event crosswalk must target known operation categories");
 
+const maibMapping = JSON.parse(await readFile(path.join(root, "data/mappings/maib-to-maritime-taxonomy.v1.json"), "utf8"));
+assert.equal(maibMapping.taxonomyVersion, taxonomy.version, "MAIB mapping must target the current taxonomy version");
+assert.ok(Object.values(maibMapping.vesselType.values).every((value) => taxonomy.axes.vessels.includes(value)), "MAIB vessel mappings must target known categories");
+assert.ok(Object.values(maibMapping.role.rankValues).every((value) => taxonomy.axes.roles.includes(value)), "MAIB role mappings must target known categories");
+assert.ok(taxonomy.axes.roles.includes(maibMapping.role.passengerOverride));
+assert.ok(taxonomy.axes.operations.includes(maibMapping.operation.target));
+for (const coverage of Object.values(maibMapping.coverageSnapshot)) {
+  assert.equal(coverage.mapped + coverage.unknown, coverage.total, "mapping coverage must reconcile to its source-table grain");
+  assert.equal(coverage.percent, Number(((coverage.mapped / coverage.total) * 100).toFixed(2)), "stored mapping percentage must be reproducible");
+}
+assert.equal(maibMapping.rules.inferOperationFromEvent, false, "event labels must not invent operations");
+assert.equal(maibMapping.operation.exposureUnit, "none", "MAIB counts have no exposure denominator");
+
 const html = await readFile(path.join(root, "src/index.html"), "utf8");
 const serviceWorker = await readFile(path.join(root, "src/sw.js"), "utf8");
 assert.match(html, /дослідницькою оцінкою/i, "visible research disclaimer is required");
