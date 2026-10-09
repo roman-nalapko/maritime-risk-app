@@ -6,10 +6,11 @@
   "description": "Transparent maritime worker risk assessment research prototype",
   "scripts": {
     "dev": "node scripts/dev-server.mjs",
-    "test": "node scripts/check.mjs && node scripts/audit-accessibility-pwa.mjs && node scripts/governance-checks.mjs && node scripts/research-protocol-checks.mjs",
+    "test": "node scripts/check.mjs && node scripts/audit-accessibility-pwa.mjs && node scripts/governance-checks.mjs && node scripts/research-protocol-checks.mjs && node scripts/ai-evaluation-checks.mjs",
     "audit": "node scripts/audit-accessibility-pwa.mjs",
     "governance:check": "node scripts/governance-checks.mjs",
     "research:check": "node scripts/research-protocol-checks.mjs",
+    "ai:check": "node scripts/ai-evaluation-checks.mjs",
     "build": "node scripts/build.mjs",
     "import:maib": "node scripts/import-maib.mjs",
     "release:check": "node scripts/release-checks.mjs"

@@ -117,3 +117,13 @@
 **Consequence:** The boundary is visible before and after calculation, pilot materials must name monitored incident contacts, and CI checks prevent silent addition of browser storage or remote questionnaire transmission.
 
 **Evidence:** See `docs/governance/privacy-and-misuse-review.md` and `docs/governance/incident-response.md`.
+
+## ADR-015: Do not add runtime AI before a measured evaluation gate
+
+**Decision:** Keep the public application and numeric calculator AI-free. Optional classification, retrieval, or grounded explanation may be reconsidered only after a frozen human-reviewed evaluation set shows a material gain over deterministic rules and passes zero-tolerance unsupported-claim/citation gates.
+
+**Why:** The active static product has no need for model hosting, remote data transfer, or a large first-use download. Browser inference is technically feasible but varies by model size, device, and WebGPU support; hosted inference adds keys, data flow, retention, and variable usage cost.
+
+**Consequence:** AI experiments stay outside the runtime and public bundle. They cannot receive questionnaire values or change coefficients/results, must be optional and removable, and must record accuracy, abstention, hallucination, latency, size, and cost rather than relying on demonstrations.
+
+**Evidence:** See `docs/research/optional-ai-evaluation-plan.md`.
