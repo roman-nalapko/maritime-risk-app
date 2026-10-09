@@ -36,21 +36,36 @@ function asIndex(value) {
 
 function renderRisk(result) {
   $("#method-badge").textContent = `Реєстр ${result.registryId.replace("SR-UA-COEFFICIENTS-", "")}`;
-  $("#risk-value").textContent = asIndex(result.total);
+  $("#risk-value").textContent = `≈ ${asIndex(result.total)}`;
   $("#risk-ratio").textContent = "Не є ймовірністю травми або загибелі";
   $("#risk-badge span").textContent = result.category.label;
   $("#risk-badge").dataset.category = result.category.key;
   $("#risk-meter").style.width = `${result.category.meter}%`;
+  $("#model-status").textContent = result.modelStatus === "provisional" ? "Попередня · невалідована" : result.modelStatus;
+  $("#model-version").textContent = result.modelId;
+  $("#uncertainty-status").textContent = `Не оцінена. ${result.uncertainty.explanation}`;
 
   const labels = { health: "Вік і здоров’я", occupation: "Професійна експозиція", lifestyle: "Спосіб життя" };
   const sum = Object.values(result.components).reduce((total, value) => total + value, 0) || 1;
   $("#breakdown-list").innerHTML = Object.entries(result.components).map(([key, value]) => {
     const share = value / sum;
-    return `<div class="factor"><div class="factor-heading"><span>${labels[key]}</span><strong>${asPercent(share, 0)} внеску · індекс ${asIndex(value)}</strong></div><div class="factor-bar"><i style="width:${Math.max(2, share * 100)}%"></i></div></div>`;
+    return `<div class="factor"><div class="factor-heading"><span>${labels[key]}</span><strong>${asPercent(share, 0)} внеску · індекс ≈ ${asIndex(value)}</strong></div><div class="factor-bar"><i style="width:${Math.max(2, share * 100)}%"></i></div></div>`;
   }).join("");
 
+  const statusLabels = { disputed: "Спірне джерело", synthetic_demo: "Синтетичне припущення", approved: "Перевірено" };
+  $("#component-evidence").innerHTML = Object.entries(result.componentEvidence).map(([key, records]) => `
+    <section class="evidence-component">
+      <h4>${labels[key]}</h4>
+      <ul>${records.map((record) => `<li>
+        <div><code>${record.id}</code><span class="evidence-status" data-status="${record.status}">${statusLabels[record.status] ?? record.status}</span></div>
+        <p>${record.source} · ${record.sourceVersion}</p>
+        <small>Одиниця: ${record.unit}; популяція: ${record.population}; період: ${record.period}.</small>
+      </li>`).join("")}</ul>
+    </section>`).join("");
+
   $("#recommendation-list").innerHTML = result.recommendations.map((item) => `<li>${item}</li>`).join("");
-  $("#formula-copy").textContent = `Модель ${result.modelId}, реєстр ${result.registryId}: 1 − (1 − Rздоров’я) × (1 − Rробота) × (1 − Rспосіб життя). Усі поточні коефіцієнти мають статус disputed або synthetic_demo. Компоненти мають несумісні результати та джерела, тому значення є лише демонстраційним індексом, а не ймовірністю.`;
+  $("#formula-copy").textContent = "Формула: 1 − (1 − Rздоров’я) × (1 − Rробота) × (1 − Rспосіб життя). Значення округлено до трьох значущих цифр.";
+  $("#assumption-list").innerHTML = result.assumptions.map((item) => `<li>${item}</li>`).join("");
 }
 
 form.addEventListener("submit", (event) => {

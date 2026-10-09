@@ -10,6 +10,11 @@ export const MODEL = Object.freeze({
   lifestyle: COEFFICIENTS.lifestyle.value
 });
 
+const coefficientSummary = (key) => {
+  const { id, unit, population, period, source, sourceVersion, status } = COEFFICIENTS[key];
+  return { id, unit, population, period, source, sourceVersion, status };
+};
+
 const clamp = (value, min, max) => Math.min(max, Math.max(min, Number(value) || 0));
 
 export function categoryFor(risk) {
@@ -45,12 +50,35 @@ export function calculateRisk(input) {
   lifestyle = clamp(lifestyle, 0, 0.95);
   const total = 1 - (1 - health) * (1 - occupation) * (1 - lifestyle);
 
+  const componentEvidence = {
+    health: ["ageBaseline", "demographicMultiplier", ...(input.chronic ? ["chronicMultiplier"] : [])].map(coefficientSummary),
+    occupation: [
+      "hourlyRoleRate",
+      "nightExposureSlope",
+      ...(input.ppe ? ["ppeMultiplier"] : []),
+      ...(input.previous ? ["previousIncidentMultiplier"] : [])
+    ].map(coefficientSummary),
+    lifestyle: ["lifestyle"].map(coefficientSummary)
+  };
+
   return {
     modelId: MODEL.id,
     registryId: MODEL.registryId,
+    modelStatus: MODEL.status,
     total,
     category: categoryFor(total),
     components: { health, occupation, lifestyle },
+    componentEvidence,
+    uncertainty: {
+      status: "not_quantified",
+      explanation: "Довірчий інтервал не розраховується: первинні вибірки, знаменники та похибки коефіцієнтів не наведені."
+    },
+    assumptions: [
+      "Компоненти походять із різних популяцій і описують несумісні наслідки.",
+      "Формула лише обмежує демонстраційний індекс діапазоном від 0 до 1 і не доводить незалежність факторів.",
+      "Навчальна шкала категорій не є затвердженим порогом професійного ризику.",
+      "Результат не можна використовувати для допуску до роботи, медичного висновку чи прогнозу для людини."
+    ],
     recommendations: recommendationsFor(input, { health, occupation, lifestyle })
   };
 }

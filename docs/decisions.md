@@ -99,3 +99,11 @@
 **Consequence:** Real external record-level data cannot enter `dist/`. MAIB-derived aggregates remain blocked until dataset-specific licensing and attribution are confirmed.
 
 **Evidence:** See `docs/data-release-policy.md`.
+
+## ADR-013: Put model limitations next to every individual result
+
+**Decision:** Display the model status and version, unquantified uncertainty, coefficient source/status details, and plain-language assumptions inside the result card. Round the prototype index to three significant figures and mark it as approximate.
+
+**Why:** A methodology page alone is too easy to miss. The user needs the evidence quality and limitations at the point where a number could otherwise appear authoritative.
+
+**Consequence:** Every calculation result carries the same provisional warning and evidence metadata. Missing confidence intervals are stated explicitly instead of represented by invented precision.

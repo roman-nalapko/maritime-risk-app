@@ -186,10 +186,21 @@
             <div class="meter" aria-hidden="true"><i id="risk-meter"></i></div>
             <div class="meter-labels"><span>Низький</span><span>Середній</span><span>Екстремальний · навчальна шкала</span></div>
 
+            <dl class="model-context" aria-label="Статус і обмеження моделі">
+              <div><dt>Статус моделі</dt><dd id="model-status">Попередня</dd></div>
+              <div><dt>Версія</dt><dd id="model-version">SR-UA-PROTOTYPE-0.1</dd></div>
+              <div><dt>Невизначеність</dt><dd id="uncertainty-status">Не оцінена</dd></div>
+            </dl>
+
             <div class="breakdown">
               <div class="breakdown-title"><h3>Внесок факторів</h3><button type="button" id="details-toggle" aria-expanded="true">Сховати деталі</button></div>
               <div id="breakdown-list"></div>
             </div>
+
+            <details class="evidence-details">
+              <summary>Джерела компонентів і статус перевірки</summary>
+              <div id="component-evidence"></div>
+            </details>
 
             <div class="recommendations">
               <h3>Що варто контролювати</h3>
@@ -199,6 +210,7 @@
             <details class="calculation-details">
               <summary>Формула та припущення</summary>
               <p id="formula-copy"></p>
+              <ul id="assumption-list"></ul>
             </details>
           </aside>
         </div>

@@ -15,6 +15,10 @@ const baseline = calculateRisk({ age: 35, sex: "male", residence: "city", role: 
 assert.ok(baseline.total > 0 && baseline.total < 1, "prototype index must remain bounded");
 assert.equal(baseline.modelId, "SR-UA-PROTOTYPE-0.1");
 assert.equal(baseline.registryId, REGISTRY_ID);
+assert.equal(baseline.modelStatus, "provisional");
+assert.equal(baseline.uncertainty.status, "not_quantified");
+assert.ok(baseline.assumptions.length >= 4, "prototype assumptions must be returned with every result");
+assert.ok(Object.values(baseline.componentEvidence).flat().every((item) => item.source && item.status && item.unit && item.population && item.period), "component evidence must expose source and status metadata");
 
 assert.equal(validateRegistry(), true);
 for (const item of Object.values(COEFFICIENTS)) {
@@ -113,6 +117,9 @@ assert.match(html, /дослідницькою оцінкою/i, "visible resear
 assert.match(html, /Синтетична DEMO-вибірка/i, "demo data label is required");
 assert.match(html, /Демонстраційний індекс прототипу/i, "prototype output must be labelled as an index");
 assert.match(html, /Реєстр 0\.1\.0/i, "coefficient registry version must be visible");
+assert.match(html, /model-status/, "result must expose model status");
+assert.match(html, /uncertainty-status/, "result must expose uncertainty status");
+assert.match(html, /component-evidence/, "result must expose component evidence details");
 assert.match(html, /event-chart-meta/, "event chart must expose source and filter metadata");
 assert.match(html, /severity-chart-meta/, "severity chart must expose source and filter metadata");
 assert.doesNotMatch(html, /випадок на/i, "prototype must not express an unsupported one-in-N probability");
