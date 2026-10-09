@@ -25,9 +25,17 @@ function asPercent(value, digits = value < 0.001 ? 4 : 2) {
   return new Intl.NumberFormat("uk-UA", { style: "percent", minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
 }
 
+function asIndex(value) {
+  if (value === 0) return "0";
+  const exponent = Math.floor(Math.log10(Math.abs(value)));
+  const coefficient = value / (10 ** exponent);
+  const superscript = String(exponent).replace("-", "⁻").replaceAll("0", "⁰").replaceAll("1", "¹").replaceAll("2", "²").replaceAll("3", "³").replaceAll("4", "⁴").replaceAll("5", "⁵").replaceAll("6", "⁶").replaceAll("7", "⁷").replaceAll("8", "⁸").replaceAll("9", "⁹");
+  return `${coefficient.toLocaleString("uk-UA", { maximumFractionDigits: 2 })} × 10${superscript}`;
+}
+
 function renderRisk(result) {
-  $("#risk-value").textContent = asPercent(result.total);
-  $("#risk-ratio").textContent = result.total > 0 ? `≈ 1 на ${Math.max(1, Math.round(1 / result.total)).toLocaleString("uk-UA")} за рік · модельний еквівалент` : "нижче межі відображення";
+  $("#risk-value").textContent = asIndex(result.total);
+  $("#risk-ratio").textContent = "Не є ймовірністю травми або загибелі";
   $("#risk-badge span").textContent = result.category.label;
   $("#risk-badge").dataset.category = result.category.key;
   $("#risk-meter").style.width = `${result.category.meter}%`;
@@ -36,11 +44,11 @@ function renderRisk(result) {
   const sum = Object.values(result.components).reduce((total, value) => total + value, 0) || 1;
   $("#breakdown-list").innerHTML = Object.entries(result.components).map(([key, value]) => {
     const share = value / sum;
-    return `<div class="factor"><div class="factor-heading"><span>${labels[key]}</span><strong>${asPercent(share, 0)} внеску · ${asPercent(value)}</strong></div><div class="factor-bar"><i style="width:${Math.max(2, share * 100)}%"></i></div></div>`;
+    return `<div class="factor"><div class="factor-heading"><span>${labels[key]}</span><strong>${asPercent(share, 0)} внеску · індекс ${asIndex(value)}</strong></div><div class="factor-bar"><i style="width:${Math.max(2, share * 100)}%"></i></div></div>`;
   }).join("");
 
   $("#recommendation-list").innerHTML = result.recommendations.map((item) => `<li>${item}</li>`).join("");
-  $("#formula-copy").textContent = `Модель ${result.modelId}: 1 − (1 − Rздоров’я) × (1 − Rробота) × (1 − Rспосіб життя). Коефіцієнти попередні; незалежність компонентів є припущенням прототипу.`;
+  $("#formula-copy").textContent = `Модель ${result.modelId}: 1 − (1 − Rздоров’я) × (1 − Rробота) × (1 − Rспосіб життя). Компоненти мають несумісні результати та джерела, тому значення є лише демонстраційним індексом, а не ймовірністю.`;
 }
 
 form.addEventListener("submit", (event) => {

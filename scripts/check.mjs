@@ -24,5 +24,6 @@ assert.ok(incidents.every((item) => item.id.startsWith("DEMO-")), "synthetic rec
 const html = await readFile(path.join(root, "src/index.html"), "utf8");
 assert.match(html, /дослідницькою оцінкою/i, "visible research disclaimer is required");
 assert.match(html, /Синтетична DEMO-вибірка/i, "demo data label is required");
+assert.match(html, /Демонстраційний індекс прототипу/i, "prototype output must be labelled as an index");
+assert.doesNotMatch(html, /випадок на/i, "prototype must not express an unsupported one-in-N probability");
 console.log("All repository checks passed.");
-
