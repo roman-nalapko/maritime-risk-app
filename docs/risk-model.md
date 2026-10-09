@@ -20,6 +20,8 @@ The current output is an **educational demonstration index, not a probability**.
 
 The last three are not interchangeable.
 
+Roles, vessels, operations, events, and exposure units follow [maritime taxonomy v1.0.0](methodology/maritime-taxonomy.md). Unknown values are retained explicitly and must not be inferred from another taxonomy axis.
+
 ## Prototype components
 
 The prototype UI reports three components:

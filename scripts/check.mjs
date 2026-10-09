@@ -27,6 +27,21 @@ assert.ok(educationalAudit.workedExample.components.every((item) => item.eligibl
 assert.ok(educationalAudit.findings.length >= 12, "all identified source defects must remain recorded");
 assert.ok(Math.abs(educationalAudit.workedExample.recalculatedTotal - 0.0429144) < Number.EPSILON, "worked example total must remain reproducible");
 
+const taxonomy = JSON.parse(await readFile(path.join(root, "data/taxonomy/maritime-taxonomy.v1.json"), "utf8"));
+assert.equal(taxonomy.version, "1.0.0");
+for (const [axis, values] of Object.entries(taxonomy.axes)) {
+  assert.equal(new Set(values).size, values.length, `${axis} taxonomy values must be unique`);
+}
+assert.ok(taxonomy.axes.roles.includes("unknown"), "roles require an explicit unknown value");
+assert.ok(taxonomy.axes.vessels.includes("unknown"), "vessels require an explicit unknown value");
+assert.ok(taxonomy.axes.operations.includes("unknown"), "operations require an explicit unknown value");
+assert.equal(taxonomy.mappingRules.allowInferenceAcrossAxes, false, "taxonomy axes must not be inferred from one another");
+assert.deepEqual(Object.keys(taxonomy.prototypeMappings.roles).sort(), ["cadet", "deck", "diver", "engine", "officer", "port"]);
+assert.deepEqual(Object.keys(taxonomy.prototypeMappings.vessels).sort(), ["cargo", "fishing", "passenger", "service", "tanker"]);
+assert.ok(Object.values(taxonomy.prototypeMappings.roles).every((value) => taxonomy.axes.roles.includes(value)), "prototype role mappings must target known categories");
+assert.ok(Object.values(taxonomy.prototypeMappings.vessels).every((value) => taxonomy.axes.vessels.includes(value)), "prototype vessel mappings must target known categories");
+assert.ok(Object.values(taxonomy.prototypeMappings.eventsToOperations).every((value) => taxonomy.axes.operations.includes(value)), "event crosswalk must target known operation categories");
+
 const html = await readFile(path.join(root, "src/index.html"), "utf8");
 assert.match(html, /дослідницькою оцінкою/i, "visible research disclaimer is required");
 assert.match(html, /Синтетична DEMO-вибірка/i, "demo data label is required");

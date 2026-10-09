@@ -23,6 +23,8 @@
 
 Counts alone support recorded-incident distributions, not individual risk. A statistical risk estimate must document an exposure denominator such as worker-hours, voyages, operations, vessel-years, or exposed-worker population for the same scope and period.
 
+All imports must preserve original source values and map role, vessel, operation, and exposure fields through [maritime taxonomy v1.0.0](methodology/maritime-taxonomy.md). Event type and operation are separate fields; missing values remain `unknown`.
+
 ## Prototype data
 
 `src/data/incidents.sample.json` is synthetic demonstration data. It exists to validate interaction and presentation and must not be used for empirical conclusions.
