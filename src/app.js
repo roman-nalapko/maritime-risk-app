@@ -16,6 +16,7 @@ const eventLabels = {
 const severityLabels = { none: "Без травм", injury: "Травмування", fatal: "Летальний наслідок" };
 const severityColors = { none: "#22c7b8", injury: "#5fa8ff", fatal: "#e96b61" };
 let incidents = [];
+let datasetMeta = null;
 
 function readForm() {
   return Object.fromEntries(new FormData(form).entries());
@@ -108,13 +109,39 @@ function renderIncidents() {
   }).join(", ");
   $("#severity-donut").style.background = total ? `conic-gradient(${gradient})` : "#274354";
   $("#severity-legend").innerHTML = segments.map((segment) => `<li><i style="background:${severityColors[segment.key]}"></i><span>${severityLabels[segment.key]}</span><strong>${total ? asPercent(segment.share, 0) : "—"}</strong></li>`).join("");
+
+  renderChartMeta("#event-chart-meta", filtered, "Частка кожного типу серед відфільтрованих зареєстрованих подій. Не є індивідуальним ризиком.");
+  renderChartMeta("#severity-chart-meta", filtered, "Умовний розподіл наслідків серед відфільтрованих зареєстрованих подій. Не є ймовірністю для працівника.");
+}
+
+function renderChartMeta(selector, filtered, definition) {
+  const role = $("#stats-role").value;
+  const vessel = $("#stats-vessel").value;
+  const years = filtered.map((item) => Number(item.year)).filter(Number.isFinite);
+  const period = years.length ? `${Math.min(...years)}–${Math.max(...years)}` : `${datasetMeta?.reportingPeriod?.from ?? "—"}–${datasetMeta?.reportingPeriod?.to ?? "—"}`;
+  const source = datasetMeta?.source?.publisher ?? "Невідоме джерело";
+  const version = datasetMeta?.datasetVersion ?? "—";
+  const dataKind = datasetMeta?.releaseMode === "synthetic" ? "Синтетичні DEMO-дані" : "Офіційні агреговані дані";
+  const filters = `Роль: ${role === "all" ? "усі" : roleLabels[role]}; судно: ${vessel === "all" ? "усі" : vesselLabels[vessel]}`;
+  $(selector).innerHTML = `
+    <div><dt>Джерело · версія</dt><dd>${source} · ${version}</dd></div>
+    <div><dt>Період · вибірка</dt><dd>${period} · n = ${filtered.length.toLocaleString("uk-UA")}</dd></div>
+    <div class="meta-wide"><dt>Активні фільтри</dt><dd>${filters}</dd></div>
+    <div class="meta-wide"><dt>Тип даних</dt><dd class="data-kind">${dataKind}</dd></div>
+    <div class="meta-wide"><dt>Що означає показник</dt><dd class="definition">${definition}</dd></div>`;
 }
 
 async function loadIncidents() {
   try {
-    const response = await fetch("data/incidents.sample.json");
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const [response, manifestResponse] = await Promise.all([
+      fetch("data/incidents.sample.json"),
+      fetch("data/release-manifest.json")
+    ]);
+    if (!response.ok || !manifestResponse.ok) throw new Error(`HTTP ${response.status}/${manifestResponse.status}`);
     incidents = await response.json();
+    const manifest = await manifestResponse.json();
+    datasetMeta = manifest.datasets.find((dataset) => dataset.file === "incidents.sample.json");
+    if (!datasetMeta) throw new Error("Немає метаданих набору");
     fillOptions("#stats-role", incidents.map((item) => item.role), roleLabels);
     fillOptions("#stats-vessel", incidents.map((item) => item.vessel), vesselLabels);
     $("#stats-role").addEventListener("change", renderIncidents);

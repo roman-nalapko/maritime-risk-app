@@ -3,8 +3,10 @@
   "datasets": [
     {
       "id": "synthetic-demo-incidents-0.1",
+      "datasetVersion": "0.1.0",
       "file": "incidents.sample.json",
       "releaseMode": "synthetic",
+      "reportingPeriod": { "from": 2024, "to": 2025 },
       "source": {
         "publisher": "SeaRisk UA",
         "url": "https://github.com/roman-nalapko/maritime-risk-app",

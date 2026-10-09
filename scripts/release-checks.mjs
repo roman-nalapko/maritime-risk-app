@@ -26,6 +26,8 @@ function inspectKeys(value, location = "root") {
 
 export function validateReleaseDataset(entry, data) {
   assert(entry.id && entry.file, "every dataset needs id and file");
+  assert(/^\d+\.\d+\.\d+$/.test(entry.datasetVersion ?? ""), `${entry.id} needs a semantic dataset version`);
+  assert(Number.isInteger(entry.reportingPeriod?.from) && Number.isInteger(entry.reportingPeriod?.to) && entry.reportingPeriod.from <= entry.reportingPeriod.to, `${entry.id} needs a valid reporting period`);
   assert(["synthetic", "aggregate"].includes(entry.releaseMode), `${entry.id} must be synthetic or aggregate; record-level external data is blocked`);
   assert(entry.source?.publisher && entry.source?.url && entry.source?.retrievedOn, `${entry.id} lacks source provenance`);
   assert(entry.license?.status === "approved", `${entry.id} licence is not approved`);
