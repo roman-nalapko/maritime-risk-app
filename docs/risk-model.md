@@ -75,6 +75,12 @@ Every future coefficient record must contain:
 
 The executable registry is [`src/coefficients.js`](../src/coefficients.js). Repository tests reject missing metadata and the `approvedValue()` boundary rejects every disputed or synthetic coefficient. The prototype may display those values only because its output is explicitly labelled as a demonstration index.
 
+## Calculation fixtures
+
+The versioned regression set is stored in [`data/fixtures/calculation-profiles.v0.1.json`](../data/fixtures/calculation-profiles.v0.1.json). It contains twelve maritime profiles with recorded component totals, combined outputs, and categories, including minimum/maximum boundaries and invalid-input fallbacks.
+
+`npm test` evaluates every fixture against `SR-UA-PROTOTYPE-0.1` and `SR-UA-COEFFICIENTS-0.1.0` with an absolute tolerance of `1e-12`. The set has passed an engineering implementation review for arithmetic and coverage; it has **not** received maritime safety approval and must not be interpreted as validation of the coefficients or model outcome.
+
 ## Validation backlog
 
 - Replace quarantined educational coefficients with traceable primary data.
