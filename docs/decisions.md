@@ -71,3 +71,13 @@
 **Consequence:** Personal percentages remain disabled. Future rates require the compatibility gate, exact Poisson intervals, and sparse-sample publication rules.
 
 **Evidence:** See `docs/methodology/exposure-and-uncertainty.md`.
+
+## ADR-010: Preserve MAIB grain and unresolved source meaning
+
+**Decision:** Normalize MAIB occurrences, vessels, and affected persons as separate linked tables. Preserve raw category values, publish mapping coverage, and leave ambiguous roles/operations as `unknown`.
+
+**Why:** The three source tables have different grains. Flattening them before counting duplicates occurrence/vessel totals, while guessing operations from events or voyage segments invents meaning absent from the source.
+
+**Consequence:** Imports validate keys before joins, calculate coverage at source-table grain, and require domain review for `Skipper` and narrative-derived operations.
+
+**Evidence:** See `docs/methodology/maib-field-mapping.md`.
