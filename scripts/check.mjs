@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { calculateRisk, categoryFor } from "../src/model.js";
 import { approvedValue, COEFFICIENTS, REGISTRY_ID, REQUIRED_METADATA, validateRegistry } from "../src/coefficients.js";
+import { normalizeTables, parseDelimited, stableJson, validateNormalized } from "./import-maib.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const required = ["src/index.html", "src/styles.css", "src/app.js", "src/model.js", "src/coefficients.js", "src/manifest.webmanifest", "src/data/incidents.sample.json", "AGENTS.md"];
@@ -73,6 +74,22 @@ for (const coverage of Object.values(maibMapping.coverageSnapshot)) {
 }
 assert.equal(maibMapping.rules.inferOperationFromEvent, false, "event labels must not invent operations");
 assert.equal(maibMapping.operation.exposureUnit, "none", "MAIB counts have no exposure denominator");
+
+const normalizedSchema = JSON.parse(await readFile(path.join(root, "data/schemas/maib-normalized.schema.json"), "utf8"));
+const importSnapshot = JSON.parse(await readFile(path.join(root, "data/research/maib-import-report.snapshot.json"), "utf8"));
+assert.equal(importSnapshot.mappingVersion, maibMapping.version);
+assert.deepEqual(importSnapshot.coverage, maibMapping.coverageSnapshot, "committed import report must match the profiled mapping snapshot");
+assert.ok(Object.values(importSnapshot.validation).every(Boolean), "snapshot import must pass key and schema validation");
+const occurrenceFixture = parseDelimited("Occurrence_Id;Local_Date_Main_Event;Date_Main_Event_Unconfirmed;Year_Reported;Occurrence_Severity;Main_Event_L1;Main_Event_L2;Main_Event_L3;Not_Vessel_Operations;State_Reporting\nO-1;2025-01-01;No;2025;Serious;Collision;;;False;UK\n");
+const vesselFixture = parseDelimited("Occurrence_Id;Vessel_Profile_Id;Ship_Craft_Type_L1;Ship_Craft_Type_L2;Ship_Craft_Type_L3;Ship_Craft_Type_L4;Ship_Craft_Type_L5;Vessel_Category_L1;Vessel_Category_L2;Flag_State;Is_Commercial_Vessel;Registered_Length_In_Metres;GT_Gross_Tonnage;Crew_Voyage;Voyage_Segment;Deaths_Total;Injuries_Total\nO-1;V-1;Cargo ship;;;;;Merchant Vessel >= 100gt;;UNITED KINGDOM;True;120.5;9000;18;Arrival;0;1\n");
+const personFixture = parseDelimited("Occurrence_Id;Vessel_Profile_Id;Affected_Person_Id;Affected_Person_Type;Rank;Age;Gender;Nationality;On_Duty;Physical_Condition_L1;Physical_Condition_L2;Physical_Condition_L3;Injury_Type_L1;Injury_Type_L2;PPE_Used;PPE_Deficient\nO-1;V-1;P-1;Crew;Deck officer;42;Male;UK;Yes - On duty prior to casualty;Injured;Serious injury;;;;;\n");
+const normalizedFixture = normalizeTables({ occurrences: occurrenceFixture, vessels: vesselFixture, affectedPersons: personFixture }, maibMapping);
+assert.equal(validateNormalized(normalizedFixture, normalizedSchema), true);
+assert.equal(normalizedFixture.vessels[0].vesselGroup, "cargo_dry");
+assert.equal(normalizedFixture.affectedPersons[0].roleGroup, "deck_officer");
+assert.equal(normalizedFixture.vessels[0].operationGroup, "unknown");
+assert.equal(stableJson(normalizedFixture), stableJson(normalizedFixture), "normalized serialization must be deterministic");
+assert.throws(() => normalizeTables({ occurrences: occurrenceFixture, vessels: vesselFixture, affectedPersons: [{ ...personFixture[0], Vessel_Profile_Id: "missing" }] }, maibMapping), /Orphan affected person/);
 
 const html = await readFile(path.join(root, "src/index.html"), "utf8");
 const serviceWorker = await readFile(path.join(root, "src/sw.js"), "utf8");

@@ -1,0 +1,40 @@
+{
+  "importId": "MAIB-2026-10-09-1.0.0",
+  "mappingVersion": "1.0.0",
+  "schemaVersion": "1.0.0",
+  "sources": {
+    "occurrences": {
+      "filename": "occurrences.csv",
+      "url": "https://maps.dft.gov.uk/maib-data-portal/csv-files/occurrences.csv",
+      "retrievedOn": "2026-10-09",
+      "sha256": "029b2b655831ba33314300c0d730efc03a9731a505499f908254b5b787bd5833",
+      "rows": 9063
+    },
+    "vessels": {
+      "filename": "vessels.csv",
+      "url": "https://maps.dft.gov.uk/maib-data-portal/csv-files/vessels.csv",
+      "retrievedOn": "2026-10-09",
+      "sha256": "a88eaf0cf007bdd7ac9361dc505f5c22c2cbfb112f2c17227d029e702e146954",
+      "rows": 9830
+    },
+    "affectedPersons": {
+      "filename": "affected_persons.csv",
+      "url": "https://maps.dft.gov.uk/maib-data-portal/csv-files/affected_persons.csv",
+      "retrievedOn": "2026-10-09",
+      "sha256": "2ab4ccb14741f8f181d49ee20117af96dd4237eb40f1e922c9332f72484403ea",
+      "rows": 3040
+    }
+  },
+  "validation": {
+    "uniqueKeys": true,
+    "foreignKeys": true,
+    "schema": true
+  },
+  "coverage": {
+    "vesselType": { "total": 9830, "mapped": 9824, "unknown": 6, "percent": 99.94 },
+    "role": { "total": 3040, "mapped": 2659, "unknown": 381, "percent": 87.47 },
+    "operation": { "total": 9830, "mapped": 0, "unknown": 9830, "percent": 0 },
+    "outcome": { "total": 3040, "mapped": 3040, "unknown": 0, "percent": 100 },
+    "eventGroup": { "total": 9063, "mapped": 9061, "unknown": 2, "percent": 99.98 }
+  }
+}
