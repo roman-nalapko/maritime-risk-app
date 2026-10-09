@@ -34,6 +34,25 @@ assert.ok(highExposure.total > baseline.total, "additional exposure must increas
 assert.equal(categoryFor(0.02).key, "extreme");
 assert.equal(categoryFor(0.0005).key, "medium");
 
+const calculationFixtures = JSON.parse(await readFile(path.join(root, "data/fixtures/calculation-profiles.v0.1.json"), "utf8"));
+assert.equal(calculationFixtures.modelVersion, baseline.modelId, "fixture model version must match the executable model");
+assert.equal(calculationFixtures.registryVersion, REGISTRY_ID, "fixture registry version must match the executable registry");
+assert.ok(calculationFixtures.cases.length >= 10, "at least ten representative calculation fixtures are required");
+assert.ok(calculationFixtures.review.engineeringReviewer && calculationFixtures.review.reviewedOn, "fixture reviewer and date are required");
+assert.equal(calculationFixtures.review.domainSafetyApproval, false, "regression fixtures must not imply domain approval");
+assert.ok(calculationFixtures.cases.some((item) => item.kind === "boundary"), "boundary fixtures are required");
+assert.ok(calculationFixtures.cases.some((item) => item.kind === "invalid_input"), "invalid-input fixtures are required");
+assert.equal(new Set(calculationFixtures.cases.map((item) => item.id)).size, calculationFixtures.cases.length, "fixture ids must be unique");
+assert.deepEqual([...new Set(calculationFixtures.cases.filter((item) => item.kind !== "invalid_input").map((item) => item.input.role).filter(Boolean))].sort(), ["cadet", "deck", "diver", "engine", "officer", "port"], "representative fixtures must cover every prototype role");
+for (const fixture of calculationFixtures.cases) {
+  const result = calculateRisk(fixture.input);
+  for (const component of ["health", "occupation", "lifestyle"]) {
+    assert.ok(Math.abs(result.components[component] - fixture.expected.components[component]) <= calculationFixtures.tolerance, `${fixture.id} ${component} changed`);
+  }
+  assert.ok(Math.abs(result.total - fixture.expected.total) <= calculationFixtures.tolerance, `${fixture.id} total changed`);
+  assert.equal(result.category.key, fixture.expected.category, `${fixture.id} category changed`);
+}
+
 const incidents = JSON.parse(await readFile(path.join(root, "src/data/incidents.sample.json"), "utf8"));
 assert.ok(incidents.length >= 20, "sample data should support meaningful UI filtering");
 assert.ok(incidents.every((item) => item.id.startsWith("DEMO-")), "synthetic records must be unmistakably labelled");

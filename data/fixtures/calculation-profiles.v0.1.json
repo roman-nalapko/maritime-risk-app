@@ -1,0 +1,100 @@
+{
+  "fixtureSetId": "SR-UA-CALCULATION-FIXTURES-0.1.0",
+  "modelVersion": "SR-UA-PROTOTYPE-0.1",
+  "registryVersion": "SR-UA-COEFFICIENTS-0.1.0",
+  "tolerance": 1e-12,
+  "review": {
+    "reviewedOn": "2026-10-09",
+    "engineeringReviewer": "Codex implementation review",
+    "scope": "Formula reproduction, representative inputs, boundaries, fallbacks, and regression values",
+    "status": "engineering_regression_reviewed",
+    "domainSafetyApproval": false,
+    "note": "These fixtures verify prototype arithmetic only. Maritime safety specialist review remains pending."
+  },
+  "cases": [
+    {
+      "id": "deck-baseline",
+      "description": "Typical deck profile with PPE and moderate night exposure",
+      "kind": "representative",
+      "input": { "age": 35, "sex": "male", "residence": "city", "role": "deck", "hours": 2024, "night": 25, "ppe": true, "previous": false, "smoking": false, "alcohol": false, "chronic": false },
+      "expected": { "components": { "health": 0.00232, "occupation": 0.00104742, "lifestyle": 0 }, "total": 0.0033649899855999754, "category": "very-high" }
+    },
+    {
+      "id": "engine-city-female",
+      "description": "Engine worker with PPE and no night exposure",
+      "kind": "representative",
+      "input": { "age": 28, "sex": "female", "residence": "city", "role": "engine", "hours": 1800, "night": 0, "ppe": true, "previous": false, "smoking": false, "alcohol": false, "chronic": false },
+      "expected": { "components": { "health": 0.00019, "occupation": 0.000675, "lifestyle": 0 }, "total": 0.0008648717500000513, "category": "medium" }
+    },
+    {
+      "id": "officer-mixed-factors",
+      "description": "Officer profile exercising every component and prior-incident adjustment",
+      "kind": "representative",
+      "input": { "age": 50, "sex": "male", "residence": "village", "role": "officer", "hours": 2500, "night": 40, "ppe": false, "previous": true, "smoking": true, "alcohol": true, "chronic": true },
+      "expected": { "components": { "health": 0.017849999999999998, "occupation": 0.001116, "lifestyle": 0.0139604 }, "total": 0.032641984553144265, "category": "extreme" }
+    },
+    {
+      "id": "port-village-female",
+      "description": "Port worker kept as a separate population proxy",
+      "kind": "representative",
+      "input": { "age": 45, "sex": "female", "residence": "village", "role": "port", "hours": 1600, "night": 10, "ppe": true, "previous": false, "smoking": false, "alcohol": false, "chronic": false },
+      "expected": { "components": { "health": 0.0020159999999999996, "occupation": 0.00015263999999999998, "lifestyle": 0 }, "total": 0.0021683322777600322, "category": "very-high" }
+    },
+    {
+      "id": "cadet-young",
+      "description": "Young cadet with low annual exposure",
+      "kind": "representative",
+      "input": { "age": 19, "sex": "male", "residence": "city", "role": "cadet", "hours": 900, "night": 15, "ppe": true, "previous": false, "smoking": false, "alcohol": false, "chronic": false },
+      "expected": { "components": { "health": 0.00043499999999999995, "occupation": 0.0000367875, "lifestyle": 0 }, "total": 0.0004717714974374898, "category": "medium" }
+    },
+    {
+      "id": "diver-high-exposure",
+      "description": "High-exposure diving profile with prior incident",
+      "kind": "representative",
+      "input": { "age": 40, "sex": "male", "residence": "city", "role": "diver", "hours": 3000, "night": 60, "ppe": false, "previous": true, "smoking": false, "alcohol": false, "chronic": false },
+      "expected": { "components": { "health": 0.003915, "occupation": 0.029376, "lifestyle": 0 }, "total": 0.033175992959999956, "category": "extreme" }
+    },
+    {
+      "id": "deck-older-lifestyle",
+      "description": "Older deck profile with chronic and smoking markers",
+      "kind": "representative",
+      "input": { "age": 65, "sex": "female", "residence": "village", "role": "deck", "hours": 1200, "night": 0, "ppe": true, "previous": false, "smoking": true, "alcohol": false, "chronic": true },
+      "expected": { "components": { "health": 0.01995, "occupation": 0.0005399999999999999, "lifestyle": 0.00336 }, "total": 0.02377041679728009, "category": "extreme" }
+    },
+    {
+      "id": "engine-maximum-hours",
+      "description": "Engine worker at the accepted hours and night-work limits",
+      "kind": "boundary",
+      "input": { "age": 80, "sex": "male", "residence": "city", "role": "engine", "hours": 5000, "night": 100, "ppe": false, "previous": true, "smoking": false, "alcohol": true, "chronic": false },
+      "expected": { "components": { "health": 0.20734999999999998, "occupation": 0.0048, "lifestyle": 0.0003074 }, "total": 0.21139721103907183, "category": "extreme" }
+    },
+    {
+      "id": "minimum-boundary",
+      "description": "Minimum accepted age and exposure values",
+      "kind": "boundary",
+      "input": { "age": 18, "sex": "female", "residence": "city", "role": "deck", "hours": 1, "night": 0, "ppe": false, "previous": false, "smoking": false, "alcohol": false, "chronic": false },
+      "expected": { "components": { "health": 0.00011399999999999999, "occupation": 6e-7, "lifestyle": 0 }, "total": 0.00011459993160001236, "category": "medium" }
+    },
+    {
+      "id": "maximum-boundary",
+      "description": "Maximum accepted age, hours, and night exposure with all additive markers",
+      "kind": "boundary",
+      "input": { "age": 85, "sex": "male", "residence": "village", "role": "diver", "hours": 5000, "night": 100, "ppe": false, "previous": true, "smoking": true, "alcohol": true, "chronic": true },
+      "expected": { "components": { "health": 0.303875, "occupation": 0.057600000000000005, "lifestyle": 0.0139604 }, "total": 0.35313021608328, "category": "extreme" }
+    },
+    {
+      "id": "invalid-numeric-and-categories",
+      "description": "Invalid numeric and taxonomy values exercise clamping and documented fallbacks",
+      "kind": "invalid_input",
+      "input": { "age": "not-a-number", "sex": "unknown", "residence": "unknown", "role": "unknown", "hours": -50, "night": 140, "ppe": false, "previous": false, "smoking": false, "alcohol": false, "chronic": false },
+      "expected": { "components": { "health": 0.0003, "occupation": 9.6e-7, "lifestyle": 0 }, "total": 0.00030095971200005955, "category": "medium" }
+    },
+    {
+      "id": "missing-input",
+      "description": "Empty input exercises all numeric and category fallbacks",
+      "kind": "invalid_input",
+      "input": {},
+      "expected": { "components": { "health": 0.0003, "occupation": 6e-7, "lifestyle": 0 }, "total": 0.0003005998199999693, "category": "medium" }
+    }
+  ]
+}
