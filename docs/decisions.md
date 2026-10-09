@@ -81,3 +81,11 @@
 **Consequence:** Imports validate keys before joins, calculate coverage at source-table grain, and require domain review for `Skipper` and narrative-derived operations.
 
 **Evidence:** See `docs/methodology/maib-field-mapping.md`.
+
+## ADR-011: Offline, deterministic MAIB import
+
+**Decision:** Import locally downloaded MAIB CSV files with a dependency-free offline command. Produce separate occurrence, vessel, and affected-person artifacts plus a manifest and validation report.
+
+**Why:** Separating download from transformation makes source snapshots auditable, keeps CI independent of a changing external service, and prevents one-to-many joins from corrupting counts.
+
+**Consequence:** The caller supplies an explicit retrieval date. Artifacts are sorted by source key, checksummed, schema-validated, and reproducible from the same inputs and mapping version.

@@ -29,6 +29,14 @@ Candidate workforce, fleet, arrival, and passenger denominators are inventoried 
 
 The field-level import contract, controlled value crosswalk, and measured coverage are defined in [MAIB public data mapping v1.0.0](methodology/maib-field-mapping.md). Its unresolved values remain `unknown` pending specialist review.
 
+Run the offline importer after downloading the three official CSV files:
+
+```bash
+npm run import:maib -- --input work/maib-source --output work/maib-build --retrieved-on YYYY-MM-DD
+```
+
+The command produces three normalized table-grain artifacts, a provenance manifest, and an import report. It performs no network requests.
+
 ## Prototype data
 
 `src/data/incidents.sample.json` is synthetic demonstration data. It exists to validate interaction and presentation and must not be used for empirical conclusions.
