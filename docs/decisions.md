@@ -61,3 +61,13 @@
 **Why:** A numeric value without a unit, covered population, period, source, and review status cannot be interpreted or safely reused.
 
 **Consequence:** The demonstration engine can read quarantined values through an explicit prototype path, but the approved-calculation accessor rejects them. Registry and model versions are displayed with each result.
+
+## ADR-009: No personal rate from unmatched public denominators
+
+**Decision:** Do not divide MAIB affected-person counts by DfT seafarer estimates or other convenient public totals. Permit descriptive statistics now and only conditional vessel/arrival rate research after exact scope matching.
+
+**Why:** MAIB's jurisdiction combines UK vessels worldwide with vessels in UK territorial waters, while candidate denominators use different nationality, registration, employer, vessel, and time-at-risk definitions.
+
+**Consequence:** Personal percentages remain disabled. Future rates require the compatibility gate, exact Poisson intervals, and sparse-sample publication rules.
+
+**Evidence:** See `docs/methodology/exposure-and-uncertainty.md`.

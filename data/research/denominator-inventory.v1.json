@@ -1,0 +1,84 @@
+{
+  "id": "SR-UA-DENOMINATOR-REVIEW-1.0.0",
+  "version": "1.0.0",
+  "reviewedOn": "2026-10-09",
+  "personalRateDecision": "no_go",
+  "reason": "No public numerator and denominator pair matches outcome, population, geography, vessel scope, operation, period, and exposure unit.",
+  "sources": [
+    {
+      "id": "maib_public_portal",
+      "kind": "numerator",
+      "units": ["occurrence", "affected_person", "involved_vessel"],
+      "compatibleWithPersonalRate": false,
+      "allowedUse": "recorded_incident_statistics",
+      "url": "https://maps.dft.gov.uk/maib-data-portal/web-pages/download_files_section.html"
+    },
+    {
+      "id": "dft_seafarers",
+      "kind": "candidate_denominator",
+      "units": ["estimated_active_seafarer"],
+      "compatibleWithPersonalRate": false,
+      "allowedUse": "workforce_context_only",
+      "url": "https://www.gov.uk/government/statistics/seafarers-in-the-uk-shipping-industry-2025"
+    },
+    {
+      "id": "dft_uk_fleet",
+      "kind": "candidate_denominator",
+      "units": ["registered_vessel", "gross_tonnage"],
+      "compatibleWithPersonalRate": false,
+      "allowedUse": "conditional_vessel_rate_research",
+      "url": "https://www.gov.uk/government/statistical-data-sets/shipping-fleet-statistics"
+    },
+    {
+      "id": "dft_port_arrivals",
+      "kind": "candidate_denominator",
+      "units": ["commercial_port_arrival"],
+      "compatibleWithPersonalRate": false,
+      "allowedUse": "conditional_arrival_rate_research",
+      "url": "https://www.gov.uk/government/statistics/port-freight-annual-statistics-2024/port-freight-annual-statistics-2024-arrivals"
+    },
+    {
+      "id": "dft_sea_passengers",
+      "kind": "candidate_denominator",
+      "units": ["passenger_journey"],
+      "compatibleWithPersonalRate": false,
+      "allowedUse": "passenger_research_only",
+      "url": "https://www.gov.uk/government/collections/maritime-and-shipping-statistics"
+    },
+    {
+      "id": "worker_hours_gap",
+      "kind": "data_gap",
+      "units": ["worker_hour"],
+      "compatibleWithPersonalRate": false,
+      "allowedUse": "none",
+      "reason": "No compatible public maritime worker-hour source was identified."
+    },
+    {
+      "id": "voyages_gap",
+      "kind": "data_gap",
+      "units": ["voyage"],
+      "compatibleWithPersonalRate": false,
+      "allowedUse": "none",
+      "reason": "Port arrivals do not enumerate all matching voyages."
+    },
+    {
+      "id": "operation_counts_gap",
+      "kind": "data_gap",
+      "units": ["operation_count"],
+      "compatibleWithPersonalRate": false,
+      "allowedUse": "none",
+      "reason": "No matching standardized operation-count source was identified."
+    }
+  ],
+  "uncertainty": {
+    "rateInterval": "exact_poisson_garwood_95",
+    "zeroEventUpperBound": "-ln(0.05)/exposure",
+    "shareInterval": "wilson_score_95"
+  },
+  "suppression": {
+    "missingOrIncompatibleDenominator": "suppress_rate",
+    "eventsUnder5": "suppress_public_point_rate",
+    "eventsUnder20": "warn_very_sparse_no_ranking",
+    "eventsUnder50": "warn_limited_precision"
+  }
+}

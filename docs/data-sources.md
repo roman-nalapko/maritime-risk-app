@@ -25,6 +25,8 @@ Counts alone support recorded-incident distributions, not individual risk. A sta
 
 All imports must preserve original source values and map role, vessel, operation, and exposure fields through [maritime taxonomy v1.0.0](methodology/maritime-taxonomy.md). Event type and operation are separate fields; missing values remain `unknown`.
 
+Candidate workforce, fleet, arrival, and passenger denominators are inventoried in [the exposure and uncertainty review](methodology/exposure-and-uncertainty.md). None is currently compatible with a MAIB-derived personal worker rate.
+
 ## Prototype data
 
 `src/data/incidents.sample.json` is synthetic demonstration data. It exists to validate interaction and presentation and must not be used for empirical conclusions.
