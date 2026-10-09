@@ -6,6 +6,8 @@ Model ID: `SR-UA-PROTOTYPE-0.1`
 
 This model demonstrates product behavior. It is not validated for operational safety decisions. Several seed values are adapted from the supplied educational tables; those tables contain apparent arithmetic inconsistencies, so every coefficient must be reviewed before the model is promoted.
 
+The supplied tables have now been independently recalculated and quarantined in [the educational source audit](methodology/educational-source-audit.md). No value from that material is eligible for model v1.0 until its primary provenance and definitions are verified.
+
 The current output is an **educational demonstration index, not a probability**. It combines components with incompatible outcomes and source populations. The target outcomes for model v1.0 are defined in [outcome-definitions.md](methodology/outcome-definitions.md); the primary target is annual fatal occupational injury connected with ship operations.
 
 ## Concepts
@@ -67,7 +69,7 @@ Every future coefficient record must contain:
 
 ## Validation backlog
 
-- Verify source-table arithmetic and exponents.
+- Replace quarantined educational coefficients with traceable primary data.
 - Define whether health baseline represents all-cause mortality or a narrower outcome.
 - Replace generic roles with maritime occupation groups supported by denominators.
 - Obtain worker-hours, voyages, or population counts for every incident numerator.

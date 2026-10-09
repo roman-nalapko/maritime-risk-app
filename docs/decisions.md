@@ -33,3 +33,13 @@
 **Consequence:** UI copy must not express the prototype value as “one case in N” or as a probability of injury/death. Port workers and other non-seafarer populations require separate models or compatible coefficient sets.
 
 **Evidence:** See `docs/methodology/outcome-definitions.md`.
+
+## ADR-006: Quarantine the supplied educational coefficients
+
+**Decision:** Retain the supplied teaching tables only as research evidence and an arithmetic test case. Mark the source and every extracted component `eligibleForModel: false`.
+
+**Why:** The material lacks primary provenance and contains exponent, boundary, reference, and percentage contradictions. Its worked example also adds incompatible outcomes and denominators.
+
+**Consequence:** Runtime code must not import `data/research/educational-source-audit.json`. New coefficients require traceable source metadata and review before use.
+
+**Evidence:** See `docs/methodology/educational-source-audit.md`.

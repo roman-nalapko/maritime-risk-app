@@ -21,6 +21,12 @@ const incidents = JSON.parse(await readFile(path.join(root, "src/data/incidents.
 assert.ok(incidents.length >= 20, "sample data should support meaningful UI filtering");
 assert.ok(incidents.every((item) => item.id.startsWith("DEMO-")), "synthetic records must be unmistakably labelled");
 
+const educationalAudit = JSON.parse(await readFile(path.join(root, "data/research/educational-source-audit.json"), "utf8"));
+assert.equal(educationalAudit.eligibleForModel, false, "unverified educational data must stay quarantined");
+assert.ok(educationalAudit.workedExample.components.every((item) => item.eligibleForModel === false), "audited example values must not become model coefficients");
+assert.ok(educationalAudit.findings.length >= 12, "all identified source defects must remain recorded");
+assert.ok(Math.abs(educationalAudit.workedExample.recalculatedTotal - 0.0429144) < Number.EPSILON, "worked example total must remain reproducible");
+
 const html = await readFile(path.join(root, "src/index.html"), "utf8");
 assert.match(html, /дослідницькою оцінкою/i, "visible research disclaimer is required");
 assert.match(html, /Синтетична DEMO-вибірка/i, "demo data label is required");

@@ -1,0 +1,42 @@
+{
+  "auditId": "EDU-SOURCE-AUDIT-2026-10-09",
+  "source": "Nine user-supplied screenshots of Ukrainian educational material",
+  "retrievedOn": "2026-10-09",
+  "sourceStatus": "unverified_secondary_material",
+  "eligibleForModel": false,
+  "workedExample": {
+    "inputs": {
+      "ageYears": 50,
+      "sex": "male",
+      "residence": "city",
+      "occupation": "construction_worker",
+      "workHoursPerYear": 2024,
+      "smoking": true,
+      "privateDrivingHoursPerYear": 100
+    },
+    "components": [
+      { "id": "R1", "label": "disease_and_ageing", "expression": "0.0084 * 1.45", "recalculatedValue": 0.01218, "status": "verified_arithmetic", "eligibleForModel": false },
+      { "id": "R2", "label": "construction_work", "expression": "6e-7 * 2024", "recalculatedValue": 0.0012144, "status": "verified_arithmetic", "eligibleForModel": false },
+      { "id": "R3", "label": "household_accident", "expression": "0.0012 * 1.6", "recalculatedValue": 0.00192, "status": "disputed", "eligibleForModel": false },
+      { "id": "R4", "label": "smoking", "expression": "8000e-6 * 1.45", "recalculatedValue": 0.0116, "status": "verified_arithmetic", "eligibleForModel": false },
+      { "id": "R5", "label": "private_driving", "expression": "1e-4 * 100 * 1.6", "recalculatedValue": 0.016, "status": "disputed", "eligibleForModel": false }
+    ],
+    "recalculatedTotal": 0.0429144,
+    "lifestyleShare": 0.643140763939377,
+    "interpretation": "arithmetic_demonstration_only"
+  },
+  "findings": [
+    { "id": "A-001", "status": "disputed", "summary": "Household-risk product is printed with an exponent ten times too large." },
+    { "id": "A-002", "status": "disputed", "summary": "The total formula omits the minus sign in the exponent of the driving term." },
+    { "id": "A-003", "status": "disputed", "summary": "Female workplace correction uses 1.28 in the formula although the text and result imply 2.8." },
+    { "id": "A-004", "status": "disputed", "summary": "The 35–44 sex-share row totals 110 percent." },
+    { "id": "A-005", "status": "disputed", "summary": "Category 3 has an internally inconsistent lower bound." },
+    { "id": "A-006", "status": "disputed", "summary": "Category 4 contains thresholds that differ by a factor of ten." },
+    { "id": "A-007", "status": "disputed", "summary": "The ordered scale does not define complete boundary semantics." },
+    { "id": "A-008", "status": "disputed", "summary": "The worked example references occupation data as Table 5 although visible Table 5 is a correction-factor table." },
+    { "id": "A-009", "status": "unverifiable", "summary": "Primary datasets, geography, observation years, and uncertainty are absent." },
+    { "id": "A-010", "status": "disputed", "summary": "The total adds incompatible outcomes and denominators." },
+    { "id": "A-011", "status": "disputed", "summary": "The working-age aggregate in Table 4 is inconsistent with adjacent age rows." },
+    { "id": "A-012", "status": "disputed", "summary": "The displayed working-age range is incomplete or erroneous." }
+  ]
+}
