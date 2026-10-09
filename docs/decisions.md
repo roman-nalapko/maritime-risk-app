@@ -107,3 +107,13 @@
 **Why:** A methodology page alone is too easy to miss. The user needs the evidence quality and limitations at the point where a number could otherwise appear authoritative.
 
 **Consequence:** Every calculation result carries the same provisional warning and evidence metadata. Missing confidence intervals are stated explicitly instead of represented by invented precision.
+
+## ADR-014: Keep the pilot self-directed and prohibit individual decisions
+
+**Decision:** The research pilot processes questionnaire values only in browser memory and prohibits employment, work-allocation, disciplinary, medical, insurance, navigational, and fitness-for-duty use. Any remote collection, identifiable health processing, organizational result access, or AI-based worker profiling requires a new legal and governance review before implementation.
+
+**Why:** The questionnaire includes health and lifestyle markers, and an apparently precise result could be coercively reused even when the software stores nothing. Technical privacy alone does not prevent institutional misuse.
+
+**Consequence:** The boundary is visible before and after calculation, pilot materials must name monitored incident contacts, and CI checks prevent silent addition of browser storage or remote questionnaire transmission.
+
+**Evidence:** See `docs/governance/privacy-and-misuse-review.md` and `docs/governance/incident-response.md`.
