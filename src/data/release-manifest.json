@@ -1,0 +1,30 @@
+{
+  "version": "1.0.0",
+  "datasets": [
+    {
+      "id": "synthetic-demo-incidents-0.1",
+      "file": "incidents.sample.json",
+      "releaseMode": "synthetic",
+      "source": {
+        "publisher": "SeaRisk UA",
+        "url": "https://github.com/roman-nalapko/maritime-risk-app",
+        "retrievedOn": "2026-10-09"
+      },
+      "license": {
+        "id": "project-generated-demo-data",
+        "status": "approved",
+        "attribution": "Synthetic demonstration data created for SeaRisk UA; not real incidents."
+      },
+      "privacy": {
+        "status": "reviewed",
+        "directIdentifiersRemoved": true,
+        "containsRealPeople": false
+      },
+      "quality": {
+        "status": "approved",
+        "minimumCellCount": null,
+        "limitations": "Synthetic records support UI testing only."
+      }
+    }
+  ]
+}

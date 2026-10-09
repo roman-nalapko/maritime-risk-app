@@ -37,6 +37,8 @@ npm run import:maib -- --input work/maib-source --output work/maib-build --retri
 
 The command produces three normalized table-grain artifacts, a provenance manifest, and an import report. It performs no network requests.
 
+Imported data is not automatically publishable. The [public data release policy](data-release-policy.md) blocks unlicensed, identifying, record-level, or undersized external data during every build.
+
 ## Prototype data
 
 `src/data/incidents.sample.json` is synthetic demonstration data. It exists to validate interaction and presentation and must not be used for empirical conclusions.

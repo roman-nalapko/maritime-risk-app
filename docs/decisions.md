@@ -89,3 +89,13 @@
 **Why:** Separating download from transformation makes source snapshots auditable, keeps CI independent of a changing external service, and prevents one-to-many joins from corrupting counts.
 
 **Consequence:** The caller supplies an explicit retrieval date. Artifacts are sorted by source key, checksummed, schema-validated, and reproducible from the same inputs and mapping version.
+
+## ADR-012: Separate import approval from public release approval
+
+**Decision:** Treat successful import as necessary but insufficient for publication. A build-time release manifest gates licensing, attribution, privacy, aggregation, and quality.
+
+**Why:** Technically valid public-source records can still be unlicensed for the intended reuse, identifying when linked, or misleading at sparse sample sizes.
+
+**Consequence:** Real external record-level data cannot enter `dist/`. MAIB-derived aggregates remain blocked until dataset-specific licensing and attribution are confirmed.
+
+**Evidence:** See `docs/data-release-policy.md`.

@@ -5,6 +5,7 @@ import path from "node:path";
 import { calculateRisk, categoryFor } from "../src/model.js";
 import { approvedValue, COEFFICIENTS, REGISTRY_ID, REQUIRED_METADATA, validateRegistry } from "../src/coefficients.js";
 import { normalizeTables, parseDelimited, stableJson, validateNormalized } from "./import-maib.mjs";
+import { runReleaseChecks, validateReleaseDataset } from "./release-checks.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const required = ["src/index.html", "src/styles.css", "src/app.js", "src/model.js", "src/coefficients.js", "src/manifest.webmanifest", "src/data/incidents.sample.json", "AGENTS.md"];
@@ -90,6 +91,21 @@ assert.equal(normalizedFixture.affectedPersons[0].roleGroup, "deck_officer");
 assert.equal(normalizedFixture.vessels[0].operationGroup, "unknown");
 assert.equal(stableJson(normalizedFixture), stableJson(normalizedFixture), "normalized serialization must be deterministic");
 assert.throws(() => normalizeTables({ occurrences: occurrenceFixture, vessels: vesselFixture, affectedPersons: [{ ...personFixture[0], Vessel_Profile_Id: "missing" }] }, maibMapping), /Orphan affected person/);
+
+const publicRelease = await runReleaseChecks(path.join(root, "src/data"));
+assert.equal(publicRelease.datasetsChecked, 1);
+const releaseEntry = {
+  id: "test", file: "test.json", releaseMode: "aggregate",
+  source: { publisher: "test", url: "https://example.invalid", retrievedOn: "2026-10-09" },
+  license: { id: "test", status: "approved", attribution: "test" },
+  privacy: { status: "reviewed", directIdentifiersRemoved: true, containsRealPeople: false },
+  quality: { status: "approved", minimumCellCount: 5 }
+};
+assert.equal(validateReleaseDataset(releaseEntry, { cells: [{ count: 5 }] }), true);
+assert.throws(() => validateReleaseDataset({ ...releaseEntry, license: { ...releaseEntry.license, status: "unknown" } }, { cells: [{ count: 5 }] }), /licence is not approved/);
+assert.throws(() => validateReleaseDataset(releaseEntry, { cells: [{ count: 4 }] }), /below its minimum aggregation size/);
+assert.throws(() => validateReleaseDataset({ ...releaseEntry, releaseMode: "record_level" }, []), /record-level external data is blocked/);
+assert.throws(() => validateReleaseDataset(releaseEntry, { cells: [{ count: 5, latitude: 1 }] }), /latitude is not allowed/);
 
 const html = await readFile(path.join(root, "src/index.html"), "utf8");
 const serviceWorker = await readFile(path.join(root, "src/sw.js"), "utf8");
