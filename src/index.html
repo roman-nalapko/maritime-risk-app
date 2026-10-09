@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#071521" />
+    <meta
+      name="description"
+      content="Дослідницький прототип прозорої оцінки індивідуального ризику працівника морської галузі."
+    />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icons/searisk.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>SeaRisk UA — оцінка морських ризиків</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#assessment">До оцінювання</a>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="SeaRisk UA, на початок">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 44 44" role="img">
+            <path d="M7 25c5-6 9-6 14 0s9 6 16 0" />
+            <path d="M8 17h28l-5 9H13z" />
+            <path d="M22 8v9M22 9l8 6" />
+          </svg>
+        </span>
+        <span><strong>SeaRisk</strong><small>UA · research preview</small></span>
+      </a>
+      <nav aria-label="Основна навігація">
+        <a href="#assessment">Оцінювання</a>
+        <a href="#statistics">Статистика</a>
+        <a href="#methodology">Методика</a>
+      </nav>
+      <span class="status-pill"><i></i> Модель 0.1</span>
+    </header>
+
+    <main id="top">
+      <section class="hero shell">
+        <div class="hero-copy">
+          <p class="eyebrow">Безпека, яку можна пояснити</p>
+          <h1>Побачте, що саме формує професійний ризик.</h1>
+          <p class="hero-lede">
+            Локальний браузерний розрахунок для працівника морської галузі — з
+            розкладом факторів, контекстом інцидентів і практичними кроками.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#assessment">Почати оцінювання</a>
+            <a class="text-link" href="#methodology">Як працює модель <span>↗</span></a>
+          </div>
+        </div>
+        <div class="hero-visual" aria-label="Приклад структури оцінки ризику">
+          <div class="radar-card">
+            <div class="radar-topline"><span>Профіль ризику</span><b>DEMO</b></div>
+            <div class="radar-wrap">
+              <svg viewBox="0 0 240 190" role="img" aria-label="Демонстраційна радарна діаграма">
+                <g class="radar-grid">
+                  <path d="M120 18 203 66 184 153 56 153 37 66Z" />
+                  <path d="M120 48 172 78 160 132 80 132 68 78Z" />
+                  <path d="M120 76 143 89 138 113 102 113 97 89Z" />
+                  <path d="M120 18v135M37 66l147 87M203 66 56 153M184 153 68 78M56 153l116-75" />
+                </g>
+                <path class="radar-value" d="M120 40 180 78 151 131 77 141 72 80Z" />
+                <g class="radar-dots">
+                  <circle cx="120" cy="40" r="4" /><circle cx="180" cy="78" r="4" />
+                  <circle cx="151" cy="131" r="4" /><circle cx="77" cy="141" r="4" />
+                  <circle cx="72" cy="80" r="4" />
+                </g>
+              </svg>
+              <span class="radar-label label-1">Втома</span>
+              <span class="radar-label label-2">Операції</span>
+              <span class="radar-label label-3">Здоров’я</span>
+              <span class="radar-label label-4">Звички</span>
+              <span class="radar-label label-5">Середовище</span>
+            </div>
+            <p><span>Пріоритет</span><strong>контроль втоми</strong></p>
+          </div>
+          <div class="signal signal-a">01 <span>Локальний розрахунок</span></div>
+          <div class="signal signal-b">02 <span>Прозорі фактори</span></div>
+        </div>
+      </section>
+
+      <section class="trust-strip" aria-label="Принципи продукту">
+        <div class="shell trust-grid">
+          <p><span>01</span><strong>Без передачі даних</strong><small>Анкета обробляється у браузері</small></p>
+          <p><span>02</span><strong>Без чорної скриньки</strong><small>Кожен внесок можна перевірити</small></p>
+          <p><span>03</span><strong>Два різні контексти</strong><small>Оцінка ≠ частка інцидентів</small></p>
+        </div>
+      </section>
+
+      <section class="workspace shell" id="assessment">
+        <div class="section-heading">
+          <div><p class="eyebrow">Індивідуальне оцінювання</p><h2>Профіль працівника</h2></div>
+          <p>Заповнення займає приблизно дві хвилини. Поля не зберігаються після закриття сторінки.</p>
+        </div>
+
+        <div class="assessment-grid">
+          <form class="assessment-form card" id="risk-form">
+            <fieldset>
+              <legend><span>1</span> Основні дані</legend>
+              <div class="field-grid">
+                <label>Вік
+                  <input id="age" name="age" type="number" min="18" max="80" value="35" required />
+                </label>
+                <label>Стать
+                  <select id="sex" name="sex">
+                    <option value="male">Чоловіча</option>
+                    <option value="female">Жіноча</option>
+                  </select>
+                </label>
+                <label>Місце проживання
+                  <select id="residence" name="residence">
+                    <option value="city">Місто</option>
+                    <option value="village">Сільська місцевість</option>
+                  </select>
+                </label>
+                <label class="toggle-field">Хронічні захворювання
+                  <input id="chronic" name="chronic" type="checkbox" role="switch" />
+                  <span class="toggle" aria-hidden="true"></span>
+                </label>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend><span>2</span> Робота та експозиція</legend>
+              <div class="field-grid">
+                <label class="wide">Професійна група
+                  <select id="role" name="role">
+                    <option value="deck">Палубна команда</option>
+                    <option value="engine">Машинна команда</option>
+                    <option value="officer">Командний склад</option>
+                    <option value="port">Портовий працівник</option>
+                    <option value="cadet">Курсант / практикант</option>
+                    <option value="diver">Водолазні роботи</option>
+                  </select>
+                </label>
+                <label>Робочих годин на рік
+                  <input id="hours" name="hours" type="number" min="1" max="5000" value="2024" required />
+                </label>
+                <label>Нічні зміни, %
+                  <input id="night" name="night" type="number" min="0" max="100" value="25" required />
+                </label>
+                <label class="toggle-field">Завжди використовую ЗІЗ
+                  <input id="ppe" name="ppe" type="checkbox" role="switch" checked />
+                  <span class="toggle" aria-hidden="true"></span>
+                </label>
+                <label class="toggle-field">Був інцидент за 3 роки
+                  <input id="previous" name="previous" type="checkbox" role="switch" />
+                  <span class="toggle" aria-hidden="true"></span>
+                </label>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend><span>3</span> Додаткові фактори</legend>
+              <div class="field-grid">
+                <label class="toggle-field">Куріння
+                  <input id="smoking" name="smoking" type="checkbox" role="switch" />
+                  <span class="toggle" aria-hidden="true"></span>
+                </label>
+                <label class="toggle-field">Регулярне надмірне вживання алкоголю
+                  <input id="alcohol" name="alcohol" type="checkbox" role="switch" />
+                  <span class="toggle" aria-hidden="true"></span>
+                </label>
+              </div>
+            </fieldset>
+
+            <div class="form-footer">
+              <p><span aria-hidden="true">ⓘ</span> Результат є дослідницькою оцінкою, а не медичним чи професійним висновком.</p>
+              <button class="button button-primary" type="submit">Розрахувати ризик <span>→</span></button>
+            </div>
+          </form>
+
+          <aside class="result-card card" id="result-panel" aria-live="polite">
+            <div class="result-header">
+              <span class="result-kicker">Розрахункова річна оцінка</span>
+              <span class="method-badge">Методика 0.1</span>
+            </div>
+            <div class="score-row">
+              <div>
+                <strong id="risk-value">0,19%</strong>
+                <span id="risk-ratio">≈ 1 випадок на 526 профілів</span>
+              </div>
+              <div class="risk-badge" id="risk-badge"><i></i><span>Дуже високий</span></div>
+            </div>
+            <div class="meter" aria-hidden="true"><i id="risk-meter"></i></div>
+            <div class="meter-labels"><span>Низький</span><span>Середній</span><span>Екстремальний</span></div>
+
+            <div class="breakdown">
+              <div class="breakdown-title"><h3>Внесок факторів</h3><button type="button" id="details-toggle" aria-expanded="true">Сховати деталі</button></div>
+              <div id="breakdown-list"></div>
+            </div>
+
+            <div class="recommendations">
+              <h3>Що варто контролювати</h3>
+              <ul id="recommendation-list"></ul>
+            </div>
+
+            <details class="calculation-details">
+              <summary>Формула та припущення</summary>
+              <p id="formula-copy"></p>
+            </details>
+          </aside>
+        </div>
+      </section>
+
+      <section class="statistics" id="statistics">
+        <div class="shell">
+          <div class="section-heading light">
+            <div><p class="eyebrow">Контекст інцидентів</p><h2>Що відбувається у вибірці</h2></div>
+            <p>Це частки серед зареєстрованих подій, а не ймовірність для конкретної людини.</p>
+          </div>
+
+          <div class="stats-toolbar">
+            <label>Професійна група
+              <select id="stats-role"><option value="all">Усі групи</option></select>
+            </label>
+            <label>Тип судна
+              <select id="stats-vessel"><option value="all">Усі судна</option></select>
+            </label>
+            <div class="demo-chip"><i></i> Синтетична DEMO-вибірка</div>
+          </div>
+
+          <div class="stat-summary">
+            <div><span>Подій у вибірці</span><strong id="event-total">—</strong><small>після фільтрації</small></div>
+            <div><span>З травмуванням</span><strong id="injury-share">—</strong><small>частка подій</small></div>
+            <div><span>З летальним наслідком</span><strong id="fatal-share">—</strong><small>частка подій</small></div>
+          </div>
+
+          <div class="stats-grid">
+            <article class="chart-card">
+              <div class="chart-heading"><div><span>Типи подій</span><h3>Структура вибірки</h3></div><small>% подій</small></div>
+              <div class="event-bars" id="event-bars"></div>
+            </article>
+            <article class="chart-card severity-card">
+              <div class="chart-heading"><div><span>Наслідки</span><h3>Тяжкість інцидентів</h3></div><small>умовний розподіл</small></div>
+              <div class="donut-wrap">
+                <div class="donut" id="severity-donut"><div><strong id="severity-total">—</strong><span>подій</span></div></div>
+                <ul id="severity-legend"></ul>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="methodology shell" id="methodology">
+        <div class="section-heading">
+          <div><p class="eyebrow">Принципи методики</p><h2>Число має пояснення</h2></div>
+          <p>Перед практичним використанням формули та коефіцієнти повинні пройти експертну перевірку.</p>
+        </div>
+        <div class="method-grid">
+          <article><span>01</span><h3>Прозорий алгоритм</h3><p>Підсумок складається з версійованих компонентів. AI не обчислює числове значення.</p></article>
+          <article><span>02</span><h3>Правильний знаменник</h3><p>Для статистичного ризику потрібні години, рейси, операції або кількість працівників — не лише події.</p></article>
+          <article><span>03</span><h3>Чіткі межі</h3><p>Це дослідницький інструмент, а не допуск до роботи, медичний висновок чи прогноз долі людини.</p></article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="shell"><div class="brand inverse"><strong>SeaRisk</strong><small>UA · hypothesis</small></div><p>Дані анкети не залишають браузер.</p><a href="#top">Нагору ↑</a></div>
+    </footer>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
+

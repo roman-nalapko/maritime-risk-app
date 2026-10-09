@@ -1,0 +1,27 @@
+[
+  {"id":"DEMO-001","year":2024,"role":"deck","vessel":"cargo","eventType":"mooring","severity":"injury"},
+  {"id":"DEMO-002","year":2024,"role":"engine","vessel":"cargo","eventType":"machinery","severity":"injury"},
+  {"id":"DEMO-003","year":2024,"role":"officer","vessel":"tanker","eventType":"collision","severity":"none"},
+  {"id":"DEMO-004","year":2024,"role":"deck","vessel":"fishing","eventType":"overboard","severity":"fatal"},
+  {"id":"DEMO-005","year":2024,"role":"port","vessel":"cargo","eventType":"fall","severity":"injury"},
+  {"id":"DEMO-006","year":2024,"role":"engine","vessel":"passenger","eventType":"fire","severity":"none"},
+  {"id":"DEMO-007","year":2024,"role":"cadet","vessel":"cargo","eventType":"fall","severity":"injury"},
+  {"id":"DEMO-008","year":2024,"role":"deck","vessel":"tanker","eventType":"exposure","severity":"injury"},
+  {"id":"DEMO-009","year":2024,"role":"officer","vessel":"passenger","eventType":"collision","severity":"none"},
+  {"id":"DEMO-010","year":2024,"role":"diver","vessel":"service","eventType":"exposure","severity":"fatal"},
+  {"id":"DEMO-011","year":2025,"role":"deck","vessel":"cargo","eventType":"mooring","severity":"none"},
+  {"id":"DEMO-012","year":2025,"role":"engine","vessel":"tanker","eventType":"machinery","severity":"injury"},
+  {"id":"DEMO-013","year":2025,"role":"officer","vessel":"cargo","eventType":"collision","severity":"none"},
+  {"id":"DEMO-014","year":2025,"role":"deck","vessel":"fishing","eventType":"fall","severity":"injury"},
+  {"id":"DEMO-015","year":2025,"role":"port","vessel":"service","eventType":"mooring","severity":"injury"},
+  {"id":"DEMO-016","year":2025,"role":"engine","vessel":"passenger","eventType":"fire","severity":"injury"},
+  {"id":"DEMO-017","year":2025,"role":"cadet","vessel":"passenger","eventType":"fall","severity":"none"},
+  {"id":"DEMO-018","year":2025,"role":"deck","vessel":"tanker","eventType":"overboard","severity":"fatal"},
+  {"id":"DEMO-019","year":2025,"role":"officer","vessel":"service","eventType":"collision","severity":"none"},
+  {"id":"DEMO-020","year":2025,"role":"diver","vessel":"service","eventType":"machinery","severity":"injury"},
+  {"id":"DEMO-021","year":2025,"role":"deck","vessel":"cargo","eventType":"mooring","severity":"injury"},
+  {"id":"DEMO-022","year":2025,"role":"engine","vessel":"fishing","eventType":"machinery","severity":"fatal"},
+  {"id":"DEMO-023","year":2025,"role":"port","vessel":"cargo","eventType":"fall","severity":"none"},
+  {"id":"DEMO-024","year":2025,"role":"deck","vessel":"passenger","eventType":"fire","severity":"none"}
+]
+
