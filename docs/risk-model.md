@@ -24,6 +24,8 @@ The last three are not interchangeable.
 
 Roles, vessels, operations, events, and exposure units follow [maritime taxonomy v1.0.0](methodology/maritime-taxonomy.md). Unknown values are retained explicitly and must not be inferred from another taxonomy axis.
 
+The [denominator and uncertainty review](methodology/exposure-and-uncertainty.md) records a no-go decision for personal statistical rates from currently identified public MAIB/DfT data. Until compatible exposure is available, real incident data supports descriptive counts, recorded-event shares, and conditional severity only.
+
 ## Prototype components
 
 The prototype UI reports three components:

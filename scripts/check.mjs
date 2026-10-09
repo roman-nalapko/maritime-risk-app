@@ -38,6 +38,14 @@ assert.ok(educationalAudit.workedExample.components.every((item) => item.eligibl
 assert.ok(educationalAudit.findings.length >= 12, "all identified source defects must remain recorded");
 assert.ok(Math.abs(educationalAudit.workedExample.recalculatedTotal - 0.0429144) < Number.EPSILON, "worked example total must remain reproducible");
 
+const denominatorReview = JSON.parse(await readFile(path.join(root, "data/research/denominator-inventory.v1.json"), "utf8"));
+assert.equal(denominatorReview.personalRateDecision, "no_go", "personal rates require compatible public denominators");
+assert.ok(denominatorReview.sources.length >= 4, "denominator inventory must cover the main candidate source types");
+assert.ok(denominatorReview.sources.every((source) => source.compatibleWithPersonalRate === false), "no reviewed source may silently enable a personal rate");
+assert.equal(denominatorReview.uncertainty.rateInterval, "exact_poisson_garwood_95");
+assert.equal(denominatorReview.uncertainty.shareInterval, "wilson_score_95");
+assert.equal(denominatorReview.suppression.eventsUnder5, "suppress_public_point_rate");
+
 const taxonomy = JSON.parse(await readFile(path.join(root, "data/taxonomy/maritime-taxonomy.v1.json"), "utf8"));
 assert.equal(taxonomy.version, "1.0.0");
 for (const [axis, values] of Object.entries(taxonomy.axes)) {
