@@ -4,6 +4,8 @@
 
 Model ID: `SR-UA-PROTOTYPE-0.1`
 
+Coefficient registry: `SR-UA-COEFFICIENTS-0.1.0`
+
 This model demonstrates product behavior. It is not validated for operational safety decisions. Several seed values are adapted from the supplied educational tables; those tables contain apparent arithmetic inconsistencies, so every coefficient must be reviewed before the model is promoted.
 
 The supplied tables have now been independently recalculated and quarantined in [the educational source audit](methodology/educational-source-audit.md). No value from that material is eligible for model v1.0 until its primary provenance and definitions are verified.
@@ -68,6 +70,8 @@ Every future coefficient record must contain:
   "status": "provisional"
 }
 ```
+
+The executable registry is [`src/coefficients.js`](../src/coefficients.js). Repository tests reject missing metadata and the `approvedValue()` boundary rejects every disputed or synthetic coefficient. The prototype may display those values only because its output is explicitly labelled as a demonstration index.
 
 ## Validation backlog
 

@@ -53,3 +53,11 @@
 **Consequence:** Imports preserve raw values and mapping versions. The model may aggregate known categories but may not infer one axis from another or split an unspecified category.
 
 **Evidence:** See `docs/methodology/maritime-taxonomy.md`.
+
+## ADR-008: Gate operational calculations on coefficient approval
+
+**Decision:** Store every executable value in a versioned registry with complete provenance metadata. Operational access requires both `status: approved` and `eligibleForApprovedModel: true`.
+
+**Why:** A numeric value without a unit, covered population, period, source, and review status cannot be interpreted or safely reused.
+
+**Consequence:** The demonstration engine can read quarantined values through an explicit prototype path, but the approved-calculation accessor rejects them. Registry and model versions are displayed with each result.

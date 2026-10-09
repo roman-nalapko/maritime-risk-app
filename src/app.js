@@ -34,6 +34,7 @@ function asIndex(value) {
 }
 
 function renderRisk(result) {
+  $("#method-badge").textContent = `Реєстр ${result.registryId.replace("SR-UA-COEFFICIENTS-", "")}`;
   $("#risk-value").textContent = asIndex(result.total);
   $("#risk-ratio").textContent = "Не є ймовірністю травми або загибелі";
   $("#risk-badge span").textContent = result.category.label;
@@ -48,7 +49,7 @@ function renderRisk(result) {
   }).join("");
 
   $("#recommendation-list").innerHTML = result.recommendations.map((item) => `<li>${item}</li>`).join("");
-  $("#formula-copy").textContent = `Модель ${result.modelId}: 1 − (1 − Rздоров’я) × (1 − Rробота) × (1 − Rспосіб життя). Компоненти мають несумісні результати та джерела, тому значення є лише демонстраційним індексом, а не ймовірністю.`;
+  $("#formula-copy").textContent = `Модель ${result.modelId}, реєстр ${result.registryId}: 1 − (1 − Rздоров’я) × (1 − Rробота) × (1 − Rспосіб життя). Усі поточні коефіцієнти мають статус disputed або synthetic_demo. Компоненти мають несумісні результати та джерела, тому значення є лише демонстраційним індексом, а не ймовірністю.`;
 }
 
 form.addEventListener("submit", (event) => {
