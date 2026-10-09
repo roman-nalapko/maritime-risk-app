@@ -6,9 +6,12 @@ Model ID: `SR-UA-PROTOTYPE-0.1`
 
 This model demonstrates product behavior. It is not validated for operational safety decisions. Several seed values are adapted from the supplied educational tables; those tables contain apparent arithmetic inconsistencies, so every coefficient must be reviewed before the model is promoted.
 
+The current output is an **educational demonstration index, not a probability**. It combines components with incompatible outcomes and source populations. The target outcomes for model v1.0 are defined in [outcome-definitions.md](methodology/outcome-definitions.md); the primary target is annual fatal occupational injury connected with ship operations.
+
 ## Concepts
 
-- **Annual individual estimate:** calculated probability-like estimate for one profile.
+- **Prototype index:** dimensionless demonstration output from the current unvalidated calculation.
+- **Annual individual estimate:** future model output for one explicitly named outcome over the next 12 months.
 - **Incident share:** proportion of recorded incidents in a selected category.
 - **Severity given incident:** conditional distribution of outcomes among recorded incidents.
 - **Exposure rate:** events per worker-hour, voyage, operation, or another explicit denominator.
@@ -17,21 +20,21 @@ The last three are not interchangeable.
 
 ## Prototype components
 
-The UI reports three independent components:
+The prototype UI reports three components:
 
 1. `health`: age baseline adjusted by sex/residence and chronic-condition marker;
 2. `occupation`: hourly role rate multiplied by annual exposure and workplace multipliers;
 3. `lifestyle`: smoking and alcohol contributions from the educational reference.
 
-For small probabilities, the supplied educational method sums components. The prototype uses the bounded independent-event combination:
+The supplied educational method sums components. The prototype uses the following bounded combination for demonstration:
 
 ```text
 R_total = 1 - (1 - R_health) × (1 - R_occupation) × (1 - R_lifestyle)
 ```
 
-This prevents totals above 100% and remains close to addition when components are small. It does not prove independence; that is a documented modeling assumption for the prototype.
+This keeps the demonstration value bounded, but it does not make the components compatible or prove independence. The result must not be interpreted as a probability of injury or death. Model v1.0 must not combine general mortality and occupational injury outcomes.
 
-## Risk categories
+## Educational index categories
 
 | Annual estimate | Label |
 | ---: | --- |
@@ -42,7 +45,7 @@ This prevents totals above 100% and remains close to addition when components ar
 | `1e-3 … < 1e-2` | very high |
 | `>= 1e-2` | extreme |
 
-These labels follow the supplied educational scale and require domain validation.
+These labels follow the supplied educational scale, apply only to the prototype index, and require domain validation. They are not approved occupational-risk thresholds.
 
 ## Required coefficient metadata
 
@@ -71,4 +74,5 @@ Every future coefficient record must contain:
 - Quantify confidence intervals and sparse-data behavior.
 - Test correlation between components before retaining the independence assumption.
 - Have the method reviewed by maritime safety and occupational-risk specialists.
-
+- Remove general mortality and lifestyle mortality from the occupational-injury model.
+- Implement separate fatal, non-fatal, serious-injury, and descriptive incident outputs where evidence supports them.

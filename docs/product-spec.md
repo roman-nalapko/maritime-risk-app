@@ -2,7 +2,7 @@
 
 ## Product statement
 
-SeaRisk UA helps a maritime worker or safety educator explore which personal and occupational factors contribute to an annual risk estimate. It also presents incident statistics without confusing recorded-event shares with personal probabilities.
+SeaRisk UA helps a maritime worker or safety educator explore which occupational factors contribute to an explicitly named annual outcome estimate. It also presents incident statistics without confusing recorded-event shares with personal probabilities. Until model v1.0 is validated, the calculator displays a demonstration index rather than a probability.
 
 ## Primary user
 
@@ -12,8 +12,8 @@ A maritime worker, cadet, instructor, or occupational-safety specialist explorin
 
 1. Read the research-use disclaimer.
 2. Complete a short questionnaire.
-3. Calculate an estimate locally in the browser.
-4. Review the total, category, uncertainty/status label, and component breakdown.
+3. Calculate a demonstration index or a future explicitly named estimate locally in the browser.
+4. Review the value, model status, limitations, and component breakdown.
 5. Inspect the dominant factors and actionable recommendations.
 6. Explore incident distributions through profession and event filters.
 
@@ -37,6 +37,8 @@ The prototype is a single responsive dashboard:
 - Empty and invalid form states are understandable.
 - Incident data is labelled as demonstration data until an approved dataset is imported.
 - Data-source and model-version labels are visible.
+- A prototype index is never described as a probability of injury or death.
+- Fatal, non-fatal, serious-injury, incident-share, and conditional-severity outputs remain separate.
 - The UI can be installed as a PWA where supported.
 
 ## Success criteria for the hypothesis
@@ -53,4 +55,3 @@ The MVP stores nothing on a server. Form values exist in the page session only. 
 ## Not a decision system
 
 The prototype must not determine fitness for duty, hiring, insurance, disciplinary action, medical treatment, or voyage authorization. Those uses require validated methodology, governance, auditability, and applicable legal review.
-
