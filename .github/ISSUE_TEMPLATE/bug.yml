@@ -1,0 +1,38 @@
+name: Bug report
+description: Reproducible product, calculation, data, or accessibility defect
+title: "[Bug]: "
+labels: ["type:bug"]
+body:
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact area
+      options:
+        - Calculation or risk claim
+        - Data or provenance
+        - Privacy or security
+        - Accessibility or usability
+        - PWA, build, or performance
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      placeholder: "1. Open…\n2. Enter…\n3. Observe…"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: App, model, and dataset versions
+      placeholder: "App 0.1.0 / SR-UA-PROTOTYPE-0.1 / synthetic demo"
+    validations:
+      required: true
+

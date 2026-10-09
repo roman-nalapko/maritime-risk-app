@@ -1,0 +1,6 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Sensitive security or privacy report
+    url: https://github.com/roman-nalapko/maritime-risk-app/security/advisories/new
+    about: Do not place personal data or vulnerability details in a normal issue.
+

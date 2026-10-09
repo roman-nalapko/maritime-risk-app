@@ -67,9 +67,10 @@ For UI changes, also inspect the local preview at mobile and desktop sizes. Veri
 
 ## Change protocol
 
-1. Read `docs/product-spec.md` and `docs/risk-model.md` before changing product behavior.
-2. Record methodology changes in `docs/decisions.md`.
-3. Update the model version when coefficients or formulas change.
-4. Preserve a migration note when changing stored questionnaire fields.
-5. If a source conflicts with the existing model, do not guess: mark the coefficient as disputed and keep it out of production calculations until reviewed.
-
+1. Read `docs/product-spec.md`, `docs/system-architecture.md`, and `docs/risk-model.md` before changing product behavior.
+2. Work from a GitHub Issue that meets the Definition of Ready in `BACKLOG.md`; do not silently expand the active milestone.
+3. Record methodology changes in `docs/decisions.md`.
+4. Update the model version when coefficients or formulas change.
+5. Preserve a migration note when changing stored questionnaire fields.
+6. If a source conflicts with the existing model, do not guess: mark the coefficient as disputed and keep it out of production calculations until reviewed.
+7. Link implementation commits or pull requests to the issue and verify its acceptance criteria before closing it.

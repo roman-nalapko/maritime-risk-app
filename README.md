@@ -41,3 +41,9 @@ The deployable static site is written to `dist/` and can be published with Cloud
 
 See [docs/product-spec.md](docs/product-spec.md) for scope and [docs/risk-model.md](docs/risk-model.md) for the provisional model.
 
+## Planning and architecture
+
+- [System architecture](docs/system-architecture.md)
+- [Delivery roadmap](docs/roadmap.md)
+- [Product backlog](BACKLOG.md)
+- [Architecture decisions](docs/decisions.md)
