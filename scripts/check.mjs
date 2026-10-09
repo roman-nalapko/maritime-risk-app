@@ -3,14 +3,25 @@ import { access, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { calculateRisk, categoryFor } from "../src/model.js";
+import { approvedValue, COEFFICIENTS, REGISTRY_ID, REQUIRED_METADATA, validateRegistry } from "../src/coefficients.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const required = ["src/index.html", "src/styles.css", "src/app.js", "src/model.js", "src/manifest.webmanifest", "src/data/incidents.sample.json", "AGENTS.md"];
+const required = ["src/index.html", "src/styles.css", "src/app.js", "src/model.js", "src/coefficients.js", "src/manifest.webmanifest", "src/data/incidents.sample.json", "AGENTS.md"];
 await Promise.all(required.map((file) => access(path.join(root, file))));
 
 const baseline = calculateRisk({ age: 35, sex: "male", residence: "city", role: "officer", hours: 2024, night: 25, ppe: true });
-assert.ok(baseline.total > 0 && baseline.total < 1, "total must be a bounded probability");
+assert.ok(baseline.total > 0 && baseline.total < 1, "prototype index must remain bounded");
 assert.equal(baseline.modelId, "SR-UA-PROTOTYPE-0.1");
+assert.equal(baseline.registryId, REGISTRY_ID);
+
+assert.equal(validateRegistry(), true);
+for (const item of Object.values(COEFFICIENTS)) {
+  assert.ok(REQUIRED_METADATA.every((field) => field in item), `${item.id} must have complete provenance`);
+  assert.notEqual(item.status, "approved", "prototype coefficients must not be approved");
+  assert.equal(item.eligibleForApprovedModel, false, "prototype coefficients must stay outside approved calculations");
+}
+assert.throws(() => approvedValue("ageBaseline"), /not approved/, "disputed coefficients must be rejected by approved calculations");
+assert.throws(() => validateRegistry({ broken: { id: "broken", value: 1 } }), /missing coefficient metadata/);
 
 const highExposure = calculateRisk({ age: 35, sex: "male", residence: "city", role: "diver", hours: 4000, night: 80, ppe: false, smoking: true });
 assert.ok(highExposure.total > baseline.total, "additional exposure must increase estimate");
@@ -43,8 +54,11 @@ assert.ok(Object.values(taxonomy.prototypeMappings.vessels).every((value) => tax
 assert.ok(Object.values(taxonomy.prototypeMappings.eventsToOperations).every((value) => taxonomy.axes.operations.includes(value)), "event crosswalk must target known operation categories");
 
 const html = await readFile(path.join(root, "src/index.html"), "utf8");
+const serviceWorker = await readFile(path.join(root, "src/sw.js"), "utf8");
 assert.match(html, /дослідницькою оцінкою/i, "visible research disclaimer is required");
 assert.match(html, /Синтетична DEMO-вибірка/i, "demo data label is required");
 assert.match(html, /Демонстраційний індекс прототипу/i, "prototype output must be labelled as an index");
+assert.match(html, /Реєстр 0\.1\.0/i, "coefficient registry version must be visible");
 assert.doesNotMatch(html, /випадок на/i, "prototype must not express an unsupported one-in-N probability");
+assert.match(serviceWorker, /\.\/coefficients\.js/, "offline app shell must include the coefficient registry");
 console.log("All repository checks passed.");

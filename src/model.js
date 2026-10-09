@@ -1,24 +1,13 @@
+import { COEFFICIENTS, MODEL_VERSION, REGISTRY_ID } from "./coefficients.js";
+
 export const MODEL = Object.freeze({
-  id: "SR-UA-PROTOTYPE-0.1",
+  id: MODEL_VERSION,
+  registryId: REGISTRY_ID,
   status: "provisional",
-  ageBaseline: [
-    [20, 0.0003], [25, 0.0004], [30, 0.0005], [35, 0.0009], [40, 0.0016],
-    [45, 0.0027], [50, 0.0048], [55, 0.0084], [60, 0.015], [65, 0.025],
-    [70, 0.038], [75, 0.059], [80, 0.091], [Infinity, 0.143]
-  ],
-  demographicMultiplier: {
-    city: { male: 1.45, female: 0.38 },
-    village: { male: 1.7, female: 0.42 }
-  },
-  hourlyRoleRate: {
-    deck: 6e-7,
-    engine: 5e-7,
-    officer: 3e-7,
-    port: 1.2e-7,
-    cadet: 5e-8,
-    diver: 6e-6
-  },
-  lifestyle: { smoking: 0.008, alcohol: 0.000212 }
+  ageBaseline: COEFFICIENTS.ageBaseline.value.map(([upper, value]) => [upper ?? Infinity, value]),
+  demographicMultiplier: COEFFICIENTS.demographicMultiplier.value,
+  hourlyRoleRate: COEFFICIENTS.hourlyRoleRate.value,
+  lifestyle: COEFFICIENTS.lifestyle.value
 });
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, Number(value) || 0));
@@ -40,12 +29,12 @@ export function calculateRisk(input) {
   const demographic = MODEL.demographicMultiplier[input.residence]?.[input.sex] ?? 1;
 
   let health = baseline * demographic;
-  if (input.chronic) health *= 1.25;
+  if (input.chronic) health *= COEFFICIENTS.chronicMultiplier.value;
 
   let occupation = (MODEL.hourlyRoleRate[input.role] ?? MODEL.hourlyRoleRate.deck) * hours;
-  occupation *= 1 + nightShare * 0.6;
-  if (input.ppe) occupation *= 0.75;
-  if (input.previous) occupation *= 1.2;
+  occupation *= 1 + nightShare * COEFFICIENTS.nightExposureSlope.value;
+  if (input.ppe) occupation *= COEFFICIENTS.ppeMultiplier.value;
+  if (input.previous) occupation *= COEFFICIENTS.previousIncidentMultiplier.value;
 
   let lifestyle = 0;
   if (input.smoking) lifestyle += MODEL.lifestyle.smoking * demographic;
@@ -58,6 +47,7 @@ export function calculateRisk(input) {
 
   return {
     modelId: MODEL.id,
+    registryId: MODEL.registryId,
     total,
     category: categoryFor(total),
     components: { health, occupation, lifestyle },
@@ -78,4 +68,3 @@ function recommendationsFor(input, components) {
   }
   return items.slice(0, 3);
 }
-
