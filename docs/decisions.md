@@ -43,3 +43,13 @@
 **Consequence:** Runtime code must not import `data/research/educational-source-audit.json`. New coefficients require traceable source metadata and review before use.
 
 **Evidence:** See `docs/methodology/educational-source-audit.md`.
+
+## ADR-007: Separate role, vessel, operation, event, and exposure axes
+
+**Decision:** Use versioned controlled vocabularies for role, vessel, operation, and exposure. Keep casualty event type as a separate axis and retain explicit `unknown`/`other` values.
+
+**Why:** IMO reporting records rank, ship operation, casualty event, and consequences separately. Collapsing them would create false mappings and incompatible denominators.
+
+**Consequence:** Imports preserve raw values and mapping versions. The model may aggregate known categories but may not infer one axis from another or split an unspecified category.
+
+**Evidence:** See `docs/methodology/maritime-taxonomy.md`.
