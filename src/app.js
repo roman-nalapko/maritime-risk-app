@@ -41,6 +41,7 @@ function renderRisk(result) {
   $("#risk-badge span").textContent = result.category.label;
   $("#risk-badge").dataset.category = result.category.key;
   $("#risk-meter").style.width = `${result.category.meter}%`;
+  $("#result-announcement").textContent = `Результат оновлено. Демонстраційний індекс ${asIndex(result.total)}. Категорія ${result.category.label}. Модель попередня та невалідована.`;
   $("#model-status").textContent = result.modelStatus === "provisional" ? "Попередня · невалідована" : result.modelStatus;
   $("#model-version").textContent = result.modelId;
   $("#uncertainty-status").textContent = `Не оцінена. ${result.uncertainty.explanation}`;
@@ -170,6 +171,6 @@ async function loadIncidents() {
 renderRisk(calculateRisk({ age: 35, sex: "male", residence: "city", role: "officer", hours: 2024, night: 25, ppe: true }));
 loadIncidents();
 
-if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !["localhost", "127.0.0.1"].includes(location.hostname)) {
+if ("serviceWorker" in navigator && (location.protocol === "https:" || ["localhost", "127.0.0.1"].includes(location.hostname))) {
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
 }
