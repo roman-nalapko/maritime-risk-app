@@ -815,6 +815,7 @@ footer p, footer > div > a { font-size: 12px; }
   .chart-meta { grid-template-columns: 1fr; }
   .chart-meta .meta-wide { grid-column: auto; }
   .section-heading > p { font-size: 13px; }
+  .governance-note { grid-template-columns: 1fr; }
   .footer-shell { flex-direction: column; align-items: flex-start; gap: 14px; }
   .footer-nav { gap: 14px; }
 }
