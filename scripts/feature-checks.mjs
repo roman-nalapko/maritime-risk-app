@@ -58,4 +58,34 @@ const engineChecklist = generateChecklist({ role: "engine", night: 10, ppe: true
 assert.ok(engineChecklist.items.some((i) => i.id === "engine-confined"), "Engine checklist must include enclosed space entry check");
 assert.ok(engineChecklist.items.some((i) => i.id === "engine-hearing"), "Engine checklist must include hearing protection check");
 
+// 4. Test Incidents statistics aggregation
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const incidentsData = JSON.parse(await readFile(path.join(root, "src/data/incidents.maib.aggregate.json"), "utf8"));
+assert.ok(Array.isArray(incidentsData.cells) && incidentsData.cells.length > 50, "Incident aggregate cells must exist");
+const totalIncidents = incidentsData.cells.reduce((sum, item) => sum + item.count, 0);
+assert.ok(totalIncidents > 2000, "Incident aggregate dataset must contain over 2000 recorded cases");
+
+// Check filtering consistency
+const deckCells = incidentsData.cells.filter((item) => item.role === "deck");
+assert.ok(deckCells.length > 0, "Deck role must have records in dataset");
+const deckTotal = deckCells.reduce((sum, item) => sum + item.count, 0);
+assert.ok(deckTotal > 0 && deckTotal < totalIncidents, "Deck total must be a valid subset of all incidents");
+
+// Check severity distribution
+const injuries = incidentsData.cells.filter((item) => item.severity === "injury").reduce((sum, item) => sum + item.count, 0);
+const fatal = incidentsData.cells.filter((item) => item.severity === "fatal").reduce((sum, item) => sum + item.count, 0);
+assert.ok(injuries > 0, "Dataset must record non-fatal injuries");
+assert.ok(fatal > 0, "Dataset must record fatal cases");
+assert.ok(injuries + fatal <= totalIncidents, "Severity counts must not exceed total cases");
+
+// 5. Test Live Radar geometry calculation
+const testRadarResult = calculateRisk({ age: 25, hours: 2000, night: 20, ppe: true, role: "deck" });
+assert.ok(testRadarResult.components.health > 0, "Health component must be positive");
+assert.ok(testRadarResult.components.occupation > 0, "Occupation component must be positive");
+
 console.log("All platform feature checks passed.");
+
