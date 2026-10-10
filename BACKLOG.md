@@ -79,13 +79,15 @@ An issue is done when:
 4. [Publish source, period, sample, and filter metadata](https://github.com/roman-nalapko/maritime-risk-app/issues/17).
 5. [Research denominators, confidence intervals, and sparse-data warnings](https://github.com/roman-nalapko/maritime-risk-app/issues/13).
 
-### Research pilot
+### Optional external validation
 
 1. [Accessibility and mobile/PWA audit](https://github.com/roman-nalapko/maritime-risk-app/issues/5).
 2. [Usability protocol and sessions](https://github.com/roman-nalapko/maritime-risk-app/issues/1).
 3. [Maritime safety specialist review](https://github.com/roman-nalapko/maritime-risk-app/issues/6).
 4. [Privacy and governance review](https://github.com/roman-nalapko/maritime-risk-app/issues/2).
 5. [Restricted preview deployment and pilot findings](https://github.com/roman-nalapko/maritime-risk-app/issues/18).
+
+These items improve evidence and terminology but do not block a public educational release. They remain mandatory before any validated probability, certification, or operational decision claim.
 
 ### Optional AI
 

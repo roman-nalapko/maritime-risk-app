@@ -17,9 +17,45 @@ const severityLabels = { none: "Без травм", injury: "Травмуван�
 const severityColors = { none: "#22c7b8", injury: "#5fa8ff", fatal: "#e96b61" };
 let incidents = [];
 let datasetMeta = null;
+let activeScenario = "Користувацький профіль";
+
+const demoScenarios = {
+  cadet: {
+    label: "Вигаданий сценарій · курсант",
+    profile: { age: 20, sex: "male", residence: "city", chronic: false, role: "cadet", hours: 1200, night: 15, ppe: true, previous: false, smoking: false, alcohol: false }
+  },
+  engine: {
+    label: "Вигаданий сценарій · механік",
+    profile: { age: 38, sex: "male", residence: "city", chronic: false, role: "engine", hours: 2600, night: 45, ppe: true, previous: true, smoking: false, alcohol: false }
+  },
+  deck: {
+    label: "Вигаданий сценарій · палубна команда",
+    profile: { age: 45, sex: "female", residence: "village", chronic: false, role: "deck", hours: 2800, night: 35, ppe: false, previous: false, smoking: false, alcohol: false }
+  }
+};
 
 function readForm() {
   return Object.fromEntries(new FormData(form).entries());
+}
+
+function currentInput() {
+  return {
+    ...readForm(),
+    chronic: $("#chronic").checked,
+    ppe: $("#ppe").checked,
+    previous: $("#previous").checked,
+    smoking: $("#smoking").checked,
+    alcohol: $("#alcohol").checked
+  };
+}
+
+function applyProfile(profile) {
+  for (const [key, value] of Object.entries(profile)) {
+    const control = form.elements.namedItem(key);
+    if (!control) continue;
+    if (control.type === "checkbox") control.checked = Boolean(value);
+    else control.value = String(value);
+  }
 }
 
 function asPercent(value, digits = value < 0.001 ? 4 : 2) {
@@ -34,7 +70,7 @@ function asIndex(value) {
   return `${coefficient.toLocaleString("uk-UA", { maximumFractionDigits: 2 })} × 10${superscript}`;
 }
 
-function renderRisk(result) {
+function renderRisk(result, input, scenarioName = activeScenario) {
   $("#method-badge").textContent = `Реєстр ${result.registryId.replace("SR-UA-COEFFICIENTS-", "")}`;
   $("#risk-value").textContent = `≈ ${asIndex(result.total)}`;
   $("#risk-ratio").textContent = "Не є ймовірністю травми або загибелі";
@@ -45,6 +81,21 @@ function renderRisk(result) {
   $("#model-status").textContent = result.modelStatus === "provisional" ? "Попередня · невалідована" : result.modelStatus;
   $("#model-version").textContent = result.modelId;
   $("#uncertainty-status").textContent = `Не оцінена. ${result.uncertainty.explanation}`;
+  $("#scenario-name").textContent = scenarioName;
+  const now = new Date();
+  $("#report-date").dateTime = now.toISOString();
+  $("#report-date").textContent = new Intl.DateTimeFormat("uk-UA", { dateStyle: "medium", timeStyle: "short" }).format(now);
+
+  const yesNo = (value) => value ? "так" : "ні";
+  const profileRows = [
+    ["Вік", `${Number(input.age)} років`],
+    ["Професійна група", roleLabels[input.role] ?? input.role],
+    ["Робоча експозиція", `${Number(input.hours).toLocaleString("uk-UA")} год/рік`],
+    ["Нічні зміни", `${Number(input.night)}%`],
+    ["ЗІЗ", yesNo(input.ppe)],
+    ["Додаткові маркери", [input.chronic && "хронічний стан", input.previous && "попередній інцидент", input.smoking && "куріння", input.alcohol && "ризикове вживання алкоголю"].filter(Boolean).join(", ") || "не вибрано"]
+  ];
+  $("#profile-summary-list").innerHTML = profileRows.map(([label, value]) => `<div><dt>${label}</dt><dd>${value}</dd></div>`).join("");
 
   const labels = { health: "Вік і здоров’я", occupation: "Професійна експозиція", lifestyle: "Спосіб життя" };
   const sum = Object.values(result.components).reduce((total, value) => total + value, 0) || 1;
@@ -71,17 +122,30 @@ function renderRisk(result) {
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
-  const raw = readForm();
-  const input = {
-    ...raw,
-    chronic: $("#chronic").checked,
-    ppe: $("#ppe").checked,
-    previous: $("#previous").checked,
-    smoking: $("#smoking").checked,
-    alcohol: $("#alcohol").checked
-  };
-  renderRisk(calculateRisk(input));
+  const input = currentInput();
+  renderRisk(calculateRisk(input), input);
   $("#result-panel").scrollIntoView({ behavior: "smooth", block: "nearest" });
+});
+
+form.addEventListener("input", () => { activeScenario = "Користувацький профіль"; });
+
+$("#apply-scenario").addEventListener("click", () => {
+  const scenario = demoScenarios[$("#demo-scenario").value];
+  applyProfile(scenario.profile);
+  activeScenario = scenario.label;
+  renderRisk(calculateRisk(scenario.profile), scenario.profile, scenario.label);
+  $("#result-panel").scrollIntoView({ behavior: "smooth", block: "nearest" });
+});
+
+$("#print-report").addEventListener("click", () => window.print());
+
+let printDetailsState = [];
+window.addEventListener("beforeprint", () => {
+  printDetailsState = [...document.querySelectorAll("#result-panel details")].map((details) => details.open);
+  document.querySelectorAll("#result-panel details").forEach((details) => { details.open = true; });
+});
+window.addEventListener("afterprint", () => {
+  document.querySelectorAll("#result-panel details").forEach((details, index) => { details.open = printDetailsState[index]; });
 });
 
 $("#details-toggle").addEventListener("click", (event) => {
@@ -168,7 +232,8 @@ async function loadIncidents() {
   }
 }
 
-renderRisk(calculateRisk({ age: 35, sex: "male", residence: "city", role: "officer", hours: 2024, night: 25, ppe: true }));
+const initialInput = currentInput();
+renderRisk(calculateRisk(initialInput), initialInput);
 loadIncidents();
 
 if ("serviceWorker" in navigator && (location.protocol === "https:" || ["localhost", "127.0.0.1"].includes(location.hostname))) {

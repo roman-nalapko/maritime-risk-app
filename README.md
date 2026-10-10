@@ -1,13 +1,15 @@
 # SeaRisk UA
 
-SeaRisk UA is a research prototype for transparent individual risk assessment in the maritime industry. It combines a questionnaire, deterministic calculations, incident statistics, and practical risk-reduction guidance in a browser-only PWA.
+SeaRisk UA is a free public educational product for transparent exploration of maritime risk factors. It combines a questionnaire, deterministic calculations, incident statistics, fictional demonstration scenarios, and practical risk-reduction guidance in a browser-only PWA.
 
-> **Status:** hypothesis/MVP. The coefficients are provisional and must be validated by a maritime safety specialist before operational use. The app is not a medical, employment, or navigational decision system.
+> **Status:** public hypothesis/beta. The application is complete enough for independent educational use, but its provisional coefficients do not constitute a validated probability model. The app is not a medical, employment, insurance, certification, or navigational decision system.
 
 ## What is included
 
 - responsive Ukrainian-language calculator;
 - explainable risk breakdown by health, work conditions, and lifestyle;
+- fictional maritime profiles for classroom demonstrations;
+- reproducible input summary and local print/PDF report;
 - risk category and leading-factor summary;
 - demo incident dashboard with filters;
 - offline-capable PWA shell;
@@ -30,6 +32,8 @@ npm run build
 ```
 
 The deployable static site is written to `dist/` and can be published with Cloudflare Pages, Vercel, Netlify, or another static host.
+
+No account, paid API, backend, or AI service is required. Hosting can use a free static-site tier; a custom paid domain is optional.
 
 ## Product principles
 

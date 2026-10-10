@@ -131,6 +131,8 @@ assert.throws(() => validateReleaseDataset({ ...releaseEntry, releaseMode: "reco
 assert.throws(() => validateReleaseDataset(releaseEntry, { cells: [{ count: 5, latitude: 1 }] }), /latitude is not allowed/);
 
 const html = await readFile(path.join(root, "src/index.html"), "utf8");
+const app = await readFile(path.join(root, "src/app.js"), "utf8");
+const css = await readFile(path.join(root, "src/styles.css"), "utf8");
 const serviceWorker = await readFile(path.join(root, "src/sw.js"), "utf8");
 assert.match(html, /дослідницькою оцінкою/i, "visible research disclaimer is required");
 assert.match(html, /Синтетична DEMO-вибірка/i, "demo data label is required");
@@ -139,6 +141,14 @@ assert.match(html, /Реєстр 0\.1\.0/i, "coefficient registry version must b
 assert.match(html, /model-status/, "result must expose model status");
 assert.match(html, /uncertainty-status/, "result must expose uncertainty status");
 assert.match(html, /component-evidence/, "result must expose component evidence details");
+const scenarioMarkup = html.match(/<select id="demo-scenario">([\s\S]*?)<\/select>/)?.[1] ?? "";
+assert.equal((scenarioMarkup.match(/<option value="(?:cadet|engine|deck)">/g) ?? []).length, 3, "three fictional demo scenarios are required");
+assert.match(html, /id="profile-summary-list"/, "result must expose the active input profile");
+assert.match(html, /Орієнтовна оцінка/, "result needs a visible approximate-result disclaimer");
+assert.match(html, /id="print-report"/, "result needs a local print/PDF action");
+assert.match(app, /window\.print\(\)/, "report action must use the local browser print flow");
+assert.match(app, /beforeprint/, "print flow must expose collapsed evidence and assumptions");
+assert.match(css, /@media print/, "print report needs a dedicated layout");
 assert.match(html, /event-chart-meta/, "event chart must expose source and filter metadata");
 assert.match(html, /severity-chart-meta/, "severity chart must expose source and filter metadata");
 assert.doesNotMatch(html, /випадок на/i, "prototype must not express an unsupported one-in-N probability");

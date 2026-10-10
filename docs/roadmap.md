@@ -5,7 +5,7 @@ The roadmap is milestone-driven rather than date-driven. A milestone advances on
 ## Current position
 
 ```text
-M0 Foundation ✅ → M1 Methodology v1.0 → M2 Real incident data → M3 Research pilot → M4 Optional AI
+M0 Foundation ✅ → M1 Public educational beta → M2 Traceable incident data → M3 Optional validation → M4 Optional AI
 ```
 
 Live progress is tracked in [GitHub milestones](https://github.com/roman-nalapko/maritime-risk-app/milestones) and the linked issues in [BACKLOG.md](../BACKLOG.md).
@@ -25,9 +25,9 @@ Delivered:
 
 The prototype proves the interaction and technical approach, not scientific validity.
 
-## M1 — Methodology v1.0
+## M1 — Public educational beta
 
-**Objective:** produce a reviewable maritime-specific model that a domain specialist can reproduce.
+**Objective:** deliver a complete free browser product whose calculations, inputs, limitations, and data provenance are visible and reproducible.
 
 Workstreams:
 
@@ -44,8 +44,8 @@ Workstreams:
 - every coefficient has source, unit, population, period, and review status;
 - disputed coefficients are excluded or visibly marked;
 - at least ten representative profiles have expected, reviewed results;
-- a maritime safety specialist has recorded review comments;
-- model version `SR-UA-1.0` can be frozen without claiming certification.
+- fictional scenarios and a printable local report support classroom demonstrations;
+- the static build is ready for a free public host without a backend or paid service.
 
 **Decision gate:** no real-data risk inference begins until outcomes and denominators are defined.
 
@@ -73,9 +73,9 @@ Workstreams:
 
 **Decision gate:** if a compatible denominator cannot be obtained, the product remains a descriptive incident explorer and does not infer personal rates from those records.
 
-## M3 — Research pilot
+## M3 — Optional external validation
 
-**Objective:** determine whether users understand the result and whether domain reviewers trust the calculation trail.
+**Objective:** improve evidence quality if participants and domain reviewers become available. This milestone is not required to publish the educational hypothesis.
 
 Workstreams:
 
@@ -85,9 +85,9 @@ Workstreams:
 - Ukrainian terminology and optional English-language review;
 - historical scenario comparison;
 - privacy, governance, and limitation documentation;
-- restricted preview deployment for pilot participants.
+- public feedback and terminology review where available.
 
-**Exit criteria:**
+**Optional exit criteria:**
 
 - users distinguish annual estimate from incident share;
 - users can identify the dominant factor without assistance;
@@ -125,4 +125,5 @@ Authentication, organization dashboards, audit logs, synchronized history, priva
 - `P2` improves quality but does not block exit.
 - New ideas enter the backlog, not the active milestone, unless they resolve a documented blocker.
 - Optional AI never blocks M1–M3.
+- External participants and specialist review never block publication of the clearly labelled educational hypothesis; they do block claims of validated accuracy.
 - Close an issue only when its acceptance criteria and required tests are satisfied.
