@@ -87,6 +87,14 @@ function asPercent(value, digits = value < 0.001 ? 4 : 2) {
   return new Intl.NumberFormat("uk-UA", { style: "percent", minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
 }
 
+function asDisplayPercent(value) {
+  if (!value || value === 0) return "0%";
+  if (value >= 0.01) return asPercent(value, 1);
+  if (value >= 0.001) return asPercent(value, 2);
+  if (value >= 0.0001) return asPercent(value, 3);
+  return asPercent(value, 4);
+}
+
 function asWholeShare(value) {
   return value > 0 && value < 0.005 ? "<1%" : asPercent(value, 0);
 }
@@ -139,13 +147,15 @@ function renderRisk(result, input, scenarioName = activeScenario, isInitial = fa
   resultPanel.dataset.initial = isInitial ? "true" : "false";
 
   $("#method-badge").textContent = `Реєстр ${result.registryId.replace("SR-UA-COEFFICIENTS-", "")}`;
-  $("#risk-value").textContent = `≈ ${asIndex(result.total)}`;
+  $("#risk-value").textContent = `≈ ${asDisplayPercent(result.total)}`;
+  const sci = $("#scientific-notation");
+  if (sci) sci.textContent = `інженерний показник: ${asIndex(result.total)}`;
   $("#risk-ratio").textContent = "Не є ймовірністю травми або загибелі";
   $("#risk-badge span").textContent = result.category.label;
   $("#risk-badge").dataset.category = result.category.key;
   $("#risk-meter").style.width = `${result.category.meter}%`;
   $("#result-announcement").textContent = isInitial ? "" :
-    `Результат оновлено. Демонстраційний індекс ${asIndex(result.total)}. Категорія ${result.category.label}. Модель попередня та невалідована.`;
+    `Результат оновлено. Оцінка ризику ${asDisplayPercent(result.total)}. Категорія ${result.category.label}. Модель попередня та невалідована.`;
   $("#model-status").textContent = result.modelStatus === "provisional" ? "Попередня · невалідована" : result.modelStatus;
   $("#model-version").textContent = result.modelId;
   $("#uncertainty-status").textContent = `Не оцінена. ${result.uncertainty.explanation}`;
@@ -199,7 +209,7 @@ function renderRisk(result, input, scenarioName = activeScenario, isInitial = fa
   const sum = Object.values(result.components).reduce((total, value) => total + value, 0) || 1;
   $("#breakdown-list").innerHTML = Object.entries(result.components).map(([key, value]) => {
     const share = value / sum;
-    return `<div class="factor"><div class="factor-heading"><span>${escapeHtml(labels[key])}</span><strong>${asPercent(share, 0)} внеску · індекс ≈ ${asIndex(value)}</strong></div><div class="factor-bar"><i style="width:${Math.max(2, share * 100)}%"></i></div></div>`;
+    return `<div class="factor"><div class="factor-heading"><span>${escapeHtml(labels[key])}</span><strong>${asPercent(share, 0)} внеску (${asDisplayPercent(value)})</strong></div><div class="factor-bar"><i style="width:${Math.max(2, share * 100)}%"></i></div></div>`;
   }).join("");
 
   // What-If Scenarios
@@ -215,7 +225,7 @@ function renderRisk(result, input, scenarioName = activeScenario, isInitial = fa
           </div>
           <p>${escapeHtml(sc.description)}</p>
           <div class="what-if-footer">
-            <small>Індекс після зміни: ≈ ${asIndex(sc.simulatedTotal)}</small>
+            <small>Оцінка після зміни: ≈ ${asDisplayPercent(sc.simulatedTotal)}</small>
             <button type="button" class="what-if-apply-btn" data-whatif="${escapeHtml(sc.id)}">Змоделювати ↗</button>
           </div>
         </div>
