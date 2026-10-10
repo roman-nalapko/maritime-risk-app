@@ -1,0 +1,1095 @@
+{
+  "schemaVersion": "1.0.0",
+  "unit": "affected_person_record",
+  "measure": "count",
+  "reportingPeriod": {
+    "from": 2020,
+    "to": 2025
+  },
+  "cells": [
+    {
+      "role": "deck",
+      "vessel": "cargo_dry",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2020,
+      "count": 5
+    },
+    {
+      "role": "deck",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2020,
+      "count": 6
+    },
+    {
+      "role": "engine",
+      "vessel": "cargo_dry",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2020,
+      "count": 5
+    },
+    {
+      "role": "engine",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2020,
+      "count": 5
+    },
+    {
+      "role": "fishing",
+      "vessel": "fishing",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2020,
+      "count": 22
+    },
+    {
+      "role": "non_crew",
+      "vessel": "cargo_dry",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2020,
+      "count": 7
+    },
+    {
+      "role": "non_crew",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2020,
+      "count": 25
+    },
+    {
+      "role": "non_crew",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2020,
+      "count": 8
+    },
+    {
+      "role": "other_crew",
+      "vessel": "cargo_dry",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2020,
+      "count": 21
+    },
+    {
+      "role": "other_crew",
+      "vessel": "fishing",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2020,
+      "count": 16
+    },
+    {
+      "role": "other_crew",
+      "vessel": "other",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2020,
+      "count": 10
+    },
+    {
+      "role": "other_crew",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2020,
+      "count": 44
+    },
+    {
+      "role": "other_crew",
+      "vessel": "recreational",
+      "eventType": "capsizing_listing",
+      "severity": "injury",
+      "year": 2020,
+      "count": 6
+    },
+    {
+      "role": "other_crew",
+      "vessel": "recreational",
+      "eventType": "capsizing_listing",
+      "severity": "none",
+      "year": 2020,
+      "count": 14
+    },
+    {
+      "role": "other_crew",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2020,
+      "count": 22
+    },
+    {
+      "role": "other_crew",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2020,
+      "count": 31
+    },
+    {
+      "role": "unknown",
+      "vessel": "recreational",
+      "eventType": "capsizing_listing",
+      "severity": "none",
+      "year": 2020,
+      "count": 8
+    },
+    {
+      "role": "unknown",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2020,
+      "count": 11
+    },
+    {
+      "role": "deck",
+      "vessel": "cargo_dry",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2021,
+      "count": 19
+    },
+    {
+      "role": "deck",
+      "vessel": "other",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2021,
+      "count": 6
+    },
+    {
+      "role": "deck",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2021,
+      "count": 15
+    },
+    {
+      "role": "deck",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2021,
+      "count": 12
+    },
+    {
+      "role": "engine",
+      "vessel": "cargo_dry",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2021,
+      "count": 9
+    },
+    {
+      "role": "engine",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2021,
+      "count": 10
+    },
+    {
+      "role": "engine",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2021,
+      "count": 8
+    },
+    {
+      "role": "fishing",
+      "vessel": "fishing",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2021,
+      "count": 24
+    },
+    {
+      "role": "non_crew",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2021,
+      "count": 36
+    },
+    {
+      "role": "non_crew",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2021,
+      "count": 11
+    },
+    {
+      "role": "non_crew",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "none",
+      "year": 2021,
+      "count": 5
+    },
+    {
+      "role": "other_crew",
+      "vessel": "cargo_dry",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2021,
+      "count": 11
+    },
+    {
+      "role": "other_crew",
+      "vessel": "other",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2021,
+      "count": 7
+    },
+    {
+      "role": "other_crew",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2021,
+      "count": 17
+    },
+    {
+      "role": "other_crew",
+      "vessel": "recreational",
+      "eventType": "capsizing_listing",
+      "severity": "none",
+      "year": 2021,
+      "count": 7
+    },
+    {
+      "role": "other_crew",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "fatal",
+      "year": 2021,
+      "count": 7
+    },
+    {
+      "role": "other_crew",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2021,
+      "count": 29
+    },
+    {
+      "role": "other_crew",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "none",
+      "year": 2021,
+      "count": 8
+    },
+    {
+      "role": "other_crew",
+      "vessel": "service_offshore",
+      "eventType": "capsizing_listing",
+      "severity": "none",
+      "year": 2021,
+      "count": 13
+    },
+    {
+      "role": "other_crew",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2021,
+      "count": 16
+    },
+    {
+      "role": "other_crew",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "none",
+      "year": 2021,
+      "count": 7
+    },
+    {
+      "role": "unknown",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2021,
+      "count": 14
+    },
+    {
+      "role": "unknown",
+      "vessel": "service_offshore",
+      "eventType": "capsizing_listing",
+      "severity": "none",
+      "year": 2021,
+      "count": 6
+    },
+    {
+      "role": "deck",
+      "vessel": "cargo_dry",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2022,
+      "count": 17
+    },
+    {
+      "role": "deck",
+      "vessel": "other",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2022,
+      "count": 5
+    },
+    {
+      "role": "deck",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2022,
+      "count": 17
+    },
+    {
+      "role": "deck",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2022,
+      "count": 6
+    },
+    {
+      "role": "deck",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2022,
+      "count": 24
+    },
+    {
+      "role": "engine",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2022,
+      "count": 8
+    },
+    {
+      "role": "fishing",
+      "vessel": "fishing",
+      "eventType": "capsizing_listing",
+      "severity": "none",
+      "year": 2022,
+      "count": 5
+    },
+    {
+      "role": "fishing",
+      "vessel": "fishing",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2022,
+      "count": 34
+    },
+    {
+      "role": "non_crew",
+      "vessel": "other",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2022,
+      "count": 5
+    },
+    {
+      "role": "non_crew",
+      "vessel": "passenger",
+      "eventType": "grounding_stranding",
+      "severity": "injury",
+      "year": 2022,
+      "count": 7
+    },
+    {
+      "role": "non_crew",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2022,
+      "count": 82
+    },
+    {
+      "role": "non_crew",
+      "vessel": "recreational",
+      "eventType": "hull_failure",
+      "severity": "fatal",
+      "year": 2022,
+      "count": 8
+    },
+    {
+      "role": "non_crew",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2022,
+      "count": 10
+    },
+    {
+      "role": "other_crew",
+      "vessel": "cargo_dry",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2022,
+      "count": 7
+    },
+    {
+      "role": "other_crew",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2022,
+      "count": 36
+    },
+    {
+      "role": "other_crew",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2022,
+      "count": 14
+    },
+    {
+      "role": "other_crew",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "none",
+      "year": 2022,
+      "count": 5
+    },
+    {
+      "role": "other_crew",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2022,
+      "count": 22
+    },
+    {
+      "role": "other_crew",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "none",
+      "year": 2022,
+      "count": 5
+    },
+    {
+      "role": "unknown",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "fatal",
+      "year": 2022,
+      "count": 7
+    },
+    {
+      "role": "unknown",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2022,
+      "count": 11
+    },
+    {
+      "role": "deck",
+      "vessel": "cargo_dry",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2023,
+      "count": 20
+    },
+    {
+      "role": "deck",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2023,
+      "count": 15
+    },
+    {
+      "role": "deck",
+      "vessel": "recreational",
+      "eventType": "capsizing_listing",
+      "severity": "injury",
+      "year": 2023,
+      "count": 8
+    },
+    {
+      "role": "deck",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2023,
+      "count": 24
+    },
+    {
+      "role": "engine",
+      "vessel": "cargo_dry",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2023,
+      "count": 11
+    },
+    {
+      "role": "engine",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2023,
+      "count": 8
+    },
+    {
+      "role": "fishing",
+      "vessel": "fishing",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2023,
+      "count": 25
+    },
+    {
+      "role": "non_crew",
+      "vessel": "passenger",
+      "eventType": "loss_of_control",
+      "severity": "injury",
+      "year": 2023,
+      "count": 8
+    },
+    {
+      "role": "non_crew",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2023,
+      "count": 190
+    },
+    {
+      "role": "non_crew",
+      "vessel": "recreational",
+      "eventType": "capsizing_listing",
+      "severity": "none",
+      "year": 2023,
+      "count": 7
+    },
+    {
+      "role": "non_crew",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2023,
+      "count": 17
+    },
+    {
+      "role": "non_crew",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2023,
+      "count": 5
+    },
+    {
+      "role": "other_crew",
+      "vessel": "cargo_dry",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2023,
+      "count": 10
+    },
+    {
+      "role": "other_crew",
+      "vessel": "other",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2023,
+      "count": 5
+    },
+    {
+      "role": "other_crew",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2023,
+      "count": 67
+    },
+    {
+      "role": "other_crew",
+      "vessel": "recreational",
+      "eventType": "capsizing_listing",
+      "severity": "injury",
+      "year": 2023,
+      "count": 7
+    },
+    {
+      "role": "other_crew",
+      "vessel": "recreational",
+      "eventType": "capsizing_listing",
+      "severity": "none",
+      "year": 2023,
+      "count": 14
+    },
+    {
+      "role": "other_crew",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2023,
+      "count": 16
+    },
+    {
+      "role": "other_crew",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2023,
+      "count": 14
+    },
+    {
+      "role": "other_crew",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "none",
+      "year": 2023,
+      "count": 9
+    },
+    {
+      "role": "unknown",
+      "vessel": "recreational",
+      "eventType": "capsizing_listing",
+      "severity": "none",
+      "year": 2023,
+      "count": 18
+    },
+    {
+      "role": "unknown",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "fatal",
+      "year": 2023,
+      "count": 8
+    },
+    {
+      "role": "unknown",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2023,
+      "count": 6
+    },
+    {
+      "role": "unknown",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "none",
+      "year": 2023,
+      "count": 7
+    },
+    {
+      "role": "deck",
+      "vessel": "cargo_dry",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2024,
+      "count": 10
+    },
+    {
+      "role": "deck",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2024,
+      "count": 7
+    },
+    {
+      "role": "deck",
+      "vessel": "recreational",
+      "eventType": "capsizing_listing",
+      "severity": "none",
+      "year": 2024,
+      "count": 5
+    },
+    {
+      "role": "deck",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2024,
+      "count": 21
+    },
+    {
+      "role": "engine",
+      "vessel": "cargo_dry",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2024,
+      "count": 7
+    },
+    {
+      "role": "engine",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2024,
+      "count": 8
+    },
+    {
+      "role": "engine",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2024,
+      "count": 9
+    },
+    {
+      "role": "fishing",
+      "vessel": "fishing",
+      "eventType": "flooding_foundering",
+      "severity": "none",
+      "year": 2024,
+      "count": 5
+    },
+    {
+      "role": "fishing",
+      "vessel": "fishing",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2024,
+      "count": 20
+    },
+    {
+      "role": "non_crew",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2024,
+      "count": 166
+    },
+    {
+      "role": "non_crew",
+      "vessel": "recreational",
+      "eventType": "capsizing_listing",
+      "severity": "fatal",
+      "year": 2024,
+      "count": 6
+    },
+    {
+      "role": "non_crew",
+      "vessel": "recreational",
+      "eventType": "capsizing_listing",
+      "severity": "none",
+      "year": 2024,
+      "count": 6
+    },
+    {
+      "role": "non_crew",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2024,
+      "count": 8
+    },
+    {
+      "role": "non_crew",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2024,
+      "count": 6
+    },
+    {
+      "role": "other_crew",
+      "vessel": "cargo_dry",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2024,
+      "count": 11
+    },
+    {
+      "role": "other_crew",
+      "vessel": "other",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2024,
+      "count": 5
+    },
+    {
+      "role": "other_crew",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2024,
+      "count": 56
+    },
+    {
+      "role": "other_crew",
+      "vessel": "recreational",
+      "eventType": "capsizing_listing",
+      "severity": "none",
+      "year": 2024,
+      "count": 14
+    },
+    {
+      "role": "other_crew",
+      "vessel": "recreational",
+      "eventType": "collision",
+      "severity": "none",
+      "year": 2024,
+      "count": 5
+    },
+    {
+      "role": "other_crew",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2024,
+      "count": 11
+    },
+    {
+      "role": "other_crew",
+      "vessel": "service_offshore",
+      "eventType": "capsizing_listing",
+      "severity": "none",
+      "year": 2024,
+      "count": 6
+    },
+    {
+      "role": "other_crew",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2024,
+      "count": 28
+    },
+    {
+      "role": "other_crew",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "none",
+      "year": 2024,
+      "count": 7
+    },
+    {
+      "role": "unknown",
+      "vessel": "recreational",
+      "eventType": "capsizing_listing",
+      "severity": "none",
+      "year": 2024,
+      "count": 14
+    },
+    {
+      "role": "unknown",
+      "vessel": "recreational",
+      "eventType": "fire_explosion",
+      "severity": "injury",
+      "year": 2024,
+      "count": 6
+    },
+    {
+      "role": "unknown",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "fatal",
+      "year": 2024,
+      "count": 5
+    },
+    {
+      "role": "unknown",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2024,
+      "count": 15
+    },
+    {
+      "role": "unknown",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "none",
+      "year": 2024,
+      "count": 7
+    },
+    {
+      "role": "deck",
+      "vessel": "cargo_dry",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2025,
+      "count": 11
+    },
+    {
+      "role": "deck",
+      "vessel": "other",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2025,
+      "count": 8
+    },
+    {
+      "role": "deck",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2025,
+      "count": 9
+    },
+    {
+      "role": "deck",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2025,
+      "count": 8
+    },
+    {
+      "role": "deck",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2025,
+      "count": 21
+    },
+    {
+      "role": "deck",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "none",
+      "year": 2025,
+      "count": 7
+    },
+    {
+      "role": "engine",
+      "vessel": "cargo_dry",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2025,
+      "count": 10
+    },
+    {
+      "role": "fishing",
+      "vessel": "fishing",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2025,
+      "count": 27
+    },
+    {
+      "role": "non_crew",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2025,
+      "count": 74
+    },
+    {
+      "role": "non_crew",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2025,
+      "count": 18
+    },
+    {
+      "role": "other_crew",
+      "vessel": "cargo_dry",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2025,
+      "count": 13
+    },
+    {
+      "role": "other_crew",
+      "vessel": "passenger",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2025,
+      "count": 31
+    },
+    {
+      "role": "other_crew",
+      "vessel": "recreational",
+      "eventType": "capsizing_listing",
+      "severity": "none",
+      "year": 2025,
+      "count": 10
+    },
+    {
+      "role": "other_crew",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2025,
+      "count": 7
+    },
+    {
+      "role": "other_crew",
+      "vessel": "service_offshore",
+      "eventType": "capsizing_listing",
+      "severity": "none",
+      "year": 2025,
+      "count": 6
+    },
+    {
+      "role": "other_crew",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2025,
+      "count": 30
+    },
+    {
+      "role": "other_crew",
+      "vessel": "service_offshore",
+      "eventType": "personal_accident",
+      "severity": "none",
+      "year": 2025,
+      "count": 5
+    },
+    {
+      "role": "unknown",
+      "vessel": "recreational",
+      "eventType": "capsizing_listing",
+      "severity": "none",
+      "year": 2025,
+      "count": 5
+    },
+    {
+      "role": "unknown",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "injury",
+      "year": 2025,
+      "count": 19
+    },
+    {
+      "role": "unknown",
+      "vessel": "recreational",
+      "eventType": "personal_accident",
+      "severity": "none",
+      "year": 2025,
+      "count": 8
+    }
+  ],
+  "totals": {
+    "publishedRecords": 2218,
+    "publishedCells": 134,
+    "suppressedRecords": 699,
+    "suppressedCells": 416,
+    "excludedOutsidePeriod": 123,
+    "excludedNotConnected": 0
+  },
+  "suppression": {
+    "minimumCellCount": 5,
+    "rule": "Cells with fewer than five affected-person records are omitted. Displayed totals therefore exclude suppressed records."
+  }
+}

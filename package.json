@@ -13,6 +13,7 @@
     "ai:check": "node scripts/ai-evaluation-checks.mjs",
     "build": "node scripts/build.mjs",
     "import:maib": "node scripts/import-maib.mjs",
+    "aggregate:maib": "node scripts/aggregate-maib.mjs",
     "release:check": "node scripts/release-checks.mjs"
   },
   "engines": {

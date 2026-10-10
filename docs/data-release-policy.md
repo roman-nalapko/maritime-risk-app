@@ -22,18 +22,13 @@ A dataset is blocked when any of the following is true:
 
 The minimum cell count of five is a floor, not proof of anonymity. A privacy reviewer may require larger aggregation based on geography, role rarity, time window, or linkage risk. Statistical display rules in `docs/methodology/exposure-and-uncertainty.md` remain stricter for rate stability.
 
-## MAIB usage and licensing status
+## MAIB usage and licensing decision
 
-The [MAIB Data Portal](https://maps.dft.gov.uk/maib-data-portal/web-pages/index.html) describes its download as a subset of anonymised, releasable accident data and warns that records may change between releases. The portal page inspected for this project does not display a dataset-specific licence or attribution statement.
+The [MAIB Data Portal](https://maps.dft.gov.uk/maib-data-portal/web-pages/index.html) describes its downloads as a subset of anonymised, releasable accident data and warns that records may change between releases. UK government terms state that most content is Crown copyright and available under the [Open Government Licence v3.0](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/) unless otherwise indicated. No contrary notice was found on the inspected MAIB download pages.
 
-UK government guidance identifies the Open Government Licence as the default for Crown copyright information, but the project will not infer a dataset-specific grant from that general rule. Before MAIB-derived aggregates are shipped, the release manifest must record:
+SeaRisk UA therefore permits a narrow OGL v3.0 release of derived, non-substitutive aggregates with the attribution: “Contains public sector information licensed under the Open Government Licence v3.0. Source: Marine Accident Investigation Branch.” The decision excludes logos, third-party material, free-text descriptions, images, and person-level rows. If MAIB or DfT publishes contrary dataset-specific terms, publication must stop until the manifest and use are reviewed.
 
-1. confirmation of the applicable licence/version from MAIB or DfT;
-2. the required attribution wording;
-3. the source extract hashes and retrieval date;
-4. any third-party or personal-information exclusions.
-
-Until this is confirmed, MAIB-derived files remain research/build artifacts under `work/` and are not copied into `src/data` or `dist/data`.
+The release manifest records the three extract hashes, retrieval date, mapping version, OGL link, privacy status, suppression threshold, and limitations. Raw and normalized records remain ignored build artifacts under `work/`; only aggregate cells at `n >= 5` enter `src/data` and `dist/data`.
 
 ## Data minimisation
 

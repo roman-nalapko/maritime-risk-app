@@ -30,8 +30,9 @@ export function validateReleaseDataset(entry, data) {
   assert(Number.isInteger(entry.reportingPeriod?.from) && Number.isInteger(entry.reportingPeriod?.to) && entry.reportingPeriod.from <= entry.reportingPeriod.to, `${entry.id} needs a valid reporting period`);
   assert(["synthetic", "aggregate"].includes(entry.releaseMode), `${entry.id} must be synthetic or aggregate; record-level external data is blocked`);
   assert(entry.source?.publisher && entry.source?.url && entry.source?.retrievedOn, `${entry.id} lacks source provenance`);
+  assert(entry.source.url.startsWith("https://"), `${entry.id} source URL must use HTTPS`);
   assert(entry.license?.status === "approved", `${entry.id} licence is not approved`);
-  assert(entry.license?.id && entry.license?.attribution, `${entry.id} lacks licence id or attribution`);
+  assert(entry.license?.id && entry.license?.url && entry.license?.attribution, `${entry.id} lacks licence id, URL, or attribution`);
   assert(entry.privacy?.status === "reviewed", `${entry.id} privacy review is incomplete`);
   assert(entry.privacy?.directIdentifiersRemoved === true, `${entry.id} may contain direct identifiers`);
   assert(entry.quality?.status === "approved", `${entry.id} quality status is not approved`);
@@ -47,7 +48,10 @@ export function validateReleaseDataset(entry, data) {
     const minimum = entry.quality.minimumCellCount;
     assert(Number.isInteger(minimum) && minimum >= DEFAULT_MINIMUM_CELL, `${entry.id} minimum aggregation size must be at least ${DEFAULT_MINIMUM_CELL}`);
     assert(Array.isArray(data.cells), `${entry.id} aggregate data must expose a cells array`);
+    assert(data.unit && data.measure === "count", `${entry.id} aggregate data must identify its unit and count measure`);
     assert(data.cells.every((cell) => Number.isInteger(cell.count) && cell.count >= minimum), `${entry.id} contains a cell below its minimum aggregation size`);
+    assert(data.suppression?.minimumCellCount === minimum, `${entry.id} suppression metadata does not match the release manifest`);
+    assert(data.totals?.publishedRecords === data.cells.reduce((sum, cell) => sum + cell.count, 0), `${entry.id} published total does not reconcile`);
   }
   return true;
 }

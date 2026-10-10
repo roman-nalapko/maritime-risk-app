@@ -73,6 +73,7 @@ An issue is done when:
 
 ### Real incident data
 
+0. [Ingest official maritime incident sources for public statistics](https://github.com/roman-nalapko/maritime-risk-app/issues/36).
 1. [Implement the MAIB CSV import](https://github.com/roman-nalapko/maritime-risk-app/issues/12).
 2. [Map source fields to the internal taxonomy](https://github.com/roman-nalapko/maritime-risk-app/issues/9).
 3. [Add data-quality and privacy checks](https://github.com/roman-nalapko/maritime-risk-app/issues/15).

@@ -10,6 +10,16 @@
 | [Shipping Administration of Ukraine](https://marad.gov.ua/ua/diyalnist/stan-avarijnosti-ta-bezpeki-sudnoplavstva-na-vodnomu-transporti) | Ukrainian maritime and inland-waterway context | Primarily periodic reports/PDFs |
 | [EMSA STCW-IS](https://portal.emsa.europa.eu/web/stcw/seafarers-stats) | Seafarer population context | Public statistical views and reports |
 
+## Current source status (2026-10-10)
+
+| Source | Product status | Reason |
+| --- | --- | --- |
+| MAIB | **Published as aggregate v1.0** | Structured linked CSV tables; 2020–2025 affected-person records; small cells suppressed |
+| EMSA annual overview / EMCIP | Reference and European trend context; structured extraction pending | Published reports are aggregate and use a different scope; they must not be merged as MAIB rows |
+| IMO GISIS | Linked reference only | Search and some material require an account or restricted access; no access control is bypassed |
+| Shipping Administration of Ukraine | Ukrainian context; report extraction pending | Periodic reports require source-by-source table validation and terminology mapping |
+| EMSA STCW-IS | Denominator candidate only | Population totals are not yet compatible with the MAIB numerator scope |
+
 ## Import policy
 
 1. Keep raw downloads outside the public application bundle.
@@ -41,4 +51,4 @@ Imported data is not automatically publishable. The [public data release policy]
 
 ## Prototype data
 
-`src/data/incidents.sample.json` is synthetic demonstration data. It exists to validate interaction and presentation and must not be used for empirical conclusions.
+The default product dataset is `src/data/incidents.maib.aggregate.json`. Its unit is an **affected-person record**, not a unique incident, vessel, worker population, or hour of exposure. The dashboard therefore reports descriptive shares only.

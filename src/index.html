@@ -247,7 +247,7 @@
         <div class="shell">
           <div class="section-heading light">
             <div><p class="eyebrow">Контекст інцидентів</p><h2>Що відбувається у вибірці</h2></div>
-            <p>Це частки серед зареєстрованих подій, а не ймовірність для конкретної людини.</p>
+            <p>Це частки серед агрегованих записів MAIB про постраждалих, а не ймовірність для конкретної людини.</p>
           </div>
 
           <div class="stats-toolbar">
@@ -257,30 +257,39 @@
             <label>Тип судна
               <select id="stats-vessel"><option value="all">Усі судна</option></select>
             </label>
-            <div class="demo-chip"><i></i> Синтетична DEMO-вибірка</div>
+            <div class="demo-chip official"><i></i> Офіційні агрегати MAIB</div>
           </div>
 
           <div class="stat-summary">
-            <div><span>Подій у вибірці</span><strong id="event-total">—</strong><small>після фільтрації</small></div>
-            <div><span>З травмуванням</span><strong id="injury-share">—</strong><small>частка подій</small></div>
-            <div><span>З летальним наслідком</span><strong id="fatal-share">—</strong><small>частка подій</small></div>
+            <div><span>Записів про постраждалих</span><strong id="event-total">—</strong><small>після фільтрації й подавлення</small></div>
+            <div><span>З травмуванням</span><strong id="injury-share">—</strong><small>частка опублікованих записів</small></div>
+            <div><span>З летальним наслідком</span><strong id="fatal-share">—</strong><small>частка опублікованих записів</small></div>
           </div>
 
           <div class="stats-grid">
             <article class="chart-card">
-              <div class="chart-heading"><div><span>Типи подій</span><h3>Структура вибірки</h3></div><small>% подій</small></div>
+              <div class="chart-heading"><div><span>Типи подій</span><h3>Структура вибірки</h3></div><small>% записів</small></div>
               <div class="event-bars" id="event-bars"></div>
               <dl class="chart-meta" id="event-chart-meta" aria-live="polite"></dl>
             </article>
             <article class="chart-card severity-card">
               <div class="chart-heading"><div><span>Наслідки</span><h3>Тяжкість інцидентів</h3></div><small>умовний розподіл</small></div>
               <div class="donut-wrap">
-                <div class="donut" id="severity-donut"><div><strong id="severity-total">—</strong><span>подій</span></div></div>
+                <div class="donut" id="severity-donut"><div><strong id="severity-total">—</strong><span>записів</span></div></div>
                 <ul id="severity-legend"></ul>
               </div>
               <dl class="chart-meta" id="severity-chart-meta" aria-live="polite"></dl>
             </article>
           </div>
+          <p class="source-note">Джерело: <a href="https://maps.dft.gov.uk/maib-data-portal/web-pages/download_files_section.html" target="_blank" rel="noreferrer">MAIB Data Portal</a>, завантажено 10.10.2026. Комбінації з менш ніж 5 записами не публікуються, тому показані підсумки можуть бути нижчими за повні. Дані не містять знаменника експозиції й не дають персональної ймовірності.</p>
+          <section class="official-context" aria-labelledby="official-context-title">
+            <div class="context-heading"><span>Інші офіційні джерела</span><h3 id="official-context-title">Окремий контекст без змішування вибірок</h3></div>
+            <div class="context-grid">
+              <article><strong>2 659</strong><span>подій EMSA / EMCIP у 2024 році</span><p>Європейський огляд: 2 864 залучені судна. Це окрема сукупність, не додана до MAIB.</p><a href="https://www.emsa.europa.eu/emcip/items.html?cid=141&amp;id=5562" target="_blank" rel="noreferrer">Звіт EMSA 2025 ↗</a></article>
+              <article><strong>5</strong><span>аварійних подій в Україні, I півріччя 2025</span><p>1 загибла людина, 1 зникла, травмованих немає; морський, внутрішній і маломірний транспорт разом.</p><a href="https://marad.gov.ua/storage/app/sites/1/uploaded-files/Zvit_1_2025.pdf" target="_blank" rel="noreferrer">Звіт Адміністрації судноплавства ↗</a></article>
+              <article><strong>GISIS</strong><span>міжнародний реєстр IMO</span><p>Використовується як посилання на розслідування. Частина доступу потребує облікового запису й не завантажується автоматично.</p><a href="https://www.imo.org/en/ourwork/msas/pages/casualties.aspx" target="_blank" rel="noreferrer">Сторінка IMO ↗</a></article>
+            </div>
+          </section>
         </div>
       </section>
 
