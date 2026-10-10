@@ -143,3 +143,35 @@
 **Why:** These sources differ in access, coverage, reporting grain, classification, publication format, and duplication risk. A combined count would imply comparability that has not been established.
 
 **Consequence:** Every future source gets its own provenance, schema mapping, unit, period, release review, and product view before any cross-source comparison is permitted.
+
+## ADR-018: Remove dist/ from git tracking; build in CI or locally
+
+**Decision:** `dist/` is listed in `.gitignore` and must not be committed. Run `npm run build` locally or in CI to regenerate it before deployment.
+
+**Why:** AGENTS.md explicitly prohibits committing generated build artifacts. `dist/` was historically committed before `.gitignore` was created. Running `git rm -r --cached dist/` removes the tracking without deleting the local directory.
+
+**Consequence:** Any static-host deployment (Cloudflare Pages, Vercel, Netlify) must run `npm run build` as its build command and publish the `dist/` output directory. The source of truth is always `src/`.
+
+## ADR-019: Demographic multiplier applies to health and lifestyle, not occupation
+
+**Decision:** The `demographicMultiplier` (sex × residence) scales `health` and `lifestyle` but not `occupation`.
+
+**Why:** The multiplier comes from a general-population educational source that associates sex and residence with overall health risk. The `hourlyRoleRate` already encodes profession-specific exposure and is sourced from occupation-specific proxies. Applying a general-population demographic scale on top of occupation-specific rates would double-count population differences that the role rate already captures.
+
+**Consequence:** This design choice is explicitly stated in the model assumptions returned with every result. When model v1.0 is built from compatible primary sources, the interaction between demographic and occupational factors must be revisited with domain review.
+
+## ADR-020: Grounding educational recommendations in MLC 2006 and STCW standards
+
+**Decision:** Evaluate input work hours and night shift exposure against international maritime conventions (MLC 2006 Standard A2.3, Guideline B2.3, STCW Section A-VIII/1, and IMO MSC/Circ.1598) and surface non-binding educational alerts.
+
+**Why:** Abstract mathematical indices do not guide seafaring workers on regulatory rest thresholds. Anchoring fatigue and overtime warnings to ratified maritime conventions (minimum 10 hours daily rest, 77 hours weekly rest) provides immediate professional utility without claiming certified navigational authority.
+
+**Consequence:** The evaluation remains deterministic, runs purely in-browser via `evaluateMlcCompliance()`, and provides clear convention citations without altering the numeric prototype index.
+
+## ADR-021: Interactive What-If simulation and offline profile portability
+
+**Decision:** Implement client-side What-If scenario delta calculations, dynamic SVG factor radar visualization, role-specific safety checklists, and offline JSON profile export/import.
+
+**Why:** Educators and seafarers need to see the controllable impact of protective factors (e.g. 25% reduction with full PPE, fatigue abatement by halving night shifts) and share anonymized training profiles without any server-side database.
+
+**Consequence:** All operations are in-memory (`Blob`, `FileReader`, pure functions). No remote API, local storage, cookies, or telemetry are used. Tested with automated platform checks in `scripts/feature-checks.mjs`.

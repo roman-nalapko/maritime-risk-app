@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#071521" />
+    <meta name="theme-color" content="#06131e" />
     <meta
       name="description"
       content="Дослідницький прототип прозорої оцінки індивідуального ризику працівника морської галузі."
@@ -18,66 +18,73 @@
     <a class="skip-link" href="#main-content">До основного вмісту</a>
 
     <header class="site-header">
-      <a class="brand" href="#top" aria-label="SeaRisk UA, на початок">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 44 44" role="img">
-            <path d="M7 25c5-6 9-6 14 0s9 6 16 0" />
-            <path d="M8 17h28l-5 9H13z" />
-            <path d="M22 8v9M22 9l8 6" />
-          </svg>
-        </span>
-        <span><strong>SeaRisk</strong><small>UA · public hypothesis</small></span>
-      </a>
-      <nav aria-label="Основна навігація">
-        <a href="#assessment">Оцінювання</a>
-        <a href="#statistics">Статистика</a>
-        <a href="#methodology">Методика</a>
-      </nav>
-      <span class="status-pill"><i></i> Безкоштовна beta</span>
+      <div class="shell header-shell">
+        <a class="brand" href="#top" aria-label="SeaRisk UA, на початок">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 44 44" role="img" aria-labelledby="brand-svg-title">
+                <title id="brand-svg-title">Логотип SeaRisk UA</title>
+              <path d="M7 25c5-6 9-6 14 0s9 6 16 0" />
+              <path d="M8 17h28l-5 9H13z" />
+              <path d="M22 8v9M22 9l8 6" />
+            </svg>
+          </span>
+          <span><strong>SeaRisk</strong><small>UA · public hypothesis</small></span>
+        </a>
+        <nav aria-label="Основна навігація">
+          <a href="#assessment">Оцінювання</a>
+          <a href="#statistics">Статистика</a>
+          <a href="#methodology">Методика</a>
+        </nav>
+        <span class="status-pill"><i aria-hidden="true"></i> Дослідницький прототип</span>
+      </div>
     </header>
 
     <main id="main-content" tabindex="-1">
-      <section class="hero shell" id="top">
-        <div class="hero-copy">
-          <p class="eyebrow">Безпека, яку можна пояснити</p>
-          <h1>Побачте, що саме формує професійний ризик.</h1>
-          <p class="hero-lede">
-            Безкоштовний освітній сервіс для самостійного аналізу факторів морського ризику —
-            з локальним розрахунком, контекстом інцидентів і практичними кроками.
-          </p>
-          <div class="hero-actions">
-            <a class="button button-primary" href="#assessment">Почати оцінювання</a>
-            <a class="text-link" href="#methodology">Як працює модель <span>↗</span></a>
-          </div>
-        </div>
-        <div class="hero-visual" aria-label="Приклад структури оцінки ризику">
-          <div class="radar-card">
-            <div class="radar-topline"><span>Профіль ризику</span><b>DEMO</b></div>
-            <div class="radar-wrap">
-              <svg viewBox="0 0 240 190" role="img" aria-label="Демонстраційна радарна діаграма">
-                <g class="radar-grid">
-                  <path d="M120 18 203 66 184 153 56 153 37 66Z" />
-                  <path d="M120 48 172 78 160 132 80 132 68 78Z" />
-                  <path d="M120 76 143 89 138 113 102 113 97 89Z" />
-                  <path d="M120 18v135M37 66l147 87M203 66 56 153M184 153 68 78M56 153l116-75" />
-                </g>
-                <path class="radar-value" d="M120 40 180 78 151 131 77 141 72 80Z" />
-                <g class="radar-dots">
-                  <circle cx="120" cy="40" r="4" /><circle cx="180" cy="78" r="4" />
-                  <circle cx="151" cy="131" r="4" /><circle cx="77" cy="141" r="4" />
-                  <circle cx="72" cy="80" r="4" />
-                </g>
-              </svg>
-              <span class="radar-label label-1">Втома</span>
-              <span class="radar-label label-2">Операції</span>
-              <span class="radar-label label-3">Здоров’я</span>
-              <span class="radar-label label-4">Звички</span>
-              <span class="radar-label label-5">Середовище</span>
+      <section class="hero" id="top">
+        <div class="shell hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">Безпека, яку можна пояснити</p>
+            <h1>Побачте, що саме формує професійний ризик.</h1>
+            <p class="hero-lede">
+              Безкоштовний освітній сервіс для самостійного аналізу факторів морського ризику —
+              з локальним розрахунком, контекстом інцидентів і практичними кроками.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#assessment">Почати оцінювання</a>
+              <a class="text-link" href="#methodology">Як працює модель <span>↗</span></a>
             </div>
-            <p><span>Пріоритет</span><strong>контроль втоми</strong></p>
           </div>
-          <div class="signal signal-a">01 <span>Локальний розрахунок</span></div>
-          <div class="signal signal-b">02 <span>Прозорі фактори</span></div>
+          <div class="hero-visual" aria-label="Приклад структури оцінки ризику">
+            <div class="radar-card">
+              <div class="radar-topline"><span>Профіль ризику</span><b>DEMO</b></div>
+              <div class="radar-wrap">
+                <svg viewBox="0 0 240 190" role="img" aria-label="Демонстраційна радарна діаграма">
+                  <g class="radar-grid">
+                    <path d="M120 18 203 66 184 153 56 153 37 66Z" />
+                    <path d="M120 48 172 78 160 132 80 132 68 78Z" />
+                    <path d="M120 76 143 89 138 113 102 113 97 89Z" />
+                    <path d="M120 18v135M37 66l147 87M203 66 56 153M184 153 68 78M56 153l116-75" />
+                  </g>
+                  <path class="radar-value" d="M120 40 180 78 151 131 77 141 72 80Z" />
+                  <g class="radar-dots">
+                    <circle cx="120" cy="40" r="4" /><circle cx="180" cy="78" r="4" />
+                    <circle cx="151" cy="131" r="4" /><circle cx="77" cy="141" r="4" />
+                    <circle cx="72" cy="80" r="4" />
+                  </g>
+                </svg>
+                <span class="radar-label label-1">Втома</span>
+                <span class="radar-label label-2">Операції</span>
+                <span class="radar-label label-3">Здоров’я</span>
+                <span class="radar-label label-4">Звички</span>
+                <span class="radar-label label-5">Середовище</span>
+              </div>
+              <p><span>Пріоритет</span><strong>контроль втоми</strong></p>
+            </div>
+            <div class="hero-signals">
+              <div class="signal signal-a">01 <span>Локальний розрахунок</span></div>
+              <div class="signal signal-b">02 <span>Прозорі фактори</span></div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -89,25 +96,31 @@
         </div>
       </section>
 
-      <section class="workspace shell" id="assessment">
-        <div class="section-heading">
-          <div><p class="eyebrow">Індивідуальне оцінювання</p><h2>Профіль працівника</h2></div>
-          <p>Заповнення займає приблизно дві хвилини. Поля не зберігаються після закриття сторінки.</p>
-        </div>
+      <section class="workspace" id="assessment">
+        <div class="shell">
+          <div class="section-heading">
+            <div><p class="eyebrow">Індивідуальне оцінювання</p><h2>Профіль працівника</h2></div>
+            <p>Заповнення займає приблизно дві хвилини. Поля не зберігаються після закриття сторінки.</p>
+          </div>
 
-        <div class="assessment-grid">
-          <form class="assessment-form card" id="risk-form">
-            <section class="scenario-panel" aria-labelledby="scenario-title">
-              <div><span>Без персональних даних</span><h3 id="scenario-title">Спробуйте вигаданий сценарій</h3></div>
-              <label for="demo-scenario">Демонстраційний профіль
-                <select id="demo-scenario">
-                  <option value="cadet">Курсант на навчальній практиці</option>
-                  <option value="engine">Механік із нічними змінами</option>
-                  <option value="deck">Палубна команда з підвищеною експозицією</option>
-                </select>
-              </label>
-              <button class="button button-secondary" id="apply-scenario" type="button">Застосувати сценарій</button>
-            </section>
+          <div class="assessment-grid">
+            <form class="assessment-form card" id="risk-form">
+              <section class="scenario-panel" aria-labelledby="scenario-title">
+                <div class="scenario-intro">
+                  <span>Без особистих даних</span>
+                  <h3 id="scenario-title">Спробуйте вигаданий сценарій</h3>
+                </div>
+                <div class="scenario-controls">
+                  <label for="demo-scenario">Демонстраційний профіль
+                    <select id="demo-scenario">
+                      <option value="cadet">Курсант · навчальна практика</option>
+                      <option value="engine">Механік · нічні зміни</option>
+                      <option value="deck">Палубна команда · висока експозиція</option>
+                    </select>
+                  </label>
+                  <button class="button button-secondary" id="apply-scenario" type="button">Застосувати</button>
+                </div>
+              </section>
 
             <fieldset>
               <legend><span>1</span> Основні дані</legend>
@@ -178,6 +191,16 @@
               </div>
             </fieldset>
 
+            <div class="profile-file-actions">
+              <button class="button-ghost" id="export-profile-btn" type="button">
+                <span>📥</span> Експорт профілю (.json)
+              </button>
+              <label class="button-ghost file-label" for="import-profile-input">
+                <span>📤</span> Імпорт з файлу
+                <input id="import-profile-input" type="file" accept=".json" class="sr-only" />
+              </label>
+            </div>
+
             <p class="privacy-note"><strong>Приватність:</strong> вводьте лише власні дані й лише добровільно. Значення обробляються в цьому браузері, не зберігаються та не надсилаються. Не вводьте ПІБ, контакти чи дані іншої людини.</p>
 
             <div class="form-footer">
@@ -186,11 +209,14 @@
             </div>
           </form>
 
-          <aside class="result-card card" id="result-panel">
+          <aside class="result-card card" id="result-panel" data-initial="true">
             <p class="sr-only" id="result-announcement" role="status" aria-live="polite" aria-atomic="true"></p>
             <div class="result-header">
               <span class="result-kicker">Демонстраційний індекс прототипу</span>
               <span class="method-badge" id="method-badge">Реєстр 0.1.0</span>
+            </div>
+            <div class="result-initial-banner" role="note" aria-live="off">
+              <strong>Попередній перегляд.</strong> Показано розрахунок для дефолтних значень форми. Заповніть анкету та натисніть «Розрахувати ризик», щоб побачити свій результат.
             </div>
             <p class="result-disclaimer"><strong>Орієнтовна оцінка.</strong> Показує відносну структуру факторів, але не є точною ймовірністю травми чи загибелі та може відрізнятися від фактичного ризику.</p>
             <div class="score-row">
@@ -209,15 +235,60 @@
               <div><dt>Невизначеність</dt><dd id="uncertainty-status">Не оцінена</dd></div>
             </dl>
 
+            <div class="mlc-advice-card" id="mlc-advice-card" hidden>
+              <div class="mlc-advice-heading">
+                <span class="mlc-tag">MLC 2006 · STCW</span>
+                <h4>Контроль навантаження та втоми</h4>
+              </div>
+              <ul id="mlc-findings-list"></ul>
+            </div>
+
             <section class="profile-summary" aria-labelledby="profile-summary-title">
               <div class="profile-summary-heading"><h3 id="profile-summary-title">Вхідний профіль</h3><span id="scenario-name">Користувацький профіль</span></div>
               <dl id="profile-summary-list"></dl>
               <p>Сформовано локально: <time id="report-date">—</time>. Дані не збережено.</p>
             </section>
 
+            <div class="live-radar-box" id="live-radar-box">
+              <div class="live-radar-header">
+                <h3>Профіль факторів (LIVE)</h3>
+                <small>Нормований радар поточного розрахунку</small>
+              </div>
+              <div class="live-radar-wrapper">
+                <svg viewBox="0 0 240 190" id="live-radar-svg" role="img" aria-label="Радарна діаграма поточного розрахунку">
+                  <g class="live-radar-bg-grid">
+                    <polygon points="120,20 200,68 180,150 60,150 40,68" fill="none" stroke="rgba(16,37,54,0.12)" stroke-width="1" />
+                    <polygon points="120,52 170,82 155,130 85,130 70,82" fill="none" stroke="rgba(16,37,54,0.08)" stroke-width="1" />
+                    <line x1="120" y1="98" x2="120" y2="20" stroke="rgba(16,37,54,0.1)" />
+                    <line x1="120" y1="98" x2="200" y2="68" stroke="rgba(16,37,54,0.1)" />
+                    <line x1="120" y1="98" x2="180" y2="150" stroke="rgba(16,37,54,0.1)" />
+                    <line x1="120" y1="98" x2="60" y2="150" stroke="rgba(16,37,54,0.1)" />
+                    <line x1="120" y1="98" x2="40" y2="68" stroke="rgba(16,37,54,0.1)" />
+                  </g>
+                  <polygon id="live-radar-poly" points="120,60 160,95 140,135 90,135 75,95" fill="rgba(34,199,184,0.22)" stroke="#087a72" stroke-width="2" />
+                  <g id="live-radar-markers"></g>
+                </svg>
+                <div class="live-radar-axis-labels">
+                  <span class="lra-1">Здоров'я</span>
+                  <span class="lra-2">Експозиція</span>
+                  <span class="lra-3">Нічні</span>
+                  <span class="lra-4">Звички</span>
+                  <span class="lra-5">ЗІЗ</span>
+                </div>
+              </div>
+            </div>
+
             <div class="breakdown">
               <div class="breakdown-title"><h3>Внесок факторів</h3><button type="button" id="details-toggle" aria-expanded="true">Сховати деталі</button></div>
               <div id="breakdown-list"></div>
+            </div>
+
+            <div class="what-if-section" id="what-if-section">
+              <div class="what-if-header">
+                <h3>Симуляція «Що, якщо?»</h3>
+                <small>Оцінка потенційного зниження ризику</small>
+              </div>
+              <div class="what-if-grid" id="what-if-grid"></div>
             </div>
 
             <details class="evidence-details">
@@ -230,6 +301,17 @@
               <ul id="recommendation-list"></ul>
             </div>
 
+            <div class="checklist-section" id="checklist-section">
+              <div class="checklist-header">
+                <div>
+                  <span class="checklist-kicker">ОПБ / ПЕРЕДЗМІННИЙ ЧЕК-ЛИСТ</span>
+                  <h3>Контрольний список вахти</h3>
+                </div>
+                <span class="checklist-progress" id="checklist-progress">0 / 0</span>
+              </div>
+              <ul class="checklist-list" id="checklist-list"></ul>
+            </div>
+
             <details class="calculation-details">
               <summary>Формула та припущення</summary>
               <p id="formula-copy"></p>
@@ -240,6 +322,7 @@
               <small>Діалог друку відкривається локально у браузері.</small>
             </div>
           </aside>
+        </div>
         </div>
       </section>
 
@@ -311,7 +394,16 @@
     </main>
 
     <footer>
-      <div class="shell"><div class="brand inverse"><strong>SeaRisk</strong><small>UA · hypothesis</small></div><p>Дані анкети не залишають браузер.</p><a href="#top">Нагору ↑</a></div>
+      <div class="shell footer-shell">
+        <div class="brand inverse"><strong>SeaRisk</strong><small>UA · hypothesis</small></div>
+        <nav class="footer-nav" aria-label="Нижня навігація">
+          <a href="#assessment">Оцінювання</a>
+          <a href="#statistics">Статистика</a>
+          <a href="#methodology">Методика</a>
+        </nav>
+        <p>Дані анкети не залишають браузер.</p>
+        <a href="#top">Нагору ↑</a>
+      </div>
     </footer>
 
     <script type="module" src="app.js"></script>
