@@ -26,14 +26,14 @@
             <path d="M22 8v9M22 9l8 6" />
           </svg>
         </span>
-        <span><strong>SeaRisk</strong><small>UA · research preview</small></span>
+        <span><strong>SeaRisk</strong><small>UA · public hypothesis</small></span>
       </a>
       <nav aria-label="Основна навігація">
         <a href="#assessment">Оцінювання</a>
         <a href="#statistics">Статистика</a>
         <a href="#methodology">Методика</a>
       </nav>
-      <span class="status-pill"><i></i> Модель 0.1</span>
+      <span class="status-pill"><i></i> Безкоштовна beta</span>
     </header>
 
     <main id="main-content" tabindex="-1">
@@ -42,8 +42,8 @@
           <p class="eyebrow">Безпека, яку можна пояснити</p>
           <h1>Побачте, що саме формує професійний ризик.</h1>
           <p class="hero-lede">
-            Локальний браузерний розрахунок для працівника морської галузі — з
-            розкладом факторів, контекстом інцидентів і практичними кроками.
+            Безкоштовний освітній сервіс для самостійного аналізу факторів морського ризику —
+            з локальним розрахунком, контекстом інцидентів і практичними кроками.
           </p>
           <div class="hero-actions">
             <a class="button button-primary" href="#assessment">Почати оцінювання</a>
@@ -97,6 +97,18 @@
 
         <div class="assessment-grid">
           <form class="assessment-form card" id="risk-form">
+            <section class="scenario-panel" aria-labelledby="scenario-title">
+              <div><span>Без персональних даних</span><h3 id="scenario-title">Спробуйте вигаданий сценарій</h3></div>
+              <label for="demo-scenario">Демонстраційний профіль
+                <select id="demo-scenario">
+                  <option value="cadet">Курсант на навчальній практиці</option>
+                  <option value="engine">Механік із нічними змінами</option>
+                  <option value="deck">Палубна команда з підвищеною експозицією</option>
+                </select>
+              </label>
+              <button class="button button-secondary" id="apply-scenario" type="button">Застосувати сценарій</button>
+            </section>
+
             <fieldset>
               <legend><span>1</span> Основні дані</legend>
               <div class="field-grid">
@@ -180,6 +192,7 @@
               <span class="result-kicker">Демонстраційний індекс прототипу</span>
               <span class="method-badge" id="method-badge">Реєстр 0.1.0</span>
             </div>
+            <p class="result-disclaimer"><strong>Орієнтовна оцінка.</strong> Показує відносну структуру факторів, але не є точною ймовірністю травми чи загибелі та може відрізнятися від фактичного ризику.</p>
             <div class="score-row">
               <div>
                 <strong id="risk-value">1,9 × 10⁻³</strong>
@@ -195,6 +208,12 @@
               <div><dt>Версія</dt><dd id="model-version">SR-UA-PROTOTYPE-0.1</dd></div>
               <div><dt>Невизначеність</dt><dd id="uncertainty-status">Не оцінена</dd></div>
             </dl>
+
+            <section class="profile-summary" aria-labelledby="profile-summary-title">
+              <div class="profile-summary-heading"><h3 id="profile-summary-title">Вхідний профіль</h3><span id="scenario-name">Користувацький профіль</span></div>
+              <dl id="profile-summary-list"></dl>
+              <p>Сформовано локально: <time id="report-date">—</time>. Дані не збережено.</p>
+            </section>
 
             <div class="breakdown">
               <div class="breakdown-title"><h3>Внесок факторів</h3><button type="button" id="details-toggle" aria-expanded="true">Сховати деталі</button></div>
@@ -216,6 +235,10 @@
               <p id="formula-copy"></p>
               <ul id="assumption-list"></ul>
             </details>
+            <div class="report-actions">
+              <button class="button button-secondary" id="print-report" type="button">Друк / зберегти PDF</button>
+              <small>Діалог друку відкривається локально у браузері.</small>
+            </div>
           </aside>
         </div>
       </section>
@@ -264,7 +287,7 @@
       <section class="methodology shell" id="methodology">
         <div class="section-heading">
           <div><p class="eyebrow">Принципи методики</p><h2>Число має пояснення</h2></div>
-          <p>Перед практичним використанням формули та коефіцієнти повинні пройти експертну перевірку.</p>
+          <p>Публічна версія є завершеним освітнім продуктом, але її експериментальні коефіцієнти не є сертифікованою методикою.</p>
         </div>
         <div class="method-grid">
           <article><span>01</span><h3>Прозорий алгоритм</h3><p>Підсумок складається з версійованих компонентів. AI не обчислює числове значення.</p></article>
@@ -273,7 +296,7 @@
         </div>
         <aside class="governance-note" aria-labelledby="prohibited-use-title">
           <div><span>Пілотне обмеження</span><h3 id="prohibited-use-title">Не використовувати для рішень про людину</h3></div>
-          <p>Результат заборонено застосовувати для найму, звільнення, допуску чи розподілу змін, дисциплінарних, страхових або медичних рішень. Він призначений лише для навчання, дослідження зрозумілості та перевірки методики.</p>
+          <p>Результат заборонено застосовувати для найму, звільнення, допуску чи розподілу змін, дисциплінарних, страхових або медичних рішень. Він призначений для самостійного навчання, аналізу факторів і демонстрації методики.</p>
         </aside>
       </section>
     </main>

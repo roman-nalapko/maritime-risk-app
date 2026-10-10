@@ -1,4 +1,4 @@
-const CACHE = "searisk-ua-v0.1.3";
+const CACHE = "searisk-ua-v0.1.4";
 const APP_SHELL = ["./", "./index.html", "./styles.css", "./app.js", "./model.js", "./coefficients.js", "./manifest.webmanifest", "./icons/searisk.svg", "./icons/searisk-192.png", "./icons/searisk-512.png", "./data/incidents.sample.json", "./data/release-manifest.json"];
 
 self.addEventListener("install", (event) => {

@@ -2,7 +2,7 @@
 
 ## Product statement
 
-SeaRisk UA helps a maritime worker or safety educator explore which occupational factors contribute to an explicitly named annual outcome estimate. It also presents incident statistics without confusing recorded-event shares with personal probabilities. Until model v1.0 is validated, the calculator displays a demonstration index rather than a probability.
+SeaRisk UA is a free public educational service that helps a maritime worker, cadet, or safety educator explore which factors contribute to a transparent demonstration index. It also presents incident statistics without confusing recorded-event shares with personal probabilities. The public hypothesis remains useful without claiming that the index is a validated probability.
 
 ## Primary user
 
@@ -16,6 +16,7 @@ A maritime worker, cadet, instructor, or occupational-safety specialist explorin
 4. Review the value, model status, limitations, and component breakdown.
 5. Inspect the dominant factors and actionable recommendations.
 6. Explore incident distributions through profession and event filters.
+7. Print or save a local educational report with the profile, result, version, and limitations.
 
 ## MVP screens
 
@@ -40,13 +41,19 @@ The prototype is a single responsive dashboard:
 - A prototype index is never described as a probability of injury or death.
 - Fatal, non-fatal, serious-injury, incident-share, and conditional-severity outputs remain separate.
 - The UI can be installed as a PWA where supported.
+- Users can start with clearly fictional profiles instead of personal information.
+- A printable report is created entirely in the browser and includes the active inputs and disclaimer.
 
-## Success criteria for the hypothesis
+## Public hypothesis completion criteria
 
-- A user can complete the assessment in under three minutes.
-- A user can correctly identify the largest risk component without instruction.
-- A user can distinguish “annual individual estimate” from “share among recorded incidents.”
-- A domain reviewer can reproduce each calculation from the displayed inputs and model documentation.
+- the full questionnaire-to-report journey works without an account, backend, paid API, or external AI;
+- at least three fictional maritime profiles demonstrate distinct roles and exposure patterns;
+- every result displays its inputs, component contributions, model/registry status, assumptions, and limitations;
+- incident shares remain visibly distinct from the individual demonstration index;
+- print/PDF, offline PWA, keyboard use, and mobile layouts pass automated and manual engineering checks;
+- deployment documentation supports a free static host.
+
+External usability studies, domain review, and statistical validation are valuable future improvements but do not block completion of the public educational hypothesis. Without them, the product must continue to describe the output as an experimental index rather than an actual injury or fatality probability.
 
 ## Privacy
 
