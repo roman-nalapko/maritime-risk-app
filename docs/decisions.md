@@ -127,3 +127,19 @@
 **Consequence:** AI experiments stay outside the runtime and public bundle. They cannot receive questionnaire values or change coefficients/results, must be optional and removable, and must record accuracy, abstention, hallucination, latency, size, and cost rather than relying on demonstrations.
 
 **Evidence:** See `docs/research/optional-ai-evaluation-plan.md`.
+
+## ADR-016: Publish MAIB only as suppressed affected-person aggregates
+
+**Decision:** Use the linked MAIB occurrence, vessel, and affected-person downloads to publish 2020–2025 counts at affected-person-record grain. Group source roles into broad public categories, combine fatal and presumed-fatal outcomes, and omit every role × vessel × event × outcome × year cell below five records.
+
+**Why:** Person-level publication is unnecessary for the product and increases linkage risk. The linked tables provide incident numerators but no compatible exposure denominator, so they support descriptive shares rather than personal rates.
+
+**Consequence:** The interface names the unit, suppression, source, period, sample size, filters, and limitation. Displayed totals exclude suppressed records and can be lower than the full source count. Raw IDs, exact ages, gender, nationality, location, narratives, and injury details do not enter the public bundle.
+
+## ADR-017: Keep official sources source-specific
+
+**Decision:** Do not concatenate MAIB records, EMSA/EMCIP reports, IMO GISIS material, and Ukrainian administration reports into one apparent incident population. MAIB powers the first structured explorer; EMSA supports European context and taxonomy review; IMO GISIS remains an access-controlled reference; Ukrainian reports require a separate verified extraction.
+
+**Why:** These sources differ in access, coverage, reporting grain, classification, publication format, and duplication risk. A combined count would imply comparability that has not been established.
+
+**Consequence:** Every future source gets its own provenance, schema mapping, unit, period, release review, and product view before any cross-source comparison is permitted.

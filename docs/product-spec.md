@@ -36,7 +36,7 @@ The prototype is a single responsive dashboard:
 - Results update only after explicit calculation.
 - The app explains how each component was produced.
 - Empty and invalid form states are understandable.
-- Incident data is labelled as demonstration data until an approved dataset is imported.
+- Incident data is labelled with its analysis unit, source, period, version, suppression rule, and active filters.
 - Data-source and model-version labels are visible.
 - A prototype index is never described as a probability of injury or death.
 - Fatal, non-fatal, serious-injury, incident-share, and conditional-severity outputs remain separate.

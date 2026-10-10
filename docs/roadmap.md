@@ -5,7 +5,7 @@ The roadmap is milestone-driven rather than date-driven. A milestone advances on
 ## Current position
 
 ```text
-M0 Foundation ✅ → M1 Public educational beta → M2 Traceable incident data → M3 Optional validation → M4 Optional AI
+M0 Foundation ✅ → M1 Public educational beta ✅ → M2 Traceable incident data (MAIB v1 ✅; more sources ongoing) → M3 Optional validation → M4 Optional AI
 ```
 
 Live progress is tracked in [GitHub milestones](https://github.com/roman-nalapko/maritime-risk-app/milestones) and the linked issues in [BACKLOG.md](../BACKLOG.md).
@@ -19,7 +19,7 @@ Delivered:
 - responsive browser-only PWA;
 - local questionnaire and deterministic calculation;
 - risk breakdown and rule-based recommendations;
-- synthetic incident explorer;
+- synthetic incident explorer, later replaced by official MAIB aggregates;
 - visible research disclaimer;
 - automated repository checks and documentation.
 
@@ -52,6 +52,8 @@ Workstreams:
 ## M2 — Real incident data
 
 **Objective:** replace synthetic dashboard data with a traceable first official dataset while preserving the distinction between event share and individual risk.
+
+**Current delivery:** MAIB v1 is complete: three linked CSV tables are reproducibly imported, mapped, aggregated at affected-person-record grain, privacy-suppressed at `n < 5`, and used by the default dashboard. EMSA, IMO GISIS, and Ukrainian reports remain source-specific follow-up work because their formats, access conditions, populations, and measures cannot be silently merged into the MAIB cube.
 
 Workstreams:
 

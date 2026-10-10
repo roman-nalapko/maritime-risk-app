@@ -11,7 +11,7 @@ SeaRisk UA is a free public educational product for transparent exploration of m
 - fictional maritime profiles for classroom demonstrations;
 - reproducible input summary and local print/PDF report;
 - risk category and leading-factor summary;
-- demo incident dashboard with filters;
+- official MAIB aggregate dashboard with role and vessel filters;
 - offline-capable PWA shell;
 - product, risk-model, design, data-source, and roadmap documentation;
 - `AGENTS.md` with repository rules for future contributors and coding agents.
@@ -29,6 +29,13 @@ Open `http://localhost:4173`.
 ```bash
 npm test
 npm run build
+```
+
+The default incident view uses 2020–2025 MAIB affected-person records. Raw linked CSV files stay under ignored `work/`; only cells containing at least five records are published. Reproduce the public file with:
+
+```bash
+npm run import:maib -- --input work/raw/maib --output work/normalized/maib --retrieved-on 2026-10-10
+npm run aggregate:maib -- --input work/normalized/maib --output src/data/incidents.maib.aggregate.json --from 2020 --to 2025 --minimum-cell 5
 ```
 
 The deployable static site is written to `dist/` and can be published with Cloudflare Pages, Vercel, Netlify, or another static host.

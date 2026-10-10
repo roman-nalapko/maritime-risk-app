@@ -4,14 +4,25 @@ const $ = (selector) => document.querySelector(selector);
 const form = $("#risk-form");
 const roleLabels = {
   deck: "Палубна команда", engine: "Машинна команда", officer: "Командний склад",
-  port: "Портові працівники", cadet: "Курсанти", diver: "Водолази"
+  port: "Портові працівники", cadet: "Курсанти", diver: "Водолази",
+  fishing: "Екіпаж риболовного судна", other_crew: "Інший екіпаж",
+  non_crew: "Не члени екіпажу", unknown: "Роль не визначена"
 };
 const vesselLabels = {
-  cargo: "Вантажне", tanker: "Танкер", passenger: "Пасажирське", fishing: "Риболовне", service: "Службове"
+  cargo: "Вантажне", cargo_dry: "Суховантажне", tanker: "Танкер",
+  passenger: "Пасажирське", fishing: "Риболовне", service: "Службове",
+  service_offshore: "Службове / офшорне", recreational: "Прогулянкове",
+  other: "Інше", unknown: "Тип не визначено"
 };
 const eventLabels = {
   fall: "Падіння", machinery: "Механізми", mooring: "Швартування", fire: "Пожежа",
-  collision: "Зіткнення", overboard: "За бортом", exposure: "Вплив речовин"
+  collision: "Зіткнення", overboard: "За бортом", exposure: "Вплив речовин",
+  personal_accident: "Нещасний випадок з людиною", equipment_damage: "Пошкодження обладнання",
+  grounding_stranding: "Посадка на мілину", loss_of_control: "Втрата керування",
+  capsizing_listing: "Перекидання / крен", contact: "Контакт",
+  flooding_foundering: "Затоплення / загибель судна", hull_failure: "Пошкодження корпусу",
+  fire_explosion: "Пожежа / вибух", heavy_weather_damage: "Пошкодження через негоду",
+  vessel_missing: "Зникнення судна", unknown: "Тип не визначено"
 };
 const severityLabels = { none: "Без травм", injury: "Травмування", fatal: "Летальний наслідок" };
 const severityColors = { none: "#22c7b8", injury: "#5fa8ff", fatal: "#e96b61" };
@@ -60,6 +71,10 @@ function applyProfile(profile) {
 
 function asPercent(value, digits = value < 0.001 ? 4 : 2) {
   return new Intl.NumberFormat("uk-UA", { style: "percent", minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
+}
+
+function asWholeShare(value) {
+  return value > 0 && value < 0.005 ? "<1%" : asPercent(value, 0);
 }
 
 function asIndex(value) {
@@ -165,20 +180,23 @@ function renderIncidents() {
   const role = $("#stats-role").value;
   const vessel = $("#stats-vessel").value;
   const filtered = incidents.filter((item) => (role === "all" || item.role === role) && (vessel === "all" || item.vessel === vessel));
-  const total = filtered.length;
-  const countBy = (key) => filtered.reduce((acc, item) => ({ ...acc, [item[key]]: (acc[item[key]] || 0) + 1 }), {});
+  const total = filtered.reduce((sum, item) => sum + item.count, 0);
+  const countBy = (key) => filtered.reduce((acc, item) => {
+    acc[item[key]] = (acc[item[key]] || 0) + item.count;
+    return acc;
+  }, {});
   const severity = countBy("severity");
   const events = countBy("eventType");
 
   $("#event-total").textContent = total.toLocaleString("uk-UA");
-  $("#injury-share").textContent = total ? asPercent((severity.injury || 0) / total, 0) : "—";
-  $("#fatal-share").textContent = total ? asPercent((severity.fatal || 0) / total, 0) : "—";
+  $("#injury-share").textContent = total ? asWholeShare((severity.injury || 0) / total) : "—";
+  $("#fatal-share").textContent = total ? asWholeShare((severity.fatal || 0) / total) : "—";
   $("#severity-total").textContent = total.toLocaleString("uk-UA");
 
   const orderedEvents = Object.entries(events).sort((a, b) => b[1] - a[1]);
   $("#event-bars").innerHTML = total ? orderedEvents.map(([key, count]) => {
     const share = count / total;
-    return `<div class="event-bar"><span title="${eventLabels[key]}">${eventLabels[key]}</span><i style="--bar-width:${share * 100}%"></i><strong>${asPercent(share, 0)}</strong></div>`;
+    return `<div class="event-bar"><span title="${eventLabels[key]}">${eventLabels[key]}</span><i style="--bar-width:${share * 100}%"></i><strong>${asWholeShare(share)}</strong></div>`;
   }).join("") : "<p>Для цього поєднання фільтрів подій немає.</p>";
 
   const segments = ["none", "injury", "fatal"].map((key) => ({ key, count: severity[key] || 0, share: total ? (severity[key] || 0) / total : 0 }));
@@ -188,10 +206,10 @@ function renderIncidents() {
     return `${severityColors[segment.key]} ${start}% ${cursor}%`;
   }).join(", ");
   $("#severity-donut").style.background = total ? `conic-gradient(${gradient})` : "#274354";
-  $("#severity-legend").innerHTML = segments.map((segment) => `<li><i style="background:${severityColors[segment.key]}"></i><span>${severityLabels[segment.key]}</span><strong>${total ? asPercent(segment.share, 0) : "—"}</strong></li>`).join("");
+  $("#severity-legend").innerHTML = segments.map((segment) => `<li><i style="background:${severityColors[segment.key]}"></i><span>${severityLabels[segment.key]}</span><strong>${total ? asWholeShare(segment.share) : "—"}</strong></li>`).join("");
 
-  renderChartMeta("#event-chart-meta", filtered, "Частка кожного типу серед відфільтрованих зареєстрованих подій. Не є індивідуальним ризиком.");
-  renderChartMeta("#severity-chart-meta", filtered, "Умовний розподіл наслідків серед відфільтрованих зареєстрованих подій. Не є ймовірністю для працівника.");
+  renderChartMeta("#event-chart-meta", filtered, "Частка типів подій серед опублікованих записів про постраждалих. Один інцидент може мати кілька таких записів. Не є індивідуальним ризиком.");
+  renderChartMeta("#severity-chart-meta", filtered, "Умовний розподіл наслідків серед опублікованих записів про постраждалих. Не є ймовірністю для працівника.");
 }
 
 function renderChartMeta(selector, filtered, definition) {
@@ -201,11 +219,12 @@ function renderChartMeta(selector, filtered, definition) {
   const period = years.length ? `${Math.min(...years)}–${Math.max(...years)}` : `${datasetMeta?.reportingPeriod?.from ?? "—"}–${datasetMeta?.reportingPeriod?.to ?? "—"}`;
   const source = datasetMeta?.source?.publisher ?? "Невідоме джерело";
   const version = datasetMeta?.datasetVersion ?? "—";
-  const dataKind = datasetMeta?.releaseMode === "synthetic" ? "Синтетичні DEMO-дані" : "Офіційні агреговані дані";
+  const dataKind = datasetMeta?.releaseMode === "aggregate" ? "Офіційні агреговані дані" : "Синтетичні DEMO-дані";
+  const sampleSize = filtered.reduce((sum, item) => sum + item.count, 0);
   const filters = `Роль: ${role === "all" ? "усі" : roleLabels[role]}; судно: ${vessel === "all" ? "усі" : vesselLabels[vessel]}`;
   $(selector).innerHTML = `
     <div><dt>Джерело · версія</dt><dd>${source} · ${version}</dd></div>
-    <div><dt>Період · вибірка</dt><dd>${period} · n = ${filtered.length.toLocaleString("uk-UA")}</dd></div>
+    <div><dt>Період · опубліковано</dt><dd>${period} · n = ${sampleSize.toLocaleString("uk-UA")}</dd></div>
     <div class="meta-wide"><dt>Активні фільтри</dt><dd>${filters}</dd></div>
     <div class="meta-wide"><dt>Тип даних</dt><dd class="data-kind">${dataKind}</dd></div>
     <div class="meta-wide"><dt>Що означає показник</dt><dd class="definition">${definition}</dd></div>`;
@@ -214,13 +233,14 @@ function renderChartMeta(selector, filtered, definition) {
 async function loadIncidents() {
   try {
     const [response, manifestResponse] = await Promise.all([
-      fetch("data/incidents.sample.json"),
+      fetch("data/incidents.maib.aggregate.json"),
       fetch("data/release-manifest.json")
     ]);
     if (!response.ok || !manifestResponse.ok) throw new Error(`HTTP ${response.status}/${manifestResponse.status}`);
-    incidents = await response.json();
+    const aggregate = await response.json();
+    incidents = aggregate.cells;
     const manifest = await manifestResponse.json();
-    datasetMeta = manifest.datasets.find((dataset) => dataset.file === "incidents.sample.json");
+    datasetMeta = manifest.datasets.find((dataset) => dataset.file === "incidents.maib.aggregate.json");
     if (!datasetMeta) throw new Error("Немає метаданих набору");
     fillOptions("#stats-role", incidents.map((item) => item.role), roleLabels);
     fillOptions("#stats-vessel", incidents.map((item) => item.vessel), vesselLabels);
@@ -228,7 +248,7 @@ async function loadIncidents() {
     $("#stats-vessel").addEventListener("change", renderIncidents);
     renderIncidents();
   } catch (error) {
-    $("#event-bars").innerHTML = `<p>Не вдалося завантажити демонстраційні дані: ${error.message}</p>`;
+    $("#event-bars").innerHTML = `<p>Не вдалося завантажити агреговані дані: ${error.message}</p>`;
   }
 }
 

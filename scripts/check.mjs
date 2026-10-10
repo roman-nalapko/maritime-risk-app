@@ -5,10 +5,11 @@ import path from "node:path";
 import { calculateRisk, categoryFor } from "../src/model.js";
 import { approvedValue, COEFFICIENTS, REGISTRY_ID, REQUIRED_METADATA, validateRegistry } from "../src/coefficients.js";
 import { normalizeTables, parseDelimited, stableJson, validateNormalized } from "./import-maib.mjs";
+import { aggregateMaib } from "./aggregate-maib.mjs";
 import { runReleaseChecks, validateReleaseDataset } from "./release-checks.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const required = ["src/index.html", "src/styles.css", "src/app.js", "src/model.js", "src/coefficients.js", "src/manifest.webmanifest", "src/data/incidents.sample.json", "AGENTS.md"];
+const required = ["src/index.html", "src/styles.css", "src/app.js", "src/model.js", "src/coefficients.js", "src/manifest.webmanifest", "src/data/incidents.maib.aggregate.json", "AGENTS.md"];
 await Promise.all(required.map((file) => access(path.join(root, file))));
 
 const baseline = calculateRisk({ age: 35, sex: "male", residence: "city", role: "officer", hours: 2024, night: 25, ppe: true });
@@ -53,9 +54,12 @@ for (const fixture of calculationFixtures.cases) {
   assert.equal(result.category.key, fixture.expected.category, `${fixture.id} category changed`);
 }
 
-const incidents = JSON.parse(await readFile(path.join(root, "src/data/incidents.sample.json"), "utf8"));
-assert.ok(incidents.length >= 20, "sample data should support meaningful UI filtering");
-assert.ok(incidents.every((item) => item.id.startsWith("DEMO-")), "synthetic records must be unmistakably labelled");
+const incidents = JSON.parse(await readFile(path.join(root, "src/data/incidents.maib.aggregate.json"), "utf8"));
+assert.equal(incidents.unit, "affected_person_record", "public MAIB data must name its analysis unit");
+assert.equal(incidents.suppression.minimumCellCount, 5, "public MAIB data must suppress small cells");
+assert.ok(incidents.cells.length >= 100, "official aggregates should support meaningful UI filtering");
+assert.ok(incidents.cells.every((item) => item.count >= 5), "no sparse MAIB cell may enter the public bundle");
+assert.equal(incidents.cells.reduce((sum, item) => sum + item.count, 0), incidents.totals.publishedRecords, "published MAIB total must reconcile");
 
 const educationalAudit = JSON.parse(await readFile(path.join(root, "data/research/educational-source-audit.json"), "utf8"));
 assert.equal(educationalAudit.eligibleForModel, false, "unverified educational data must stay quarantined");
@@ -70,6 +74,13 @@ assert.ok(denominatorReview.sources.every((source) => source.compatibleWithPerso
 assert.equal(denominatorReview.uncertainty.rateInterval, "exact_poisson_garwood_95");
 assert.equal(denominatorReview.uncertainty.shareInterval, "wilson_score_95");
 assert.equal(denominatorReview.suppression.eventsUnder5, "suppress_public_point_rate");
+
+const officialSources = JSON.parse(await readFile(path.join(root, "data/research/official-source-inventory.v1.json"), "utf8"));
+assert.equal(officialSources.version, "1.0.0");
+assert.ok(officialSources.sources.some((source) => source.id.startsWith("maib-") && source.localStatus.includes("published")), "source inventory must record the published MAIB aggregate");
+assert.ok(officialSources.sources.some((source) => source.id.startsWith("emsa-") && source.localStatus.includes("downloaded")), "source inventory must record the downloaded EMSA report");
+assert.ok(officialSources.sources.some((source) => source.id.startsWith("ukraine-") && source.localStatus.includes("downloaded")), "source inventory must record downloaded Ukrainian reports");
+assert.ok(officialSources.sources.some((source) => source.id.startsWith("imo-") && source.access.includes("authenticated")), "source inventory must retain GISIS access restrictions");
 
 const taxonomy = JSON.parse(await readFile(path.join(root, "data/taxonomy/maritime-taxonomy.v1.json"), "utf8"));
 assert.equal(taxonomy.version, "1.0.0");
@@ -115,27 +126,38 @@ assert.equal(normalizedFixture.vessels[0].operationGroup, "unknown");
 assert.equal(stableJson(normalizedFixture), stableJson(normalizedFixture), "normalized serialization must be deterministic");
 assert.throws(() => normalizeTables({ occurrences: occurrenceFixture, vessels: vesselFixture, affectedPersons: [{ ...personFixture[0], Vessel_Profile_Id: "missing" }] }, maibMapping), /Orphan affected person/);
 
+const aggregateFixture = aggregateMaib({
+  occurrences: [{ ...normalizedFixture.occurrences[0], occurredMonth: "2025-01-01" }],
+  vessels: normalizedFixture.vessels,
+  affectedPersons: Array.from({ length: 5 }, (_, index) => ({ ...normalizedFixture.affectedPersons[0], sourceAffectedPersonId: `P-${index}` }))
+});
+assert.equal(aggregateFixture.cells.length, 1);
+assert.deepEqual(aggregateFixture.cells[0], { role: "deck", vessel: "cargo_dry", eventType: "collision", severity: "injury", year: 2025, count: 5 });
+assert.equal(aggregateFixture.totals.suppressedRecords, 0);
+assert.throws(() => aggregateMaib({ occurrences: [], vessels: [], affectedPersons: [] }, { minimumCellCount: 4 }), /at least 5/);
+
 const publicRelease = await runReleaseChecks(path.join(root, "src/data"));
 assert.equal(publicRelease.datasetsChecked, 1);
 const releaseEntry = {
   id: "test", datasetVersion: "1.0.0", file: "test.json", releaseMode: "aggregate", reportingPeriod: { from: 2024, to: 2025 },
   source: { publisher: "test", url: "https://example.invalid", retrievedOn: "2026-10-09" },
-  license: { id: "test", status: "approved", attribution: "test" },
+  license: { id: "test", url: "https://example.invalid/license", status: "approved", attribution: "test" },
   privacy: { status: "reviewed", directIdentifiersRemoved: true, containsRealPeople: false },
   quality: { status: "approved", minimumCellCount: 5 }
 };
-assert.equal(validateReleaseDataset(releaseEntry, { cells: [{ count: 5 }] }), true);
-assert.throws(() => validateReleaseDataset({ ...releaseEntry, license: { ...releaseEntry.license, status: "unknown" } }, { cells: [{ count: 5 }] }), /licence is not approved/);
-assert.throws(() => validateReleaseDataset(releaseEntry, { cells: [{ count: 4 }] }), /below its minimum aggregation size/);
+const releaseData = { unit: "test_record", measure: "count", cells: [{ count: 5 }], totals: { publishedRecords: 5 }, suppression: { minimumCellCount: 5 } };
+assert.equal(validateReleaseDataset(releaseEntry, releaseData), true);
+assert.throws(() => validateReleaseDataset({ ...releaseEntry, license: { ...releaseEntry.license, status: "unknown" } }, releaseData), /licence is not approved/);
+assert.throws(() => validateReleaseDataset(releaseEntry, { ...releaseData, cells: [{ count: 4 }], totals: { publishedRecords: 4 } }), /below its minimum aggregation size/);
 assert.throws(() => validateReleaseDataset({ ...releaseEntry, releaseMode: "record_level" }, []), /record-level external data is blocked/);
-assert.throws(() => validateReleaseDataset(releaseEntry, { cells: [{ count: 5, latitude: 1 }] }), /latitude is not allowed/);
+assert.throws(() => validateReleaseDataset(releaseEntry, { ...releaseData, cells: [{ count: 5, latitude: 1 }] }), /latitude is not allowed/);
 
 const html = await readFile(path.join(root, "src/index.html"), "utf8");
 const app = await readFile(path.join(root, "src/app.js"), "utf8");
 const css = await readFile(path.join(root, "src/styles.css"), "utf8");
 const serviceWorker = await readFile(path.join(root, "src/sw.js"), "utf8");
 assert.match(html, /дослідницькою оцінкою/i, "visible research disclaimer is required");
-assert.match(html, /Синтетична DEMO-вибірка/i, "demo data label is required");
+assert.match(html, /Офіційні агрегати MAIB/i, "official aggregate data label is required");
 assert.match(html, /Демонстраційний індекс прототипу/i, "prototype output must be labelled as an index");
 assert.match(html, /Реєстр 0\.1\.0/i, "coefficient registry version must be visible");
 assert.match(html, /model-status/, "result must expose model status");
@@ -154,4 +176,5 @@ assert.match(html, /severity-chart-meta/, "severity chart must expose source and
 assert.doesNotMatch(html, /випадок на/i, "prototype must not express an unsupported one-in-N probability");
 assert.match(serviceWorker, /\.\/coefficients\.js/, "offline app shell must include the coefficient registry");
 assert.match(serviceWorker, /\.\/data\/release-manifest\.json/, "offline app shell must include dataset provenance");
+assert.match(serviceWorker, /\.\/data\/incidents\.maib\.aggregate\.json/, "offline app shell must include official MAIB aggregates");
 console.log("All repository checks passed.");

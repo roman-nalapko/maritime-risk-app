@@ -68,9 +68,9 @@ Raw records are not shipped to the browser unless their licence, privacy status,
 | Risk engine | Calculate health, occupation, and lifestyle components | Provisional model |
 | Classification | Map annual estimate to labelled scale | Provisional model |
 | Recommendations | Produce deterministic, controllable actions | Prototype complete |
-| Incident explorer | Filter event types and severity distribution | Synthetic data only |
+| Incident explorer | Filter MAIB affected-person counts and outcome distribution | Official aggregate v1.0 |
 | Coefficient registry | Store values with units, scope, provenance, and review status | Planned |
-| Import pipeline | Normalize official incident sources | Planned |
+| Import pipeline | Normalize official incident sources | MAIB CSV pipeline complete |
 | Statistical layer | Rates, denominators, uncertainty, sparse-data warnings | Planned |
 | Optional AI | Reviewed tagging, retrieval, grounded explanation | Deferred |
 

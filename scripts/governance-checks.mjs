@@ -23,7 +23,7 @@ for (const prohibitedUse of ["найму", "звільнення", "розпод
   assert.ok(html.includes(prohibitedUse), `visible boundary must name prohibited use: ${prohibitedUse}`);
 }
 assert.doesNotMatch(app, /localStorage|sessionStorage|indexedDB|sendBeacon|XMLHttpRequest/, "runtime must not retain or transmit questionnaire data");
-assert.deepEqual([...app.matchAll(/fetch\("([^"]+)"\)/g)].map((match) => match[1]).sort(), ["data/incidents.sample.json", "data/release-manifest.json"], "runtime fetches must remain limited to bundled public data");
+assert.deepEqual([...app.matchAll(/fetch\("([^"]+)"\)/g)].map((match) => match[1]).sort(), ["data/incidents.maib.aggregate.json", "data/release-manifest.json"], "runtime fetches must remain limited to bundled public data");
 
 for (const heading of ["Data-flow and retention assessment", "Allowed uses", "Prohibited uses", "Legal-review triggers"]) {
   assert.ok(privacyReview.includes(heading), `privacy review lacks ${heading}`);
