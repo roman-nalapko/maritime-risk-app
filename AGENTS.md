@@ -74,3 +74,12 @@ For UI changes, also inspect the local preview at mobile and desktop sizes. Veri
 5. Preserve a migration note when changing stored questionnaire fields.
 6. If a source conflicts with the existing model, do not guess: mark the coefficient as disputed and keep it out of production calculations until reviewed.
 7. Link implementation commits or pull requests to the issue and verify its acceptance criteria before closing it.
+
+## Release verification and autotest mandate
+
+- Every backlog capability implemented must be accompanied by comprehensive automated tests in `scripts/feature-checks.mjs` verifying edge cases and domain boundaries.
+- Zero external runtime dependencies: all mathematical models, biodynamic fatigue calculators, inspection readiness scorers, and exports must remain 100% pure client-side in-memory JavaScript.
+- Maintain Zero-Data Retention: zero storage of personal questionnaire data (`localStorage`, `sessionStorage`, `indexedDB`, telemetry, remote APIs).
+- Maintain accessibility: exactly 5 `role="switch"` controls in the questionnaire, WCAG AA contrast, keyboard navigation.
+- All 6 test suites (`npm test`) and build (`npm run build`) must pass cleanly with exit code 0 before issuing release output.
+

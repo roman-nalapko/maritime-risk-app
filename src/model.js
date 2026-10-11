@@ -626,3 +626,363 @@ export function calculateSensitivity(input) {
   })).sort((a, b) => b.marginalDelta - a.marginalDelta);
 }
 
+/**
+ * Epic 1: Circadian Fatigue & Sleep Debt Biodynamics (SAFTE / FAST framework)
+ */
+export function calculateCircadianFatigue(input) {
+  const watchSystem = input.watchSystem || "4on8off";
+  const nightPercent = Number(input.night) || 25;
+  const annualHours = Number(input.hours) || 2024;
+  const weeklyHours = annualHours / 52;
+
+  let sleepDebtHours = 0;
+  if (weeklyHours > 60) {
+    sleepDebtHours = Math.min(28, (weeklyHours - 60) * 0.45);
+  }
+  if (watchSystem === "6on6off") {
+    sleepDebtHours += 4.5;
+  }
+
+  const curve24h = [];
+  for (let hour = 0; hour < 24; hour++) {
+    let isWatchTime = false;
+    if (watchSystem === "4on8off") {
+      isWatchTime = (hour >= 0 && hour < 4) || (hour >= 12 && hour < 16);
+    } else if (watchSystem === "6on6off") {
+      isWatchTime = (hour >= 0 && hour < 6) || (hour >= 12 && hour < 18);
+    } else {
+      isWatchTime = hour >= 8 && hour < 17;
+    }
+
+    const radians1 = (2 * Math.PI * (hour - 8)) / 24;
+    const radians2 = (4 * Math.PI * (hour - 2)) / 24;
+    let alertness = 78 + 14 * Math.sin(radians1) - 8 * Math.cos(radians2);
+
+    if (hour >= 1 && hour <= 5) {
+      if (nightPercent > 0 || isWatchTime) {
+        alertness -= (nightPercent >= 40 ? 18 : 12);
+      }
+    }
+    if (watchSystem === "6on6off") {
+      alertness -= 6;
+    }
+    alertness -= Math.min(15, sleepDebtHours * 1.2);
+    alertness = Math.max(20, Math.min(100, Math.round(alertness)));
+
+    curve24h.push({ hour, alertness, isWatchTime });
+  }
+
+  const watchPoints = curve24h.filter((p) => p.isWatchTime);
+  const minWatchAlertness = watchPoints.length > 0
+    ? Math.min(...watchPoints.map((p) => p.alertness))
+    : (curve24h.find((p) => p.hour === 14)?.alertness ?? 75);
+
+  let kssScore = 3;
+  if (minWatchAlertness < 40) kssScore = 9;
+  else if (minWatchAlertness < 50) kssScore = 8;
+  else if (minWatchAlertness < 60) kssScore = 7;
+  else if (minWatchAlertness < 70) kssScore = 5;
+  else if (minWatchAlertness < 80) kssScore = 4;
+  else kssScore = 2;
+
+  const kssLabels = {
+    1: "Надзвичайно бадьорий",
+    2: "Дуже бадьорий",
+    3: "Бадьорий",
+    4: "Досить бадьорий",
+    5: "Ні бадьорий, ні сонливий",
+    6: "Деякі ознаки сонливості",
+    7: "Сонливий, зусилля не потрібні",
+    8: "Сонливий, боротьба зі сном",
+    9: "Надзвичайно сонливий (ризик засинання)"
+  };
+
+  const recommendations = [];
+  if (kssScore >= 7) {
+    recommendations.push("Критичний ризик засинання на містку між 02:00 та 05:00: обов'язкове використання BNWAS та подвійний впередглядач.");
+  }
+  if (watchSystem === "6on6off") {
+    recommendations.push("Графік 6/6 порушує фізіологічний цикл повільного сну (SWS): рекомендовано перехід на 3-вахтову систему 4/8.");
+  }
+  if (sleepDebtHours >= 8) {
+    recommendations.push(`Кумулятивний дефіцит сну становить ${sleepDebtHours.toFixed(1)} год/тиждень: необхідний 10-годинний компенсаційний відпочинок.`);
+  }
+
+  return {
+    curve24h,
+    kssScore,
+    kssLabel: kssLabels[kssScore] || "Помірна уважність",
+    sleepDebtHours: Math.round(sleepDebtHours * 10) / 10,
+    peakVulnerabilityTime: "03:00 – 05:00 (циркадний спад)",
+    recommendations
+  };
+}
+
+/**
+ * Epic 2: Hydrometeorological & Operational Hazards
+ */
+export function calculateOperationalWeatherRisk(input, options = {}) {
+  const beaufort = Math.max(0, Math.min(12, Number(options.beaufort ?? 3)));
+  const polarZone = Boolean(options.polarZone);
+  const engineHeat = Boolean(options.engineHeat);
+  const vesselType = input.vesselType || "container";
+  const role = input.role || "deck";
+
+  const vesselMotionMultipliers = {
+    tug: 1.45,
+    cargo: 1.1,
+    cargo_dry: 1.1,
+    bulker: 1.05,
+    container: 1.0,
+    tanker: 0.9,
+    passenger: 0.8
+  };
+  const vMulti = vesselMotionMultipliers[vesselType] || 1.0;
+  const msiPercent = Math.min(95, Math.round(Math.pow(beaufort / 12, 1.6) * 100 * vMulti));
+
+  let slipMultiplier = 1.0;
+  if (beaufort >= 8) slipMultiplier = 4.2;
+  else if (beaufort >= 6) slipMultiplier = 2.6;
+  else if (beaufort >= 4) slipMultiplier = 1.5;
+
+  const warnings = [];
+  if (beaufort >= 7) {
+    warnings.push({
+      severity: "danger",
+      title: "Штормове попередження (Шкала Бофорта ≥ 7)",
+      advice: "Вихід на відкриту головну палубу заборонено без особистого дозволу капітана та страхувальних леєрів."
+    });
+  }
+  if (polarZone) {
+    warnings.push({
+      severity: "warning",
+      title: "IMO Polar Code · Ризик обледеніння",
+      advice: "Контроль наростання льоду на такелажі та люкових закриттях. Зниження метацентричної висоти (GM)."
+    });
+  }
+  if (engineHeat && role === "engine") {
+    warnings.push({
+      severity: "warning",
+      title: "Тепловий стрес у машинному відділенні (WBGT > 32°C)",
+      advice: "Вимога обов'язкової гідратації (1 л води на годину) та режим ротації робіт 30 хв роботи / 30 хв охолодження."
+    });
+  }
+
+  const beaufortLabels = [
+    "Штиль (0 балів)", "Тихий (1 бал)", "Легкий (2 бали)", "Слабкий (3 бали)",
+    "Помірний (4 бали)", "Свіжий (5 балів)", "Сильний (6 балів)", "Міцний (7 балів)",
+    "Дуже міцний (8 балів)", "Шторм (9 балів)", "Сильний шторм (10 балів)",
+    "Жорстокий шторм (11 балів)", "Ураган (12 балів)"
+  ];
+
+  return {
+    beaufort,
+    seaStateLabel: beaufortLabels[beaufort] || `${beaufort} балів`,
+    msiPercent,
+    slipMultiplier,
+    polarZone,
+    engineHeat,
+    warnings
+  };
+}
+
+/**
+ * Epic 3: Port State Control (PSC) & SIRE 2.0 Inspection Readiness
+ */
+export function evaluatePscSireReadiness(input) {
+  const hoursNum = Number(input.hours) || 2024;
+  const nightNum = Number(input.night) || 25;
+  const deficiencies = [];
+  let score = 100;
+
+  if (hoursNum > 2600) {
+    score -= 30;
+    deficiencies.push({
+      code: "01220",
+      convention: "MLC 2006 Standard A2.3",
+      description: "Надмірне річне навантаження (> 2 600 год). Ризик припису або затримання судна через систематичне перепрацювання екіпажу.",
+      severity: "detainable"
+    });
+  } else if (hoursNum > 2300) {
+    score -= 15;
+    deficiencies.push({
+      code: "01220",
+      convention: "MLC 2006 Regulation 2.3",
+      description: "Зафіксовано періодичне перевищення середнього тижневого ліміту робочих годин (Code 17).",
+      severity: "warning"
+    });
+  }
+
+  if (input.watchSystem === "6on6off") {
+    score -= 20;
+    deficiencies.push({
+      code: "01224",
+      convention: "STCW A-VIII/1 & MLC A2.3",
+      description: "2-вахтова система (6/6) підпадає під посилений контроль інспекторів PSC щодо дотримання 77 годин відпочинку на 7 днів.",
+      severity: "warning"
+    });
+  }
+
+  if (!input.ppe) {
+    score -= 25;
+    deficiencies.push({
+      code: "07109",
+      convention: "MLC 2006 Regulation 4.3 (HSE) & SOLAS",
+      description: "Відсутність або неналежне застосування сертифікованих ЗІЗ на робочих місцях (Code 30).",
+      severity: "detainable"
+    });
+  }
+
+  if (input.vesselType === "tanker" && (hoursNum > 2400 || nightNum > 40)) {
+    score -= 15;
+    deficiencies.push({
+      code: "SIRE-HF-04",
+      convention: "OCIMF SIRE 2.0 Human Factors Framework",
+      description: "Високий рівень втоми знижує ситуаційну обізнаність під час швартування та вантажних операцій із небезпечними вантажами.",
+      severity: "observation"
+    });
+  }
+
+  score = Math.max(10, Math.min(100, score));
+
+  const correctiveActions = [];
+  if (score < 70) {
+    correctiveActions.push("Провести позачерговий судновий комітет з безпеки (Safety Committee Meeting) щодо перегляду графіка вахт.");
+    correctiveActions.push("Звірити судновий журнал обліку годин праці та відпочинку (Form MLC-WorkRest) перед заходом у порт інспекції.");
+  }
+  if (!input.ppe) {
+    correctiveActions.push("Негайне поповнення суднового запасу ЗІЗ та перевірка сертифікатів EN/ISO на захисне взуття та каски.");
+  }
+
+  return {
+    readinessScore: score,
+    statusLabel: score >= 85 ? "Висока готовність до інспекції" : (score >= 65 ? "Умовна готовність (є зауваження)" : "Високий ризик затримання судна (Detention)"),
+    deficiencies,
+    correctiveActions
+  };
+}
+
+/**
+ * Epic 4: Emergency Drills Simulator
+ */
+export function simulateEmergencyDrillFatigue(input, drillType = "fire") {
+  const hoursNum = Number(input.hours) || 2024;
+  const is6on6 = input.watchSystem === "6on6off";
+  const nightNum = Number(input.night) || 25;
+
+  let baseDelay = 1.2;
+  let errorRate = 4;
+
+  if (hoursNum > 2700) {
+    baseDelay += 2.4;
+    errorRate += 18;
+  }
+  if (is6on6) {
+    baseDelay += 1.8;
+    errorRate += 12;
+  }
+  if (nightNum > 40) {
+    baseDelay += 1.5;
+    errorRate += 10;
+  }
+
+  const drillTitles = {
+    fire: "Пожежна тривога (Fire Drill · SOLAS III/19)",
+    abandon_ship: "Шлюпкова тривога (Abandon Ship Drill)",
+    enclosed_space: "Рятування з замкненого простору (Enclosed Space Rescue)",
+    oil_spill: "Аварійний розлив нафти (SOPEP / Oil Spill Response)"
+  };
+
+  let readiness = "optimal";
+  if (errorRate > 25 || baseDelay > 4.5) readiness = "critical";
+  else if (errorRate > 12 || baseDelay > 2.5) readiness = "degraded";
+
+  return {
+    drillType,
+    title: drillTitles[drillType] || drillType,
+    reactionDelaySeconds: Math.round(baseDelay * 10) / 10,
+    errorRatePercent: Math.min(65, Math.round(errorRate)),
+    readiness,
+    recommendation: readiness === "critical"
+      ? "Критичне сповільнення реакції екіпажу: обов'язкове проведення передтривожного брифінгу та контроль напарників."
+      : "Штатна готовність до виконання аварійних обов'язків за судновим розкладом тривог (Muster List)."
+  };
+}
+
+/**
+ * Epic 5: Academic Research Toolkit & LaTeX/CSV Export
+ */
+export function generateAcademicArtifacts(result, input) {
+  const totalDisplay = (result.total * 100).toFixed(3);
+  const healthDisplay = ((result.components.health || 0) * 100).toFixed(3);
+  const occDisplay = ((result.components.occupation || 0) * 100).toFixed(3);
+  const lifeDisplay = ((result.components.lifestyle || 0) * 100).toFixed(3);
+
+  const latexTable = `% --- LaTeX Table Generated by SeaRisk UA Academic Toolkit ---
+\\begin{table}[htbp]
+\\centering
+\\caption{Результати оцінки індексу безпеки праці моряка (Модель ${result.modelId})}
+\\label{tab:searisk_profile_${input.role}}
+\\begin{tabular}{llr}
+\\hline
+\\textbf{Компонент оцінки} & \\textbf{Фактор} & \\textbf{Значення (\\%)} \\\\
+\\hline
+Вік та базове здоров'я    & $R_{health}$     & ${healthDisplay}\\% \\\\
+Професійна експозиція     & $R_{occupation}$ & ${occDisplay}\\% \\\\
+Спосіб життя              & $R_{lifestyle}$  & ${lifeDisplay}\\% \\\\
+\\hline
+\\textbf{Підсумковий індекс ризику} & $\\mathbf{R_{total}}$ & $\\mathbf{${totalDisplay}\\%}$ \\\\
+\\textbf{Категорія за шкалою}       & ${result.category.key} & ${result.category.label} \\\\
+\\hline
+\\end{tabular}
+\\end{table}`;
+
+  const bibtexCitations = `@misc{imo_fsa_2007,
+  author = {{International Maritime Organization}},
+  title = {Revised Guidelines for Formal Safety Assessment (FSA) for use in the IMO rule-making process},
+  howpublished = {IMO Document MSC-MEPC.2/Circ.12},
+  year = {2007}
+}
+
+@misc{mlc_2006,
+  author = {{International Labour Organization}},
+  title = {Maritime Labour Convention, 2006 (MLC 2006)},
+  year = {2006}
+}
+
+@misc{imo_fatigue_2019,
+  author = {{International Maritime Organization}},
+  title = {Guidelines on Fatigue Mitigation and Management},
+  howpublished = {IMO Document MSC/Circ.1598},
+  year = {2019}
+}`;
+
+  const csvHeader = "role,hours,night,watch_system,vessel_type,ppe,chronic,r_total,category,registry_id";
+  const csvRow = `${input.role},${input.hours},${input.night},${input.watchSystem || "4on8off"},${input.vesselType || "container"},${Boolean(input.ppe)},${Boolean(input.chronic)},${result.total},${result.category.key},${result.registryId}`;
+
+  return {
+    latexTable,
+    bibtexCitations,
+    csvHeader,
+    csvRow
+  };
+}
+
+/**
+ * Epic 5 Dual Profile Comparison
+ */
+export function compareProfiles(profileA, profileB) {
+  const resA = calculateRisk(profileA);
+  const resB = calculateRisk(profileB);
+  const deltaTotal = resB.total - resA.total;
+  const deltaPercent = resA.total > 0 ? ((deltaTotal / resA.total) * 100) : 0;
+
+  return {
+    profileA: { role: profileA.role, total: resA.total, category: resA.category.label },
+    profileB: { role: profileB.role, total: resB.total, category: resB.category.label },
+    deltaTotal,
+    deltaPercent: Math.round(deltaPercent * 10) / 10,
+    higherRisk: deltaTotal > 0 ? "Профіль Б" : (deltaTotal < 0 ? "Профіль А" : "Однаковий")
+  };
+}
+

@@ -1,5 +1,19 @@
 import assert from "node:assert/strict";
-import { calculateRisk, evaluateMlcCompliance, generateWhatIfScenarios, generateChecklist, retrieveSimilarIncidents, evaluateFsaMatrix, calculateSensitivity } from "../src/model.js";
+import {
+  calculateRisk,
+  evaluateMlcCompliance,
+  generateWhatIfScenarios,
+  generateChecklist,
+  retrieveSimilarIncidents,
+  evaluateFsaMatrix,
+  calculateSensitivity,
+  calculateCircadianFatigue,
+  calculateOperationalWeatherRisk,
+  evaluatePscSireReadiness,
+  simulateEmergencyDrillFatigue,
+  generateAcademicArtifacts,
+  compareProfiles
+} from "../src/model.js";
 
 console.log("Running platform feature checks...");
 
@@ -111,6 +125,75 @@ assert.ok(Array.isArray(sensList) && sensList.length >= 3, "Sensitivity list mus
 assert.ok(sensList[0].weightPercent >= sensList[sensList.length - 1].weightPercent, "Factors must be sorted by marginal weight descending");
 assert.ok(sensList.some((f) => f.id === "ppe"), "Must evaluate PPE sensitivity");
 assert.ok(sensList.some((f) => f.id === "hours"), "Must evaluate working hours sensitivity");
+
+// 9. Test Epic 1: Circadian Fatigue & Sleep Debt Biodynamics (SAFTE / FAST framework)
+const wellRested = calculateCircadianFatigue({ watchSystem: "day_only", night: 0, hours: 1800 });
+assert.equal(wellRested.curve24h.length, 24, "Circadian curve must have 24 hourly data points");
+assert.equal(wellRested.sleepDebtHours, 0, "Day worker with normal hours has 0 sleep debt");
+assert.ok(wellRested.kssScore <= 4, "Rested worker must have low KSS score (1..4)");
+
+const exhaustedNightWorker = calculateCircadianFatigue({ watchSystem: "6on6off", night: 60, hours: 3200 });
+assert.ok(exhaustedNightWorker.sleepDebtHours > 5, "Exhausted 6/6 worker must accumulate significant sleep debt");
+assert.ok(exhaustedNightWorker.kssScore >= 7, "Exhausted worker must reach high KSS score (>= 7)");
+assert.ok(exhaustedNightWorker.recommendations.length >= 2, "High fatigue profile must generate actionable safety recommendations");
+// Verify circadian nadir at 03:00 has lower alertness than 14:00
+const p03 = exhaustedNightWorker.curve24h.find((p) => p.hour === 3);
+const p14 = exhaustedNightWorker.curve24h.find((p) => p.hour === 14);
+assert.ok(p03.alertness < p14.alertness, "Alertness at circadian nadir (03:00) must be strictly lower than midday (14:00)");
+
+// 10. Test Epic 2: Hydrometeorological & Operational Hazards
+const calmWeather = calculateOperationalWeatherRisk({ vesselType: "container", role: "deck" }, { beaufort: 1, polarZone: false, engineHeat: false });
+assert.equal(calmWeather.beaufort, 1, "Beaufort scale preserved");
+assert.ok(calmWeather.msiPercent < 10, "Calm sea has negligible Motion Sickness Incidence");
+assert.equal(calmWeather.slipMultiplier, 1.0, "Calm sea has base slip multiplier 1.0");
+assert.equal(calmWeather.warnings.length, 0, "No warnings for calm weather");
+
+const galeWeather = calculateOperationalWeatherRisk({ vesselType: "tug", role: "engine" }, { beaufort: 9, polarZone: true, engineHeat: true });
+assert.ok(galeWeather.msiPercent > 50, "Gale force on tug must produce high MSI (> 50%)");
+assert.ok(galeWeather.slipMultiplier >= 4.0, "Storm force must significantly multiply slip hazard");
+assert.ok(galeWeather.warnings.some((w) => w.title.includes("Шкала Бофорта")), "Must trigger storm warning");
+assert.ok(galeWeather.warnings.some((w) => w.title.includes("Polar Code")), "Must trigger polar icing warning");
+assert.ok(galeWeather.warnings.some((w) => w.title.includes("Тепловий стрес")), "Must trigger engine room heat stress warning");
+
+// 11. Test Epic 3: Port State Control (PSC) & SIRE 2.0 Inspection Readiness
+const compliantWorkerPsc = evaluatePscSireReadiness({ hours: 2000, night: 15, ppe: true, watchSystem: "4on8off", vesselType: "container" });
+assert.equal(compliantWorkerPsc.readinessScore, 100, "Fully compliant profile must have 100 PSC score");
+assert.equal(compliantWorkerPsc.deficiencies.length, 0, "Fully compliant profile has 0 deficiencies");
+
+const nonCompliantPsc = evaluatePscSireReadiness({ hours: 2900, night: 50, ppe: false, watchSystem: "6on6off", vesselType: "tanker" });
+assert.ok(nonCompliantPsc.readinessScore <= 50, "Major non-compliance must drop PSC score below 50");
+assert.ok(nonCompliantPsc.deficiencies.some((d) => d.code === "01220"), "Must flag MLC 2006 rest hours deficiency 01220");
+assert.ok(nonCompliantPsc.deficiencies.some((d) => d.code === "07109"), "Must flag PPE deficiency 07109");
+assert.ok(nonCompliantPsc.deficiencies.some((d) => d.code.startsWith("SIRE-HF")), "Must flag SIRE 2.0 Human Factors observation on tanker");
+assert.ok(nonCompliantPsc.correctiveActions.length >= 2, "Must generate Corrective Action Plan (CAP) items");
+
+// 12. Test Epic 4: Emergency Drills Fatigue Simulation
+const drillFresh = simulateEmergencyDrillFatigue({ hours: 1900, watchSystem: "4on8off", night: 10 }, "fire");
+assert.equal(drillFresh.readiness, "optimal", "Fresh worker has optimal drill readiness");
+assert.ok(drillFresh.reactionDelaySeconds <= 1.5, "Fresh worker has minimal reaction delay");
+
+const drillFatigued = simulateEmergencyDrillFatigue({ hours: 3000, watchSystem: "6on6off", night: 55 }, "abandon_ship");
+assert.ok(drillFatigued.reactionDelaySeconds > 4.0, "Fatigued worker suffers significant reaction delay (> 4s)");
+assert.ok(drillFatigued.errorRatePercent > 25, "Fatigued worker has high error rate (> 25%)");
+assert.equal(drillFatigued.readiness, "critical", "Heavy fatigue must trigger critical drill readiness state");
+
+// 13. Test Epic 5: Academic Research Toolkit & LaTeX/CSV Export
+const academicArtifacts = generateAcademicArtifacts(calculateRisk(baseProfile), baseProfile);
+assert.ok(academicArtifacts.latexTable.includes("\\begin{table}"), "Must generate valid LaTeX table environment");
+assert.ok(academicArtifacts.latexTable.includes("R_{total}"), "LaTeX table must include math notation for R_{total}");
+assert.ok(academicArtifacts.bibtexCitations.includes("@misc{imo_fsa_2007"), "Must include IMO FSA BibTeX entry");
+assert.ok(academicArtifacts.bibtexCitations.includes("@misc{mlc_2006"), "Must include MLC BibTeX entry");
+assert.ok(academicArtifacts.csvHeader.includes("role,hours"), "Must produce valid CSV header");
+assert.ok(academicArtifacts.csvRow.includes("deck,2000"), "Must produce valid comma-separated CSV row values");
+
+// 14. Test Epic 5: Dual Profile Comparison
+const comp = compareProfiles(
+  { role: "deck", hours: 2000, night: 15, ppe: true, age: 30 },
+  { role: "deck", hours: 2800, night: 45, ppe: false, age: 30 }
+);
+assert.equal(comp.higherRisk, "Профіль Б", "Fatigued profile without PPE must be higher risk");
+assert.ok(comp.deltaTotal > 0, "Delta total risk must be positive");
+assert.ok(comp.deltaPercent > 0, "Delta percent must be positive");
 
 console.log("All platform feature checks passed.");
 

@@ -41,6 +41,7 @@
           <button type="button" class="bridge-mode-btn" data-bridge-mode="red" title="Червоне підсвічування містка (Preserve Night Vision)">🔴 Red</button>
           <button type="button" class="bridge-mode-btn" data-bridge-mode="day" title="Денний морський режим (Bright Day)">☀️ День</button>
         </div>
+        <button type="button" class="lang-switch-btn" id="lang-switch-btn" title="Змінити мову інтерфейсу (UA / IMO SMCP EN)">🌐 UA</button>
         <span class="status-pill"><i aria-hidden="true"></i> Дослідницький прототип</span>
       </div>
     </header>
@@ -330,6 +331,72 @@
                 <small class="benchmark-note">Орієнтири базуються на узагальнених даних звітів BIMCO/ICS Seafarer Workforce. Не є персональною нормою.</small>
               </div>
 
+              <div class="circadian-card" id="circadian-card">
+                <div class="circadian-header">
+                  <div>
+                    <span class="circadian-kicker">SAFTE / FAST BIODYNAMICS · IMO MSC/CIRC.1598</span>
+                    <h3>Циркадна уважність і сонливість (KSS)</h3>
+                  </div>
+                  <div class="kss-pill" id="kss-pill">
+                    <span class="kss-number" id="kss-number">KSS 3</span>
+                    <small id="kss-label">Бадьорий</small>
+                  </div>
+                </div>
+                <div class="circadian-meta-row">
+                  <div><span>Дефіцит сну</span><strong id="sleep-debt-stat">0 год/тижд</strong></div>
+                  <div><span>Пік уразливості</span><strong id="nadir-time-stat">03:00 – 05:00</strong></div>
+                  <div><span>Статус небезпеки</span><strong id="fatigue-status-stat">Контрольовано</strong></div>
+                </div>
+                <div class="circadian-chart-wrap" aria-label="24-годинний профіль бадьорості">
+                  <div class="circadian-bars" id="circadian-bars"></div>
+                  <div class="circadian-timeline">
+                    <span>00:00</span><span>04:00</span><span>08:00</span><span>12:00</span><span>16:00</span><span>20:00</span><span>23:00</span>
+                  </div>
+                </div>
+                <ul class="circadian-recs" id="circadian-recs"></ul>
+              </div>
+
+              <div class="weather-hazard-card" id="weather-hazard-card">
+                <div class="weather-header">
+                  <div>
+                    <span class="weather-kicker">ГІДРОМЕТЕОРОЛОГІЧНІ НЕБЕЗПЕКИ · ISO 2631 / POLAR CODE</span>
+                    <h3>Погодні умови та морське середовище</h3>
+                  </div>
+                  <span class="sea-state-badge" id="sea-state-badge">3 бали (Слабкий)</span>
+                </div>
+                <div class="weather-controls">
+                  <label for="beaufort-slider" class="weather-slider-label">Шкала Бофорта (хвилювання моря 0–12):
+                    <div class="slider-row">
+                      <input type="range" id="beaufort-slider" min="0" max="12" value="3" />
+                      <strong id="beaufort-val-display">3 бали</strong>
+                    </div>
+                  </label>
+                  <div class="weather-toggles">
+                    <label class="checkbox-inline">
+                      <input type="checkbox" id="polar-zone-toggle" />
+                      <span>Полярні води (IMO Polar Code · ризик обледеніння)</span>
+                    </label>
+                    <label class="checkbox-inline">
+                      <input type="checkbox" id="engine-heat-toggle" />
+                      <span>Тепловий стрес машинного відділення (WBGT &gt; 32°C)</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="weather-metrics">
+                  <div class="wm-cell">
+                    <span>Хитавиця та заколисування (MSI)</span>
+                    <strong id="msi-display">12%</strong>
+                    <small>ймовірність морської хвороби за 2 год</small>
+                  </div>
+                  <div class="wm-cell">
+                    <span>Коефіцієнт ковзання палуби</span>
+                    <strong id="slip-display">× 1.0</strong>
+                    <small>ризик послизання під час качки</small>
+                  </div>
+                </div>
+                <div class="weather-warnings" id="weather-warnings"></div>
+              </div>
+
               <div class="breakdown">
                 <div class="breakdown-title"><h3>Внесок факторів</h3><button type="button" id="details-toggle" aria-expanded="true">Сховати деталі</button></div>
                 <div id="breakdown-list"></div>
@@ -401,6 +468,58 @@
                 </div>
                 <ul class="checklist-list" id="checklist-list"></ul>
               </div>
+
+              <div class="psc-sire-card" id="psc-sire-card">
+                <div class="psc-header">
+                  <div>
+                    <span class="psc-kicker">PORT STATE CONTROL &amp; OCIMF SIRE 2.0</span>
+                    <h3>Готовність до перевірки інспекцією PSC</h3>
+                  </div>
+                  <div class="psc-score-wrap">
+                    <strong id="psc-score-display">100</strong>
+                    <span class="psc-status" id="psc-status-label">Висока готовність</span>
+                  </div>
+                </div>
+                <div class="psc-deficiencies" id="psc-deficiencies-list"></div>
+                <div class="psc-cap-box" id="psc-cap-box">
+                  <strong>План коригувальних дій (CAP):</strong>
+                  <ul id="psc-cap-list"></ul>
+                </div>
+              </div>
+
+              <div class="emergency-drill-card" id="emergency-drill-card">
+                <div class="drill-header">
+                  <div>
+                    <span class="drill-kicker">SOLAS III/19 · АВАРІЙНІ ТРИВОГИ</span>
+                    <h3>Симуляція реакції на тривогу</h3>
+                  </div>
+                  <label for="drill-type-select" class="sr-only">Тип суднової тривоги</label>
+                  <select id="drill-type-select">
+                    <option value="fire">Пожежна тривога (Fire Drill)</option>
+                    <option value="abandon_ship">Шлюпкова тривога (Abandon Ship)</option>
+                    <option value="enclosed_space">Рятування з замкненого простору</option>
+                    <option value="oil_spill">Аварійний розлив нафти (SOPEP)</option>
+                  </select>
+                </div>
+                <div class="drill-results">
+                  <div class="drill-stat-cell">
+                    <span>Затримка реакції</span>
+                    <strong id="drill-delay-display">+1.2 с</strong>
+                    <small>через фактори втоми</small>
+                  </div>
+                  <div class="drill-stat-cell">
+                    <span>Ймовірність помилки</span>
+                    <strong id="drill-error-display">4%</strong>
+                    <small>критичні збої дій</small>
+                  </div>
+                  <div class="drill-stat-cell">
+                    <span>Рівень готовності</span>
+                    <strong id="drill-readiness-display" class="readiness-optimal">Оптимальний</strong>
+                    <small>за розкладом Muster List</small>
+                  </div>
+                </div>
+                <p class="drill-advice" id="drill-advice-text">—</p>
+              </div>
             </div>
 
             <div class="result-tab-pane" id="pane-method" data-tab-pane="method" role="tabpanel" aria-labelledby="tab-btn-method" hidden>
@@ -419,6 +538,59 @@
                   <strong id="fsa-region-title">—</strong>
                   <p id="fsa-region-action">—</p>
                 </div>
+              </div>
+
+              <div class="academic-export-card" id="academic-export-card">
+                <div class="academic-header">
+                  <div>
+                    <span class="academic-kicker">ACADEMIC RESEARCH TOOLKIT · REPRODUCIBILITY</span>
+                    <h3>Експорт наукових артефактів (LaTeX / BibTeX / CSV)</h3>
+                  </div>
+                  <span class="academic-format-badge">Open Science</span>
+                </div>
+                <p class="academic-lead">
+                  Генеруйте верифіковані матриці даних та готові таблиці для публікацій у наукових журналах (Scopus, WoS) або дипломних робіт.
+                </p>
+                <div class="academic-actions">
+                  <button type="button" class="button button-secondary" id="copy-latex-btn">
+                    📋 Копіювати LaTeX таблицю
+                  </button>
+                  <button type="button" class="button button-secondary" id="copy-bibtex-btn">
+                    📚 Копіювати BibTeX цитування
+                  </button>
+                  <button type="button" class="button button-secondary" id="download-csv-btn">
+                    📊 Завантажити CSV зріз
+                  </button>
+                </div>
+                <div class="academic-preview-box">
+                  <pre id="academic-preview-code"><code>% Натисніть кнопку вище для перегляду згенерованого артефакту</code></pre>
+                </div>
+              </div>
+
+              <div class="profile-compare-card" id="profile-compare-card">
+                <div class="compare-header">
+                  <div>
+                    <span class="compare-kicker">COMPARATIVE RISK ASSESSMENT</span>
+                    <h3>Порівняння вахтових профілів</h3>
+                  </div>
+                  <span class="compare-badge" id="compare-verdict-badge">Δ 0%</span>
+                </div>
+                <div class="compare-grid">
+                  <div class="compare-col" id="compare-col-a">
+                    <h4>Поточний розрахунок</h4>
+                    <p class="compare-val" id="compare-val-a">—</p>
+                    <span class="compare-cat" id="compare-cat-a">—</span>
+                  </div>
+                  <div class="compare-divider">VS</div>
+                  <div class="compare-col" id="compare-col-b">
+                    <h4>Альтернативний графік (3-вахтовий 4/8 + ЗІЗ)</h4>
+                    <p class="compare-val" id="compare-val-b">—</p>
+                    <span class="compare-cat" id="compare-cat-b">—</span>
+                  </div>
+                </div>
+                <p class="compare-note" id="compare-note-text">
+                  Порівняльний аналіз демонструє вплив організаційних покращень без зміни технічних характеристик судна.
+                </p>
               </div>
 
               <dl class="model-context" aria-label="Статус і обмеження моделі">
@@ -603,6 +775,56 @@
                   ⚡ Завантажити в калькулятор
                 </button>
                 <a href="https://www.ntsb.gov/investigations/accidentreports/reports/mar1701.pdf" target="_blank" rel="noreferrer" class="case-link">
+                  Звіт розслідування ↗
+                </a>
+              </div>
+            </article>
+
+            <article class="case-card">
+              <div class="case-badge-row">
+                <span class="case-badge fatal">Екологічна катастрофа</span>
+                <span class="case-id">Звіт NTSB / IMO (1989)</span>
+              </div>
+              <h3 class="case-title">Танкер Exxon Valdez</h3>
+              <p class="case-ship">Супертанкер VLCC (301 м) · Протока Принца Вільгельма</p>
+              <p class="case-summary">
+                Посадка на риф Блай та вилив 41 млн літрів сирої нафти. Розслідування NTSB виявило хронічну перевтому третього помічника на ходовій вахті через безперервний вахтовий графік 6/6 та понад 18 годин без сну, що призвело до повної втрати просторової орієнтації.
+              </p>
+              <div class="case-factors">
+                <span>🛢️ Танкер VLCC</span>
+                <span>🌙 85% нічних вахт</span>
+                <span>⏰ 3 200 год/рік</span>
+              </div>
+              <div class="case-actions">
+                <button type="button" class="button button-primary case-load-btn" data-case="exxon-valdez">
+                  ⚡ Завантажити в калькулятор
+                </button>
+                <a href="https://www.ntsb.gov/investigations/accidentreports/reports/mar9004.pdf" target="_blank" rel="noreferrer" class="case-link">
+                  Звіт розслідування ↗
+                </a>
+              </div>
+            </article>
+
+            <article class="case-card">
+              <div class="case-badge-row">
+                <span class="case-badge fatal">Перекидання судна</span>
+                <span class="case-id">Звіт NMA / MAIB (2007)</span>
+              </div>
+              <h3 class="case-title">AHTS Bourbon Dolphin</h3>
+              <p class="case-ship">Якорезавізний буксир AHTS (75 м) · Північне море / Шетланд</p>
+              <p class="case-summary">
+                Втрата динамічної остійності та перекидання під час заведення якоря бурової установки. Загинуло 8 членів екіпажу. Фактори: надмірне натягнення якірних тросів, робота палубної команди на слизькій палубі без відпочинку та екстремальна кумулятивна втома.
+              </p>
+              <div class="case-factors">
+                <span>⚓ Буксир / AHTS</span>
+                <span>🛑 Відсутність ЗІЗ</span>
+                <span>⚠️ Динамічна остійність</span>
+              </div>
+              <div class="case-actions">
+                <button type="button" class="button button-primary case-load-btn" data-case="bourbon-dolphin">
+                  ⚡ Завантажити в калькулятор
+                </button>
+                <a href="https://www.regjeringen.no/contentassets/71c9b6863d0c4ebba6beba2cfcb593c6/nou2008_08_eng.pdf" target="_blank" rel="noreferrer" class="case-link">
                   Звіт розслідування ↗
                 </a>
               </div>

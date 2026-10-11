@@ -1,4 +1,18 @@
-import { calculateRisk, evaluateMlcCompliance, generateWhatIfScenarios, generateChecklist, retrieveSimilarIncidents, evaluateFsaMatrix, calculateSensitivity } from "./model.js";
+import {
+  calculateRisk,
+  evaluateMlcCompliance,
+  generateWhatIfScenarios,
+  generateChecklist,
+  retrieveSimilarIncidents,
+  evaluateFsaMatrix,
+  calculateSensitivity,
+  calculateCircadianFatigue,
+  calculateOperationalWeatherRisk,
+  evaluatePscSireReadiness,
+  simulateEmergencyDrillFatigue,
+  generateAcademicArtifacts,
+  compareProfiles
+} from "./model.js";
 
 const $ = (selector) => document.querySelector(selector);
 const form = $("#risk-form");
@@ -236,6 +250,187 @@ function renderFsaMatrix(result, input) {
   grid.innerHTML = html;
 }
 
+function renderCircadian(input) {
+  const circ = calculateCircadianFatigue(input);
+  const bars = $("#circadian-bars");
+  const kssNum = $("#kss-number");
+  const kssLbl = $("#kss-label");
+  const kssPill = $("#kss-pill");
+  const sleepDebtStat = $("#sleep-debt-stat");
+  const nadirStat = $("#nadir-time-stat");
+  const fatigueStat = $("#fatigue-status-stat");
+  const recsList = $("#circadian-recs");
+
+  if (kssNum) kssNum.textContent = `KSS ${circ.kssScore}`;
+  if (kssLbl) kssLbl.textContent = circ.kssLabel;
+  if (kssPill) {
+    kssPill.dataset.level = circ.kssScore >= 7 ? "danger" : (circ.kssScore >= 5 ? "warning" : "optimal");
+  }
+  if (sleepDebtStat) sleepDebtStat.textContent = `${circ.sleepDebtHours} год/тижд`;
+  if (nadirStat) nadirStat.textContent = circ.peakVulnerabilityTime;
+  if (fatigueStat) {
+    fatigueStat.textContent = circ.kssScore >= 7 ? "Критичний" : (circ.kssScore >= 5 ? "Підвищений" : "Контрольовано");
+    fatigueStat.className = circ.kssScore >= 7 ? "status-danger" : (circ.kssScore >= 5 ? "status-warning" : "status-optimal");
+  }
+
+  if (bars) {
+    bars.innerHTML = circ.curve24h.map((p) => {
+      const heightPercent = Math.max(10, p.alertness);
+      const isNadir = p.hour >= 2 && p.hour <= 5;
+      const barClass = [
+        "circ-bar",
+        p.isWatchTime ? "is-watch" : "",
+        isNadir ? "is-nadir" : ""
+      ].filter(Boolean).join(" ");
+      return `<div class="${barClass}" style="--bar-h:${heightPercent}%" title="${String(p.hour).padStart(2, "0")}:00 · Бадьорість ${p.alertness}%${p.isWatchTime ? " (Вахта)" : ""}"></div>`;
+    }).join("");
+  }
+
+  if (recsList) {
+    if (circ.recommendations.length > 0) {
+      recsList.innerHTML = circ.recommendations.map((r) => `<li>${escapeHtml(r)}</li>`).join("");
+    } else {
+      recsList.innerHTML = `<li>Циркадний профіль збалансований: сон та період відновлення відповідають нормі.</li>`;
+    }
+  }
+}
+
+function renderWeatherRisk(input) {
+  const beaufort = Number($("#beaufort-slider")?.value ?? 3);
+  const polarZone = Boolean($("#polar-zone-toggle")?.checked);
+  const engineHeat = Boolean($("#engine-heat-toggle")?.checked);
+
+  const weather = calculateOperationalWeatherRisk(input, { beaufort, polarZone, engineHeat });
+
+  const valDisplay = $("#beaufort-val-display");
+  if (valDisplay) valDisplay.textContent = `${weather.beaufort} балів`;
+
+  const seaBadge = $("#sea-state-badge");
+  if (seaBadge) seaBadge.textContent = weather.seaStateLabel;
+
+  const msiDisplay = $("#msi-display");
+  if (msiDisplay) msiDisplay.textContent = `${weather.msiPercent}%`;
+
+  const slipDisplay = $("#slip-display");
+  if (slipDisplay) slipDisplay.textContent = `× ${weather.slipMultiplier.toFixed(1)}`;
+
+  const warnBox = $("#weather-warnings");
+  if (warnBox) {
+    if (weather.warnings.length > 0) {
+      warnBox.innerHTML = weather.warnings.map((w) => `
+        <div class="weather-alert weather-${escapeHtml(w.severity)}">
+          <strong>${escapeHtml(w.title)}</strong>
+          <p>${escapeHtml(w.advice)}</p>
+        </div>
+      `).join("");
+    } else {
+      warnBox.innerHTML = `<div class="weather-alert weather-calm"><strong>Сприятливі погодні умови</strong><p>Стандартні процедури безпеки відповідно до СУБ судна.</p></div>`;
+    }
+  }
+}
+
+function renderPscSire(input) {
+  const psc = evaluatePscSireReadiness(input);
+  const scoreDisp = $("#psc-score-display");
+  const statusLabel = $("#psc-status-label");
+  const defBox = $("#psc-deficiencies-list");
+  const capBox = $("#psc-cap-box");
+  const capList = $("#psc-cap-list");
+
+  if (scoreDisp) scoreDisp.textContent = psc.readinessScore;
+  if (statusLabel) {
+    statusLabel.textContent = psc.statusLabel;
+    statusLabel.dataset.score = psc.readinessScore < 65 ? "critical" : (psc.readinessScore < 85 ? "warning" : "optimal");
+  }
+
+  if (defBox) {
+    if (psc.deficiencies.length > 0) {
+      defBox.innerHTML = psc.deficiencies.map((d) => `
+        <div class="psc-deficiency psc-${escapeHtml(d.severity)}">
+          <div class="psc-def-top">
+            <span class="psc-code">Code ${escapeHtml(d.code)}</span>
+            <small>${escapeHtml(d.convention)}</small>
+          </div>
+          <p>${escapeHtml(d.description)}</p>
+        </div>
+      `).join("");
+    } else {
+      defBox.innerHTML = `<p class="psc-clean">Невідповідностей за MLC 2006 та STCW A-VIII/1 не виявлено. Профіль відповідає вимогам конвенцій.</p>`;
+    }
+  }
+
+  if (capBox && capList) {
+    if (psc.correctiveActions.length > 0) {
+      capBox.hidden = false;
+      capList.innerHTML = psc.correctiveActions.map((action) => `<li>${escapeHtml(action)}</li>`).join("");
+    } else {
+      capBox.hidden = true;
+    }
+  }
+}
+
+function renderEmergencyDrill(input) {
+  const drillSelect = $("#drill-type-select");
+  const drillType = drillSelect?.value || "fire";
+  const drill = simulateEmergencyDrillFatigue(input, drillType);
+
+  const delayDisplay = $("#drill-delay-display");
+  const errorDisplay = $("#drill-error-display");
+  const readinessDisplay = $("#drill-readiness-display");
+  const adviceText = $("#drill-advice-text");
+
+  if (delayDisplay) delayDisplay.textContent = `+${drill.reactionDelaySeconds} с`;
+  if (errorDisplay) errorDisplay.textContent = `${drill.errorRatePercent}%`;
+  if (readinessDisplay) {
+    readinessDisplay.className = `readiness-${drill.readiness}`;
+    readinessDisplay.textContent = drill.readiness === "optimal" ? "Оптимальний" : (drill.readiness === "degraded" ? "Знижений" : "Критичний");
+  }
+  if (adviceText) adviceText.textContent = drill.recommendation;
+}
+
+let currentAcademicArtifacts = null;
+function renderAcademicArtifacts(result, input) {
+  currentAcademicArtifacts = generateAcademicArtifacts(result, input);
+  const preview = $("#academic-preview-code");
+  if (preview) {
+    preview.querySelector("code").textContent = currentAcademicArtifacts.latexTable;
+  }
+}
+
+function renderProfileCompare(input) {
+  const benchmarkProfile = {
+    ...input,
+    hours: 2000,
+    night: 20,
+    watchSystem: "4on8off",
+    ppe: true,
+    smoking: false,
+    alcohol: false
+  };
+  const comp = compareProfiles(input, benchmarkProfile);
+  const badge = $("#compare-verdict-badge");
+  const valA = $("#compare-val-a");
+  const catA = $("#compare-cat-a");
+  const valB = $("#compare-val-b");
+  const catB = $("#compare-cat-b");
+  const note = $("#compare-note-text");
+
+  if (badge) {
+    const isLower = comp.deltaTotal < 0;
+    badge.textContent = isLower ? `Δ ${comp.deltaPercent}% ризику` : "Базовий рівень";
+    badge.className = isLower ? "compare-badge opt-better" : "compare-badge";
+  }
+  if (valA) valA.textContent = `≈ ${asDisplayPercent(comp.profileA.total)}`;
+  if (catA) catA.textContent = comp.profileA.category;
+  if (valB) valB.textContent = `≈ ${asDisplayPercent(comp.profileB.total)}`;
+  if (catB) catB.textContent = comp.profileB.category;
+  if (note) {
+    note.textContent = comp.deltaTotal < 0
+      ? `Оптимізація режиму вахт та обов'язкові ЗІЗ зменшують індекс ризику на ${Math.abs(comp.deltaPercent)}%.`
+      : "Поточний профіль уже максимально наближений до рекомендованого стандарту безпеки.";
+  }
+}
+
 // isInitial=true: first automatic render on page load before the user interacts
 function renderRisk(result, input, scenarioName = activeScenario, isInitial = false) {
   const resultPanel = $("#result-panel");
@@ -447,6 +642,22 @@ function renderRisk(result, input, scenarioName = activeScenario, isInitial = fa
   // IMO FSA Risk Matrix Evaluation
   renderFsaMatrix(result, input);
 
+  // Epic 1: Circadian Fatigue & Sleep Debt
+  renderCircadian(input);
+
+  // Epic 2: Operational Weather & Marine Hazards
+  renderWeatherRisk(input);
+
+  // Epic 3: PSC & SIRE 2.0 Inspection Readiness
+  renderPscSire(input);
+
+  // Epic 4: Emergency Drills Simulation
+  renderEmergencyDrill(input);
+
+  // Epic 5: Academic Research Artifacts & Profile Comparison
+  renderAcademicArtifacts(result, input);
+  renderProfileCompare(input);
+
   $("#formula-copy").textContent = "Формула: 1 − (1 − Rздоров'я) × (1 − Rробота) × (1 − Rспосіб життя). Значення округлено до трьох значущих цифр.";
   $("#assumption-list").innerHTML = result.assumptions.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
 }
@@ -631,6 +842,42 @@ const MAIB_CASE_STUDIES = {
       smoking: true,
       alcohol: false
     }
+  },
+  "exxon-valdez": {
+    label: "Кейс NTSB/IMO (Exxon Valdez, 1989)",
+    profile: {
+      age: 42,
+      sex: "male",
+      residence: "city",
+      chronic: false,
+      role: "officer",
+      hours: 3200,
+      night: 85,
+      watchSystem: "6on6off",
+      vesselType: "tanker",
+      ppe: true,
+      previous: true,
+      smoking: true,
+      alcohol: true
+    }
+  },
+  "bourbon-dolphin": {
+    label: "Кейс NMA/MAIB (Bourbon Dolphin, 2007)",
+    profile: {
+      age: 36,
+      sex: "male",
+      residence: "city",
+      chronic: false,
+      role: "deck",
+      hours: 2950,
+      night: 50,
+      watchSystem: "6on6off",
+      vesselType: "tug",
+      ppe: false,
+      previous: false,
+      smoking: false,
+      alcohol: false
+    }
   }
 };
 
@@ -655,6 +902,118 @@ $("#details-toggle").addEventListener("click", (event) => {
   list.hidden = !hidden;
   event.currentTarget.setAttribute("aria-expanded", String(hidden));
   event.currentTarget.textContent = hidden ? "Сховати деталі" : "Показати деталі";
+});
+
+// Weather & Environmental Hazards interactive controls
+$("#beaufort-slider")?.addEventListener("input", () => renderWeatherRisk(currentInput()));
+$("#polar-zone-toggle")?.addEventListener("change", () => renderWeatherRisk(currentInput()));
+$("#engine-heat-toggle")?.addEventListener("change", () => renderWeatherRisk(currentInput()));
+
+// Emergency Drill simulator selector
+$("#drill-type-select")?.addEventListener("change", () => renderEmergencyDrill(currentInput()));
+
+// Academic Toolkit Artifacts copy/download
+$("#copy-latex-btn")?.addEventListener("click", () => {
+  if (!currentAcademicArtifacts) return;
+  const code = $("#academic-preview-code code");
+  if (code) code.textContent = currentAcademicArtifacts.latexTable;
+  navigator.clipboard?.writeText(currentAcademicArtifacts.latexTable).catch(() => {});
+  const btn = $("#copy-latex-btn");
+  if (btn) {
+    const orig = btn.textContent;
+    btn.textContent = "✓ Скопійовано!";
+    setTimeout(() => { btn.textContent = orig; }, 2000);
+  }
+});
+
+$("#copy-bibtex-btn")?.addEventListener("click", () => {
+  if (!currentAcademicArtifacts) return;
+  const code = $("#academic-preview-code code");
+  if (code) code.textContent = currentAcademicArtifacts.bibtexCitations;
+  navigator.clipboard?.writeText(currentAcademicArtifacts.bibtexCitations).catch(() => {});
+  const btn = $("#copy-bibtex-btn");
+  if (btn) {
+    const orig = btn.textContent;
+    btn.textContent = "✓ Скопійовано!";
+    setTimeout(() => { btn.textContent = orig; }, 2000);
+  }
+});
+
+$("#download-csv-btn")?.addEventListener("click", () => {
+  if (!currentAcademicArtifacts) return;
+  const csvContent = `${currentAcademicArtifacts.csvHeader}\n${currentAcademicArtifacts.csvRow}\n`;
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `searisk-academic-data-${Date.now()}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+// Bi-lingual Language Switcher (UA / EN IMO SMCP) — strictly in-memory client-side
+let currentLang = "uk";
+const I18N = {
+  uk: {
+    btn: "🌐 UA",
+    heroTitle: "Побачте, що саме формує професійний ризик.",
+    heroEyebrow: "Безпека, яку можна пояснити",
+    navAssess: "Оцінювання",
+    navCases: "Аварії MAIB",
+    navStats: "Статистика",
+    navMethod: "Методика",
+    calcBtn: "Розрахувати ризик",
+    radarTab: "🎯 Аналіз і радар",
+    whatifTab: "⚡ What-If",
+    checklistTab: "📋 Чек-лист",
+    methodTab: "🔬 Методика"
+  },
+  en: {
+    btn: "🌐 EN (IMO SMCP)",
+    heroTitle: "Understand what shapes maritime occupational risk.",
+    heroEyebrow: "Safety with explainable factors",
+    navAssess: "Assessment",
+    navCases: "Accidents (MAIB)",
+    navStats: "Statistics",
+    navMethod: "Methodology",
+    calcBtn: "Calculate Risk Index",
+    radarTab: "🎯 Analysis & Radar",
+    whatifTab: "⚡ What-If Simulation",
+    checklistTab: "📋 Safety Checklist",
+    methodTab: "🔬 Methodology & FSA"
+  }
+};
+
+$("#lang-switch-btn")?.addEventListener("click", () => {
+  currentLang = currentLang === "uk" ? "en" : "uk";
+  const t = I18N[currentLang];
+  const langBtn = $("#lang-switch-btn");
+  if (langBtn) langBtn.textContent = t.btn;
+
+  const h1 = document.querySelector(".hero-copy h1");
+  if (h1) h1.textContent = t.heroTitle;
+  const eye = document.querySelector(".hero-copy .eyebrow");
+  if (eye) eye.textContent = t.heroEyebrow;
+
+  const navLinks = document.querySelectorAll("header nav a");
+  if (navLinks[0]) navLinks[0].textContent = t.navAssess;
+  if (navLinks[1]) navLinks[1].textContent = t.navCases;
+  if (navLinks[2]) navLinks[2].textContent = t.navStats;
+  if (navLinks[3]) navLinks[3].textContent = t.navMethod;
+
+  const submitBtn = document.querySelector(".form-footer button[type='submit']");
+  if (submitBtn) submitBtn.innerHTML = `${t.calcBtn} <span>→</span>`;
+
+  const tabRadar = $("#tab-btn-radar");
+  if (tabRadar) tabRadar.innerHTML = `<span class="tab-icon">🎯</span> ${t.radarTab.replace("🎯 ", "")}`;
+  const tabWhatif = $("#tab-btn-whatif");
+  if (tabWhatif) tabWhatif.innerHTML = `<span class="tab-icon">⚡</span> ${t.whatifTab.replace("⚡ ", "")}`;
+  const tabChecklist = $("#tab-btn-checklist");
+  if (tabChecklist) tabChecklist.innerHTML = `<span class="tab-icon">📋</span> ${t.checklistTab.replace("📋 ", "")}`;
+  const tabMethod = $("#tab-btn-method");
+  if (tabMethod) tabMethod.innerHTML = `<span class="tab-icon">🔬</span> ${t.methodTab.replace("🔬 ", "")}`;
 });
 
 // Clear existing dynamic options (keep the first static "all" option) before re-filling
