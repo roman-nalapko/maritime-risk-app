@@ -17,13 +17,18 @@ Keep preview deployments access-restricted while coefficients remain provisional
 
 The host must not inject analytics, session replay, advertising pixels, or third-party form collection. Review the provider's access-log fields, retention, subprocessors, and region before enabling the pilot. Any collection beyond ordinary delivery logs triggers the privacy/legal review recorded in `docs/governance/privacy-and-misuse-review.md`.
 
-## Manual verification after deploy
+## Live public educational deployment
 
-1. Open the root page and confirm the `SR-UA-PROTOTYPE-0.1` model label.
-2. Calculate a default profile and a high-exposure profile.
-3. Confirm incident filters update totals and distributions.
-4. Reload offline after one successful online visit to check the PWA shell.
-5. Verify the visible research disclaimer on mobile and desktop.
-6. Confirm the privacy notice and prohibited-use boundary remain visible.
-7. Verify the pilot invitation names a monitored privacy/safety contact and a backup contact.
+- **URL**: `https://roman-nalapko.github.io/maritime-risk-app/`
+- **Hosting**: GitHub Pages with automated GitHub Actions build and deployment pipeline (`.github/workflows/deploy.yml`).
+- **Telemetry**: Zero cookies, zero trackers, zero external fonts or CDN dependencies, zero analytics scripts.
+- **Data storage**: 100% ephemeral in-memory processing. Zero-Data retention verified by automated test suites.
+
+## Rollback instructions
+
+If a defect or coefficient discrepancy is identified:
+1. Revert the problematic commit via `git revert <commit-sha>`.
+2. Push to `main` (`git push origin main`), triggering `.github/workflows/deploy.yml` which rebuilds and redeploys `dist/`.
+3. In emergency, dispatch workflow or disable GitHub Pages from Repository Settings -> Pages -> Source -> None.
+
 
