@@ -366,18 +366,103 @@ window.addEventListener("afterprint", () => {
   document.querySelectorAll(".result-tab-pane").forEach((pane, index) => { pane.hidden = printTabsState[index] ?? false; });
 });
 
-// Result Panel Segmented Tabs
+// Bridge Lighting Mode Switcher (IMO MSC.252 / IEC 62288)
+document.querySelectorAll(".bridge-mode-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const mode = btn.dataset.bridgeMode;
+    document.querySelectorAll(".bridge-mode-btn").forEach((b) => {
+      b.classList.toggle("active", b === btn);
+    });
+    if (mode === "cockpit") {
+      document.documentElement.removeAttribute("data-bridge-mode");
+    } else {
+      document.documentElement.setAttribute("data-bridge-mode", mode);
+    }
+  });
+});
+
+// Result Panel Segmented Tabs Helper & Handlers
+function switchResultTab(target) {
+  document.querySelectorAll(".result-tab-btn").forEach((b) => {
+    const isActive = b.dataset.tab === target;
+    b.classList.toggle("active", isActive);
+    b.setAttribute("aria-selected", String(isActive));
+  });
+  document.querySelectorAll(".result-tab-pane").forEach((pane) => {
+    pane.hidden = pane.dataset.tabPane !== target;
+  });
+}
+
 document.querySelectorAll(".result-tab-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
-    const target = btn.dataset.tab;
-    document.querySelectorAll(".result-tab-btn").forEach((b) => {
-      const isActive = b === btn;
-      b.classList.toggle("active", isActive);
-      b.setAttribute("aria-selected", String(isActive));
-    });
-    document.querySelectorAll(".result-tab-pane").forEach((pane) => {
-      pane.hidden = pane.dataset.tabPane !== target;
-    });
+    switchResultTab(btn.dataset.tab);
+  });
+});
+
+// MAIB Real Accident Case Studies
+const MAIB_CASE_STUDIES = {
+  "vasco-de-gama": {
+    label: "Кейс MAIB 23/2017 (CMA CGM Vasco de Gama)",
+    profile: {
+      age: 34,
+      sex: "male",
+      residence: "city",
+      chronic: false,
+      role: "officer",
+      hours: 2750,
+      night: 70,
+      ppe: true,
+      previous: false,
+      smoking: false,
+      alcohol: false
+    }
+  },
+  "zarga": {
+    label: "Кейс MAIB 13/2017 (Танкер ЗПГ Zarga)",
+    profile: {
+      age: 28,
+      sex: "male",
+      residence: "city",
+      chronic: false,
+      role: "deck",
+      hours: 2900,
+      night: 40,
+      ppe: false,
+      previous: true,
+      smoking: false,
+      alcohol: false
+    }
+  },
+  "scot-carrier": {
+    label: "Кейс MAIB 18/2023 (Scot Carrier & Karin Høj)",
+    profile: {
+      age: 45,
+      sex: "male",
+      residence: "city",
+      chronic: false,
+      role: "officer",
+      hours: 3100,
+      night: 80,
+      ppe: true,
+      previous: false,
+      smoking: true,
+      alcohol: true
+    }
+  }
+};
+
+document.querySelectorAll(".case-load-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const caseKey = btn.dataset.case;
+    const caseStudy = MAIB_CASE_STUDIES[caseKey];
+    if (!caseStudy) return;
+
+    applyProfile(caseStudy.profile);
+    activeScenario = caseStudy.label;
+    renderRisk(calculateRisk(caseStudy.profile), caseStudy.profile, caseStudy.label, false);
+    switchResultTab("radar");
+
+    $("#result-panel")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   });
 });
 

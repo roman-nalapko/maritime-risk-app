@@ -32,9 +32,15 @@
         </a>
         <nav aria-label="Основна навігація">
           <a href="#assessment">Оцінювання</a>
+          <a href="#cases">Аварії MAIB</a>
           <a href="#statistics">Статистика</a>
           <a href="#methodology">Методика</a>
         </nav>
+        <div class="bridge-mode-switch" role="group" aria-label="Світловий режим містка (IMO MSC.252 / IEC 62288)">
+          <button type="button" class="bridge-mode-btn active" data-bridge-mode="cockpit" title="Режим містка (OpenBridge Cockpit)">⚓ Ніч</button>
+          <button type="button" class="bridge-mode-btn" data-bridge-mode="red" title="Червоне підсвічування містка (Preserve Night Vision)">🔴 Red</button>
+          <button type="button" class="bridge-mode-btn" data-bridge-mode="day" title="Денний морський режим (Bright Day)">☀️ День</button>
+        </div>
         <span class="status-pill"><i aria-hidden="true"></i> Дослідницький прототип</span>
       </div>
     </header>
@@ -351,6 +357,102 @@
         </div>
       </section>
 
+      <section class="cases-section" id="cases">
+        <div class="shell">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Уроки розслідувань · MAIB Lessons Learned</p>
+              <h2>Розбір реальних морських аварій</h2>
+            </div>
+            <p>
+              Офіційні розслідування Marine Accident Investigation Branch (MAIB) доводять: 
+              перевтома, порушення режиму праці (MLC 2006) та людський фактор призводять до катастроф. 
+              Завантажте профіль інциденту в калькулятор, щоб побачити факторний аналіз ризику.
+            </p>
+          </div>
+
+          <div class="cases-grid">
+            <article class="case-card">
+              <div class="case-badge-row">
+                <span class="case-badge warning">Посадка на мілину</span>
+                <span class="case-id">Звіт MAIB 23/2017</span>
+              </div>
+              <h3 class="case-title">CMA CGM Vasco de Gama</h3>
+              <p class="case-ship">Ультра-великий контейнеровоз (399 м) · Протока Торн-Шанел</p>
+              <p class="case-summary">
+                При нічному заході в Саутгемптон судно сіло на мілину. Команда містка втратила контроль курсу 
+                через накопичену перевтому вахтового помічника: понад 70% нічних годин і високий темп роботи призвели до тунельного зору.
+              </p>
+              <div class="case-factors">
+                <span>⏰ 2 750 год/рік</span>
+                <span>🌙 70% нічних вахт</span>
+                <span>⚠️ Порушення MLC 2006</span>
+              </div>
+              <div class="case-actions">
+                <button type="button" class="button button-primary case-load-btn" data-case="vasco-de-gama">
+                  ⚡ Завантажити в калькулятор
+                </button>
+                <a href="https://www.gov.uk/maib-reports/grounding-of-ultra-large-container-vessel-cma-cgm-vasco-de-gama" target="_blank" rel="noreferrer" class="case-link">
+                  Звіт розслідування ↗
+                </a>
+              </div>
+            </article>
+
+            <article class="case-card">
+              <div class="case-badge-row">
+                <span class="case-badge danger">Важке травмування</span>
+                <span class="case-id">Звіт MAIB 13/2017</span>
+              </div>
+              <h3 class="case-title">Танкер ЗПГ «Zarga»</h3>
+              <p class="case-ship">Газовоз LNG (288 м) · Термінал South Hook</p>
+              <p class="case-summary">
+                Розрив надміцного швартовного кінця (SBT) під натягом із зоною віддачі (Snap-back). 
+                Матрос отримав важку ЧМТ і травми кінцівок. Причини: втома палубної команди, відсутність захисту та робота в небезпечній зоні.
+              </p>
+              <div class="case-factors">
+                <span>⚓ Палубна команда</span>
+                <span>🛑 Порушення ЗІЗ</span>
+                <span>⚠️ Snap-back zone</span>
+              </div>
+              <div class="case-actions">
+                <button type="button" class="button button-primary case-load-btn" data-case="zarga">
+                  ⚡ Завантажити в калькулятор
+                </button>
+                <a href="https://www.gov.uk/maib-reports/failure-of-a-mooring-line-on-board-the-lng-carrier-zarga-resulting-in-serious-injury-to-an-officer" target="_blank" rel="noreferrer" class="case-link">
+                  Звіт розслідування ↗
+                </a>
+              </div>
+            </article>
+
+            <article class="case-card">
+              <div class="case-badge-row">
+                <span class="case-badge fatal">Зіткнення з загибеллю</span>
+                <span class="case-id">Звіт MAIB 18/2023</span>
+              </div>
+              <h3 class="case-title">Scot Carrier &amp; Karin Høj</h3>
+              <p class="case-ship">Суховантаж (90 м) · Балтійське море біля Борнгольма</p>
+              <p class="case-summary">
+                Нічний таран данської самохідної баржі на швидкості 12 вузлів. Баржа перекинулася, двоє моряків загинули. 
+                Вахтовий помічник Scot Carrier був на містку сам, заснув на ходовій вахті внаслідок безсоння та алкоголю.
+              </p>
+              <div class="case-factors">
+                <span>🍺 Алкоголь на вахті</span>
+                <span>🌙 80% нічних годин</span>
+                <span>🔴 Засинання за ECDIS</span>
+              </div>
+              <div class="case-actions">
+                <button type="button" class="button button-primary case-load-btn" data-case="scot-carrier">
+                  ⚡ Завантажити в калькулятор
+                </button>
+                <a href="https://www.gov.uk/maib-reports/collision-between-general-cargo-vessel-scot-carrier-and-split-hopper-barge-karin-hoj-with-loss-of-2-lives" target="_blank" rel="noreferrer" class="case-link">
+                  Звіт розслідування ↗
+                </a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section class="statistics" id="statistics">
         <div class="shell">
           <div class="section-heading light">
@@ -426,6 +528,7 @@
           <div class="brand inverse"><strong>SeaRisk</strong><small>UA · hypothesis</small></div>
           <nav class="footer-nav" aria-label="Нижня навігація">
             <a href="#assessment">Оцінювання</a>
+            <a href="#cases">Аварії MAIB</a>
             <a href="#statistics">Статистика</a>
             <a href="#methodology">Методика</a>
           </nav>
