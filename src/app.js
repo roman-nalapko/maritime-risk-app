@@ -1,4 +1,4 @@
-import { calculateRisk, evaluateMlcCompliance, generateWhatIfScenarios, generateChecklist, retrieveSimilarIncidents } from "./model.js";
+import { calculateRisk, evaluateMlcCompliance, generateWhatIfScenarios, generateChecklist, retrieveSimilarIncidents, evaluateFsaMatrix, calculateSensitivity } from "./model.js";
 
 const $ = (selector) => document.querySelector(selector);
 const form = $("#risk-form");
@@ -147,6 +147,93 @@ function renderLiveRadar(result, input) {
   markers.innerHTML = points.map(([x, y]) =>
     `<circle cx="${x}" cy="${y}" r="3.5" fill="var(--cyan-dark)" stroke="#ffffff" stroke-width="1.5" />`
   ).join("");
+}
+
+function renderSensitivity(input) {
+  const bars = $("#sensitivity-bars");
+  const leadBadge = $("#sensitivity-lead-factor");
+  if (!bars) return;
+  const list = calculateSensitivity(input);
+  if (!list || list.length === 0) {
+    bars.innerHTML = `<p class="what-if-empty">Для обраного профілю чутливість базових параметрів знаходиться в межах мінімальної похибки.</p>`;
+    if (leadBadge) leadBadge.textContent = "Мінімальний вплив";
+    return;
+  }
+  if (leadBadge) leadBadge.textContent = `Провідний фактор: ${list[0].name} (${list[0].weightPercent}%)`;
+
+  bars.innerHTML = list.map((item) => `
+    <div class="tornado-row">
+      <div class="tornado-info">
+        <div class="tornado-title">
+          <strong>${escapeHtml(item.name)}</strong>
+          <span class="tornado-cat">${escapeHtml(item.category)}</span>
+        </div>
+        <div class="tornado-meta">
+          <small>Поточний: ${escapeHtml(item.currentSetting)} → Оптимальний: ${escapeHtml(item.optimalSetting)}</small>
+        </div>
+      </div>
+      <div class="tornado-bar-wrap">
+        <div class="tornado-track">
+          <div class="tornado-fill ${item.id === "ppe" && !input.ppe ? "danger" : ""}" style="width: ${Math.max(8, item.weightPercent)}%"></div>
+        </div>
+        <strong class="tornado-pct">${item.weightPercent}%</strong>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderFsaMatrix(result, input) {
+  const grid = $("#fsa-matrix-grid");
+  const badge = $("#fsa-matrix-badge");
+  const title = $("#fsa-region-title");
+  const action = $("#fsa-region-action");
+  if (!grid) return;
+
+  const fsa = evaluateFsaMatrix(result, input);
+  if (badge) {
+    badge.textContent = `RI = ${fsa.ri} · ${fsa.regionLabel.split(" (")[0]}`;
+    badge.className = `fsa-matrix-badge fsa-${fsa.region}`;
+  }
+  if (title) title.textContent = `Індекс ризику RI = ${fsa.ri} (${fsa.regionLabel})`;
+  if (action) action.textContent = fsa.regionAction;
+
+  const rows = [
+    { si: 4, label: "SI-4: Катастрофічні" },
+    { si: 3, label: "SI-3: Важкі" },
+    { si: 2, label: "SI-2: Значні" },
+    { si: 1, label: "SI-1: Незначні" }
+  ];
+  const cols = [
+    { fi: 1, label: "FI-1 (<10⁻⁴)" },
+    { fi: 2, label: "FI-2 (0.01%)" },
+    { fi: 3, label: "FI-3 (0.1%–1%)" },
+    { fi: 4, label: "FI-4 (≥1%)" }
+  ];
+
+  let html = `<div class="fsa-cell fsa-header-cell">Наслідки ↓ / Частота →</div>`;
+  cols.forEach((col) => {
+    html += `<div class="fsa-cell fsa-col-header ${col.fi === fsa.fi ? "active-axis" : ""}">${escapeHtml(col.label)}</div>`;
+  });
+
+  rows.forEach((row) => {
+    html += `<div class="fsa-cell fsa-row-header ${row.si === fsa.si ? "active-axis" : ""}">${escapeHtml(row.label)}</div>`;
+    cols.forEach((col) => {
+      const riVal = row.si + col.fi;
+      let regClass = "cell-acceptable";
+      if (riVal >= 7) regClass = "cell-unacceptable";
+      else if (riVal >= 4) regClass = "cell-alarp";
+
+      const isCurrent = (row.si === fsa.si && col.fi === fsa.fi);
+      html += `
+        <div class="fsa-cell ${regClass} ${isCurrent ? "current-cell" : ""}" title="SI: ${row.si}, FI: ${col.fi} → RI: ${riVal}">
+          <span class="ri-score">${riVal}</span>
+          ${isCurrent ? `<span class="current-marker">● ВИ</span>` : ""}
+        </div>
+      `;
+    });
+  });
+
+  grid.innerHTML = html;
 }
 
 // isInitial=true: first automatic render on page load before the user interacts
@@ -354,6 +441,12 @@ function renderRisk(result, input, scenarioName = activeScenario, isInitial = fa
     checklistList.querySelectorAll(".checklist-cb").forEach((cb) => cb.addEventListener("change", updateChecklistCounter));
   }
 
+  // Marginal Sensitivity Analysis (Tornado ranking)
+  renderSensitivity(input);
+
+  // IMO FSA Risk Matrix Evaluation
+  renderFsaMatrix(result, input);
+
   $("#formula-copy").textContent = "Формула: 1 − (1 − Rздоров'я) × (1 − Rробота) × (1 − Rспосіб життя). Значення округлено до трьох значущих цифр.";
   $("#assumption-list").innerHTML = result.assumptions.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
 }
@@ -519,6 +612,24 @@ const MAIB_CASE_STUDIES = {
       previous: false,
       smoking: true,
       alcohol: true
+    }
+  },
+  "el-faro": {
+    label: "Кейс NTSB/IMO (MV El Faro)",
+    profile: {
+      age: 53,
+      sex: "male",
+      residence: "city",
+      chronic: false,
+      role: "officer",
+      hours: 2950,
+      night: 45,
+      watchSystem: "4on8off",
+      vesselType: "container",
+      ppe: true,
+      previous: true,
+      smoking: true,
+      alcohol: false
     }
   }
 };

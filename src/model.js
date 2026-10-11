@@ -483,3 +483,146 @@ export function retrieveSimilarIncidents(input, cells = []) {
     disclaimer: "Це статистика записів про постраждалих у вибірці MAIB; показник не є персональною ймовірністю настання події."
   };
 }
+
+/**
+ * IMO Formal Safety Assessment (FSA) Matrix Evaluation (MSC-MEPC.2/Circ.12)
+ * Categorizes risk into Broadly Acceptable, ALARP, or Unacceptable.
+ */
+export function evaluateFsaMatrix(result, input) {
+  const total = result.total || 0;
+
+  // Frequency Index (FI): 1 (Extremely remote) to 4 (Frequent)
+  let fi = 1;
+  let fiLabel = "Вкрай малоймовірно (< 10⁻⁴)";
+  if (total >= 0.01) {
+    fi = 4;
+    fiLabel = "Висока частота (≥ 1%)";
+  } else if (total >= 0.001) {
+    fi = 3;
+    fiLabel = "Помірна частота (0.1% – 1%)";
+  } else if (total >= 0.0001) {
+    fi = 2;
+    fiLabel = "Рідкісна подія (0.01% – 0.1%)";
+  }
+
+  // Severity Index (SI): 1 (Minor) to 4 (Catastrophic) based on operational profile
+  let si = 2; // Default: Significant
+  let siLabel = "Значні наслідки (травмування / інцидент)";
+  if (input.vesselType === "tanker" || input.role === "diver" || input.watchSystem === "6on6off") {
+    si = 3;
+    siLabel = "Важкі наслідки (критична травма / загроза судну)";
+  }
+  if (!input.ppe && Number(input.hours) > 2800) {
+    si = Math.min(4, si + 1);
+  }
+  if (si === 4) {
+    siLabel = "Катастрофічні наслідки (загибель / втрата остійності)";
+  }
+
+  const ri = fi + si; // Risk Index (RI) = 2 .. 8
+  let region = "acceptable";
+  let regionLabel = "Broadly Acceptable (Прийнятний)";
+  let regionAction = "Ризик знаходиться у межах норми. Дотримуватися стандартних суднових процедур безпеки (SMS).";
+
+  if (ri >= 7) {
+    region = "unacceptable";
+    regionLabel = "Unacceptable / Intolerable (Неприпустимий)";
+    regionAction = "Критичний рівень! Негайне зупинення робіт за процедурою Stop Work Authority, перегляд штатного розкладу та відпочинку.";
+  } else if (ri >= 4) {
+    region = "alarp";
+    regionLabel = "ALARP (As Low As Reasonably Practicable)";
+    regionAction = "Зона ALARP: ризик допустимий виключно за умови реалізації активних заходів зниження (носіння ЗІЗ, нормалізація сну).";
+  }
+
+  return {
+    fi,
+    fiLabel,
+    si,
+    siLabel,
+    ri,
+    region,
+    regionLabel,
+    regionAction
+  };
+}
+
+/**
+ * Marginal Sensitivity & Factor Elasticity Analysis
+ * Calculates relative impact of controllable variables on the calculated index.
+ */
+export function calculateSensitivity(input) {
+  const baseRisk = calculateRisk(input).total;
+  if (!baseRisk || baseRisk <= 0) return [];
+
+  const factors = [];
+
+  // 1. PPE factor sensitivity
+  const ppeVariation = { ...input, ppe: !input.ppe };
+  const ppeRisk = calculateRisk(ppeVariation).total;
+  const ppeDelta = Math.abs(ppeRisk - baseRisk);
+  factors.push({
+    id: "ppe",
+    name: "Використання ЗІЗ",
+    category: "Захист",
+    marginalDelta: ppeDelta,
+    currentSetting: input.ppe ? "Використовуються" : "Відсутні",
+    optimalSetting: "Повний комплект ЗІЗ",
+    impactDirection: input.ppe ? "Захисний фактор (знижує ризик)" : "Фактор загрози (підвищує ризик)"
+  });
+
+  // 2. Night watch sensitivity (variation by 15%)
+  const curNight = Number(input.night) || 25;
+  const testNight = Math.max(0, curNight - 15);
+  const nightVariation = { ...input, night: testNight };
+  const nightRisk = calculateRisk(nightVariation).total;
+  const nightDelta = Math.abs(baseRisk - nightRisk);
+  factors.push({
+    id: "night",
+    name: "Частка нічних вахт (Δ 15%)",
+    category: "Втома",
+    marginalDelta: nightDelta,
+    currentSetting: `${curNight}% нічних`,
+    optimalSetting: "< 25% нічних вахт",
+    impactDirection: curNight >= 30 ? "Високий дестабілізатор" : "Помірний вплив"
+  });
+
+  // 3. Annual working hours sensitivity (variation by 300 hrs)
+  const curHours = Number(input.hours) || 2024;
+  const testHours = Math.max(1000, curHours - 300);
+  const hoursVariation = { ...input, hours: testHours };
+  const hoursRisk = calculateRisk(hoursVariation).total;
+  const hoursDelta = Math.abs(baseRisk - hoursRisk);
+  factors.push({
+    id: "hours",
+    name: "Напрацювання (Δ 300 год)",
+    category: "Експозиція",
+    marginalDelta: hoursDelta,
+    currentSetting: `${curHours.toLocaleString("uk-UA")} год/рік`,
+    optimalSetting: "2 000 – 2 150 год/рік",
+    impactDirection: curHours > 2400 ? "Хронічне перепрацювання" : "Штатне навантаження"
+  });
+
+  // 4. Lifestyle factors (smoking + alcohol)
+  const lifestyleVariation = { ...input, smoking: false, alcohol: false };
+  const lifestyleRisk = calculateRisk(lifestyleVariation).total;
+  const lifestyleDelta = Math.abs(baseRisk - lifestyleRisk);
+  if (lifestyleDelta > 0 || input.smoking || input.alcohol) {
+    factors.push({
+      id: "lifestyle",
+      name: "Спосіб життя (куріння/алкоголь)",
+      category: "Здоров'я",
+      marginalDelta: lifestyleDelta,
+      currentSetting: [input.smoking && "куріння", input.alcohol && "алкоголь"].filter(Boolean).join(", ") || "відсутні",
+      optimalSetting: "Відмова від шкідливих звичок",
+      impactDirection: "Додатковий фактор судинних ускладнень"
+    });
+  }
+
+  // Calculate percentage weight for Tornado ranking
+  const totalDelta = factors.reduce((sum, f) => sum + f.marginalDelta, 0) || 1;
+  return factors.map((f) => ({
+    ...f,
+    weightPercent: Math.round((f.marginalDelta / totalDelta) * 100)
+  })).sort((a, b) => b.marginalDelta - a.marginalDelta);
+}
+

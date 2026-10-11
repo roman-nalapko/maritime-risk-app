@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { calculateRisk, evaluateMlcCompliance, generateWhatIfScenarios, generateChecklist, retrieveSimilarIncidents } from "../src/model.js";
+import { calculateRisk, evaluateMlcCompliance, generateWhatIfScenarios, generateChecklist, retrieveSimilarIncidents, evaluateFsaMatrix, calculateSensitivity } from "../src/model.js";
 
 console.log("Running platform feature checks...");
 
@@ -94,5 +94,24 @@ assert.ok(Array.isArray(retrieval.retrievedFacts) && retrieval.retrievedFacts.le
 assert.ok(typeof retrieval.explanation === "string" && retrieval.explanation.length > 10, "Must return neutral grounded explanation");
 assert.ok(retrieval.disclaimer.includes("не є персональною ймовірністю"), "Must include explicit disclaimer separating records from probability");
 
+// 7. Test IMO Formal Safety Assessment (FSA) Matrix Evaluation
+const baseProfile = { role: "deck", hours: 2000, night: 20, ppe: true, watchSystem: "4on8off", vesselType: "container" };
+const fsaNormal = evaluateFsaMatrix(calculateRisk(baseProfile), baseProfile);
+assert.ok(["acceptable", "alarp", "unacceptable"].includes(fsaNormal.region), "FSA matrix region must be valid");
+assert.ok(fsaNormal.ri >= 2 && fsaNormal.ri <= 8, "Risk Index must be in 2..8 range");
+
+const extremeProfile = { role: "engine", hours: 3200, night: 60, ppe: false, watchSystem: "6on6off", vesselType: "tanker" };
+const fsaExtreme = evaluateFsaMatrix(calculateRisk(extremeProfile), extremeProfile);
+assert.ok(fsaExtreme.ri > fsaNormal.ri, "High risk profile must have higher Risk Index");
+assert.ok(fsaExtreme.region === "unacceptable" || fsaExtreme.region === "alarp", "High risk must fall in ALARP or Unacceptable region");
+
+// 8. Test Marginal Sensitivity & Elasticity Analysis
+const sensList = calculateSensitivity(extremeProfile);
+assert.ok(Array.isArray(sensList) && sensList.length >= 3, "Sensitivity list must evaluate multiple factors");
+assert.ok(sensList[0].weightPercent >= sensList[sensList.length - 1].weightPercent, "Factors must be sorted by marginal weight descending");
+assert.ok(sensList.some((f) => f.id === "ppe"), "Must evaluate PPE sensitivity");
+assert.ok(sensList.some((f) => f.id === "hours"), "Must evaluate working hours sensitivity");
+
 console.log("All platform feature checks passed.");
+
 

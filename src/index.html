@@ -376,6 +376,18 @@
                 </div>
                 <div class="what-if-grid" id="what-if-grid"></div>
               </div>
+
+              <div class="sensitivity-section" id="sensitivity-section">
+                <div class="sensitivity-header">
+                  <div>
+                    <span class="sensitivity-kicker">ФАКТОРНИЙ АНАЛІЗ · TORNADO RANKING</span>
+                    <h3>Чутливість та маржинальний вплив</h3>
+                  </div>
+                  <span class="sensitivity-lead-badge" id="sensitivity-lead-factor">—</span>
+                </div>
+                <p class="sensitivity-subtitle">Маржинальна еластичність: ранжування факторів за силою впливу на зміну загального показника безпеки.</p>
+                <div class="sensitivity-bars" id="sensitivity-bars"></div>
+              </div>
             </div>
 
             <div class="result-tab-pane" id="pane-checklist" data-tab-pane="checklist" role="tabpanel" aria-labelledby="tab-btn-checklist" hidden>
@@ -392,6 +404,23 @@
             </div>
 
             <div class="result-tab-pane" id="pane-method" data-tab-pane="method" role="tabpanel" aria-labelledby="tab-btn-method" hidden>
+              <div class="fsa-matrix-section" id="fsa-matrix-section">
+                <div class="fsa-matrix-header">
+                  <div>
+                    <span class="fsa-matrix-kicker">IMO FSA METHODOLOGY · MSC-MEPC.2/CIRC.12</span>
+                    <h3>Матриця ризиків IMO FSA</h3>
+                  </div>
+                  <span class="fsa-matrix-badge" id="fsa-matrix-badge">Оцінка матриці</span>
+                </div>
+                <div class="fsa-matrix-grid-wrap">
+                  <div class="fsa-matrix-grid" id="fsa-matrix-grid" role="region" aria-label="Таблиця оцінки ризику IMO FSA"></div>
+                </div>
+                <div class="fsa-matrix-footer">
+                  <strong id="fsa-region-title">—</strong>
+                  <p id="fsa-region-action">—</p>
+                </div>
+              </div>
+
               <dl class="model-context" aria-label="Статус і обмеження моделі">
                 <div><dt>Статус моделі</dt><dd id="model-status">Попередня</dd></div>
                 <div><dt>Версія</dt><dd id="model-version">SR-UA-PROTOTYPE-0.1</dd></div>
@@ -407,6 +436,21 @@
                 <summary>Формула та припущення</summary>
                 <p id="formula-copy"></p>
                 <ul id="assumption-list"></ul>
+              </details>
+
+              <details class="glossary-details">
+                <summary>Морський глосарій і стандарти IMO / ILO</summary>
+                <dl class="glossary-list">
+                  <div><dt>MLC 2006</dt><dd>Конвенція МОП про працю в морському судноплавстві. Встановлює обов'язкові ліміти: не менше 10 год відпочинку на добу та 77 год за 7 днів.</dd></div>
+                  <div><dt>STCW (ПДНВ)</dt><dd>Міжнародна конвенція про підготовку і дипломування моряків та несення вахти (Розділ A-VIII/1: придатність до несення ходової вахти).</dd></div>
+                  <div><dt>IMO FSA</dt><dd>Formal Safety Assessment (MSC-MEPC.2/Circ.12) — формалізована оцінка безпеки суден та екіпажу на основі матриць частоти та важкості наслідків.</dd></div>
+                  <div><dt>ALARP</dt><dd>As Low As Reasonably Practicable — фундаментальний принцип безпеки: зниження ризику до практично досяжного рівня через технічні та організаційні заходи.</dd></div>
+                  <div><dt>IMO MSC/Circ.1598</dt><dd>Керівні рекомендації IMO з управління судновою втомою (Fatigue Management Guidelines).</dd></div>
+                  <div><dt>ISGOTT</dt><dd>International Safety Guide for Oil Tankers and Terminals — стандарт безпеки газового середовища, статичної електрики та наливних операцій.</dd></div>
+                  <div><dt>IMSBC Code</dt><dd>International Maritime Solid Bulk Cargoes Code — вимоги до перевезення навалювальних вантажів, схильних до розрідження або виділення газів.</dd></div>
+                  <div><dt>Snap-Back Zone</dt><dd>Небезпечна зона віддачі швартовного троса. Розраховується для всіх типів синтетичних і сталевих кінців.</dd></div>
+                  <div><dt>Stop Work Authority</dt><dd>Безумовне право будь-якого члена екіпажу негайно зупинити роботу за підозри на загрозу життю без дисциплінарних наслідків.</dd></div>
+                </dl>
               </details>
             </div>
 
@@ -533,6 +577,32 @@
                   ⚡ Завантажити в калькулятор
                 </button>
                 <a href="https://www.gov.uk/maib-reports/collision-between-general-cargo-vessel-scot-carrier-and-split-hopper-barge-karin-hoj-with-loss-of-2-lives" target="_blank" rel="noreferrer" class="case-link">
+                  Звіт розслідування ↗
+                </a>
+              </div>
+            </article>
+
+            <article class="case-card">
+              <div class="case-badge-row">
+                <span class="case-badge fatal">Загибель судна</span>
+                <span class="case-id">Звіт NTSB / USCG / IMO</span>
+              </div>
+              <h3 class="case-title">MV El Faro (Ураган Joaquin)</h3>
+              <p class="case-ship">Контейнеровоз Ro-Ro (241 м) · Атлантичний океан / Багами</p>
+              <p class="case-summary">
+                Загибель 33 членів екіпажу в урагані 4 категорії. Комплекс факторів: тиск комерційного розкладу, 
+                зміщення вантажу через послаблені талрепи (lashing), втрата остійності, авторитаризм капітана та втома від наднормових вахт.
+              </p>
+              <div class="case-factors">
+                <span>📦 Контейнеровоз</span>
+                <span>⏰ 2 950 год/рік</span>
+                <span>🌪️ Втрата остійності</span>
+              </div>
+              <div class="case-actions">
+                <button type="button" class="button button-primary case-load-btn" data-case="el-faro">
+                  ⚡ Завантажити в калькулятор
+                </button>
+                <a href="https://www.ntsb.gov/investigations/accidentreports/reports/mar1701.pdf" target="_blank" rel="noreferrer" class="case-link">
                   Звіт розслідування ↗
                 </a>
               </div>
