@@ -41,7 +41,11 @@
           <button type="button" class="bridge-mode-btn" data-bridge-mode="red" title="Червоне підсвічування містка (Preserve Night Vision)">🔴 Red</button>
           <button type="button" class="bridge-mode-btn" data-bridge-mode="day" title="Денний морський режим (Bright Day)">☀️ День</button>
         </div>
-        <button type="button" class="lang-switch-btn" id="lang-switch-btn" title="Змінити мову інтерфейсу (UA / IMO SMCP EN)">🌐 UA</button>
+        <div class="lang-switch-group" role="group" aria-label="Мова інтерфейсу (UA / EN / RU)">
+          <button type="button" class="lang-btn active" id="lang-switch-btn" data-lang="uk" title="Українська мова">UA</button>
+          <button type="button" class="lang-btn" data-lang="en" title="IMO SMCP English">EN</button>
+          <button type="button" class="lang-btn" data-lang="ru" title="Русский морской">RU</button>
+        </div>
         <button type="button" class="presentation-mode-btn" id="presentation-mode-btn" title="Презентаційний режим доповіді (Defense HUD)">🖥️ HUD</button>
         <span class="status-pill"><i aria-hidden="true"></i> Дослідницький прототип</span>
       </div>
@@ -713,7 +717,7 @@
               <h3 class="case-title">CMA CGM Vasco de Gama</h3>
               <p class="case-ship">Ультра-великий контейнеровоз (399 м) · Протока Торн-Шанел</p>
               <p class="case-summary">
-                При нічному заході в Саутгемптон судно сіло на мілину. Команда містка втратила контроль курсу 
+                Під час нічного заходу в Саутгемптон судно сіло на мілину. Команда містка втратила контроль курсу 
                 через накопичену перевтому вахтового помічника: понад 70% нічних годин і високий темп роботи призвели до тунельного зору.
               </p>
               <div class="case-factors">

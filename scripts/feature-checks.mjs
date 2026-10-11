@@ -212,6 +212,44 @@ assert.equal(testQr.size, 21, "Must generate valid 21x21 QR Version 1 dimensions
 assert.ok(testQr.svg.startsWith("<svg") && testQr.svg.endsWith("</svg>"), "Must output valid SVG markup");
 assert.ok(testQr.rawString.startsWith("SEARISK:"), "Must encode formatted watch handover string");
 
+// 17. Test Epic 8: Tri-Lingual Maritime Localization Coverage (UA / EN IMO SMCP / RU)
+const appSource = await readFile(path.join(root, "src/app.js"), "utf8");
+const htmlSource = await readFile(path.join(root, "src/index.html"), "utf8");
+
+assert.ok(htmlSource.includes('data-lang="uk"'), "Must provide UA language toggle button");
+assert.ok(htmlSource.includes('data-lang="en"'), "Must provide EN language toggle button");
+assert.ok(htmlSource.includes('data-lang="ru"'), "Must provide RU language toggle button");
+
+// Extract I18N dictionary from app.js to test dictionary parity
+const i18nMatch = appSource.match(/const I18N = (\{[\s\S]*?\n\};)/);
+assert.ok(i18nMatch, "Must define I18N dictionary in app.js");
+
+// Validate in a sandbox
+import vm from "node:vm";
+const i18nSandbox = {};
+vm.runInNewContext(i18nMatch[0].replace(/^const /, "var "), i18nSandbox);
+const dict = i18nSandbox.I18N;
+
+assert.ok(dict.uk && dict.en && dict.ru, "Dictionary must contain UK, EN, and RU root definitions");
+const ukKeys = Object.keys(dict.uk);
+const enKeys = Object.keys(dict.en);
+const ruKeys = Object.keys(dict.ru);
+
+assert.equal(ukKeys.length, enKeys.length, "English dictionary must have exact same key count as Ukrainian");
+assert.equal(ukKeys.length, ruKeys.length, "Russian dictionary must have exact same key count as Ukrainian");
+for (const key of ukKeys) {
+  assert.ok(key in dict.en, `Key '${key}' missing in English dictionary`);
+  assert.ok(key in dict.ru, `Key '${key}' missing in Russian dictionary`);
+  assert.ok(dict.uk[key], `Value for '${key}' in Ukrainian must not be empty`);
+  assert.ok(dict.en[key], `Value for '${key}' in English must not be empty`);
+  assert.ok(dict.ru[key], `Value for '${key}' in Russian must not be empty`);
+}
+
+// Check localized markers in FSA matrix
+assert.equal(dict.uk.fsaMarker, "● ВИ", "Ukrainian FSA marker must be ● ВИ");
+assert.equal(dict.en.fsaMarker, "● YOU", "English FSA marker must be ● YOU");
+assert.equal(dict.ru.fsaMarker, "● ВЫ", "Russian FSA marker must be ● ВЫ");
+
 console.log("All platform feature checks passed.");
 
 

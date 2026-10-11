@@ -370,7 +370,7 @@ export function generateChecklist(input) {
   } else if (input.vesselType === "bulker") {
     items.push({
       id: "bulker-holds",
-      label: "Газовий аналіз та вентиляція трюмів при перевезенні небезпечних навалювальних вантажів (IMSBC Code)",
+      label: "Газовий аналіз та вентиляція трюмів під час перевезення небезпечних навалювальних вантажів (IMSBC Code)",
       category: "Вантажна безпека",
       mandatory: true
     });
@@ -715,7 +715,7 @@ export function calculateCircadianFatigue(input, options = {}) {
     recommendations.push(`Кумулятивний дефіцит сну становить ${sleepDebtHours.toFixed(1)} год/тиждень: необхідний 10-годинний компенсаційний відпочинок.`);
   }
   if (tzShift >= 3) {
-    recommendations.push(`Десинхроноз при транзиті (зсув на ${tzShift} год): фізіологічна адаптація триватиме ~${Math.ceil(tzShift / 1.2)} діб; рекомендується попередній зсув сну.`);
+    recommendations.push(`Десинхроноз під час транзиту (зсув на ${tzShift} год): фізіологічна адаптація триватиме ~${Math.ceil(tzShift / 1.2)} діб; рекомендується попередній зсув сну.`);
   }
 
   return {
