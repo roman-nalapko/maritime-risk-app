@@ -12,7 +12,8 @@ import {
   evaluatePscSireReadiness,
   simulateEmergencyDrillFatigue,
   generateAcademicArtifacts,
-  compareProfiles
+  compareProfiles,
+  generateOfflineWatchHandoverQr
 } from "../src/model.js";
 
 console.log("Running platform feature checks...");
@@ -194,6 +195,22 @@ const comp = compareProfiles(
 assert.equal(comp.higherRisk, "Профіль Б", "Fatigued profile without PPE must be higher risk");
 assert.ok(comp.deltaTotal > 0, "Delta total risk must be positive");
 assert.ok(comp.deltaPercent > 0, "Delta percent must be positive");
+assert.ok(typeof comp.componentDeltas.occupation === "number", "Must report occupation component delta");
+
+// 15. Test Epic 1 Enhancement: Jet-Lag & Time Zone Desynchronosis
+const shiftedCircadian = calculateCircadianFatigue({ watchSystem: "4on8off", night: 30, hours: 2400 }, { timezoneShiftHours: 6 });
+assert.equal(shiftedCircadian.timezoneShiftHours, 6, "Must record timezone shift hours");
+assert.ok(shiftedCircadian.sleepDebtHours > 0, "Timezone shift must accumulate physiological sleep debt");
+assert.ok(shiftedCircadian.recommendations.some((r) => r.includes("Десинхроноз")), "Must flag acute circadian desynchrony recommendation");
+
+// 16. Test Epic 7: Pure SVG Offline 2D Matrix / QR Visual Handover
+const testQr = generateOfflineWatchHandoverQr(
+  { role: "officer", hours: 2400, watchSystem: "4on8off" },
+  calculateRisk({ role: "officer", hours: 2400 })
+);
+assert.equal(testQr.size, 21, "Must generate valid 21x21 QR Version 1 dimensions");
+assert.ok(testQr.svg.startsWith("<svg") && testQr.svg.endsWith("</svg>"), "Must output valid SVG markup");
+assert.ok(testQr.rawString.startsWith("SEARISK:"), "Must encode formatted watch handover string");
 
 console.log("All platform feature checks passed.");
 

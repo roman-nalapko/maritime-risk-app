@@ -2422,6 +2422,140 @@ footer p, footer > div > a { font-size: 12px; }
   color: #94a3b8;
 }
 
+/* Presentation Mode HUD button */
+.presentation-mode-btn {
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #adbec7;
+  background: rgba(16, 45, 64, 0.6);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.presentation-mode-btn:hover {
+  color: #fff;
+  border-color: var(--cyan);
+  background: rgba(14, 165, 233, 0.2);
+}
+.presentation-mode-btn.active {
+  color: #fff;
+  background: var(--cyan-dark);
+  border-color: var(--cyan);
+  box-shadow: 0 0 10px rgba(34, 199, 184, 0.4);
+}
+
+.tz-shift-row {
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+.tz-shift-row label {
+  display: block;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* Epic 7: Pure SVG Offline 2D Matrix / QR Visual Handover Card */
+.qr-handover-card {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 14px;
+  background: rgba(7, 22, 38, 0.7);
+}
+.qr-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.qr-kicker {
+  font-size: 8.5px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--cyan);
+  display: block;
+}
+.qr-header h3 {
+  margin: 2px 0 0;
+  font-size: 13.5px;
+  color: #f8fafc;
+}
+.qr-badge {
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+}
+.qr-lead {
+  font-size: 11px;
+  color: #94a3b8;
+  margin: 0 0 12px;
+  line-height: 1.4;
+}
+.qr-visual-box {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 10px;
+  border: 1px solid rgba(56, 189, 248, 0.15);
+}
+.qr-svg-wrap {
+  width: 90px;
+  height: 90px;
+  flex-shrink: 0;
+  background: #030a11;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+.qr-svg-wrap svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.qr-meta-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+}
+.qr-meta-text span {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 10.5px;
+  color: #38bdf8;
+  word-break: break-all;
+}
+.qr-meta-text small {
+  font-size: 9px;
+  color: #64748b;
+}
+
+/* Fullscreen Presentation Mode (Defense HUD) */
+body.hud-presentation-mode {
+  background: #02070d !important;
+}
+body.hud-presentation-mode .site-header {
+  border-bottom: 2px solid var(--cyan);
+}
+body.hud-presentation-mode .result-card {
+  border: 2px solid var(--cyan);
+  box-shadow: 0 0 35px rgba(34, 199, 184, 0.2);
+}
+body.hud-presentation-mode .score-row strong {
+  font-size: 3.5rem;
+  text-shadow: 0 0 20px rgba(34, 199, 184, 0.5);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition: none !important; }

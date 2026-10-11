@@ -11,7 +11,8 @@ import {
   evaluatePscSireReadiness,
   simulateEmergencyDrillFatigue,
   generateAcademicArtifacts,
-  compareProfiles
+  compareProfiles,
+  generateOfflineWatchHandoverQr
 } from "./model.js";
 
 const $ = (selector) => document.querySelector(selector);
@@ -251,7 +252,11 @@ function renderFsaMatrix(result, input) {
 }
 
 function renderCircadian(input) {
-  const circ = calculateCircadianFatigue(input);
+  const tzShift = Number($("#tz-shift-slider")?.value || 0);
+  const tzDisp = $("#tz-shift-display");
+  if (tzDisp) tzDisp.textContent = `Δ ${tzShift} год`;
+
+  const circ = calculateCircadianFatigue(input, { timezoneShiftHours: tzShift });
   const bars = $("#circadian-bars");
   const kssNum = $("#kss-number");
   const kssLbl = $("#kss-label");
@@ -658,6 +663,13 @@ function renderRisk(result, input, scenarioName = activeScenario, isInitial = fa
   renderAcademicArtifacts(result, input);
   renderProfileCompare(input);
 
+  // Epic 7: Pure SVG Offline 2D Matrix / QR Visual Handover
+  const qr = generateOfflineWatchHandoverQr(input, result);
+  const qrWrap = $("#qr-svg-wrap");
+  if (qrWrap) qrWrap.innerHTML = qr.svg;
+  const qrText = $("#qr-digest-text");
+  if (qrText) qrText.textContent = qr.rawString;
+
   $("#formula-copy").textContent = "Формула: 1 − (1 − Rздоров'я) × (1 − Rробота) × (1 − Rспосіб життя). Значення округлено до трьох значущих цифр.";
   $("#assumption-list").innerHTML = result.assumptions.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
 }
@@ -909,6 +921,17 @@ $("#beaufort-slider")?.addEventListener("input", () => renderWeatherRisk(current
 $("#polar-zone-toggle")?.addEventListener("change", () => renderWeatherRisk(currentInput()));
 $("#engine-heat-toggle")?.addEventListener("change", () => renderWeatherRisk(currentInput()));
 
+// Timezone shift slider listener
+$("#tz-shift-slider")?.addEventListener("input", () => renderCircadian(currentInput()));
+
+// Fullscreen Presentation Mode (Defense HUD)
+$("#presentation-mode-btn")?.addEventListener("click", () => {
+  document.body.classList.toggle("hud-presentation-mode");
+  const isHud = document.body.classList.contains("hud-presentation-mode");
+  const btn = $("#presentation-mode-btn");
+  if (btn) btn.classList.toggle("active", isHud);
+});
+
 // Emergency Drill simulator selector
 $("#drill-type-select")?.addEventListener("change", () => renderEmergencyDrill(currentInput()));
 
@@ -960,6 +983,8 @@ const I18N = {
     btn: "🌐 UA",
     heroTitle: "Побачте, що саме формує професійний ризик.",
     heroEyebrow: "Безпека, яку можна пояснити",
+    heroLede: "Безкоштовний освітній сервіс для самостійного аналізу факторів морського ризику — з локальним розрахунком, контекстом інцидентів і практичними кроками.",
+    heroActionStart: "Почати оцінювання",
     navAssess: "Оцінювання",
     navCases: "Аварії MAIB",
     navStats: "Статистика",
@@ -968,12 +993,16 @@ const I18N = {
     radarTab: "🎯 Аналіз і радар",
     whatifTab: "⚡ What-If",
     checklistTab: "📋 Чек-лист",
-    methodTab: "🔬 Методика"
+    methodTab: "🔬 Методика",
+    formHeading: "Профіль працівника",
+    resKicker: "Демонстраційний індекс прототипу"
   },
   en: {
     btn: "🌐 EN (IMO SMCP)",
     heroTitle: "Understand what shapes maritime occupational risk.",
     heroEyebrow: "Safety with explainable factors",
+    heroLede: "Free educational toolkit for autonomous analysis of maritime risk contributors — pure client-side computing, incident evidence, and actionable safety steps.",
+    heroActionStart: "Start Assessment",
     navAssess: "Assessment",
     navCases: "Accidents (MAIB)",
     navStats: "Statistics",
@@ -982,7 +1011,9 @@ const I18N = {
     radarTab: "🎯 Analysis & Radar",
     whatifTab: "⚡ What-If Simulation",
     checklistTab: "📋 Safety Checklist",
-    methodTab: "🔬 Methodology & FSA"
+    methodTab: "🔬 Methodology & FSA",
+    formHeading: "Seafarer Watch Profile",
+    resKicker: "Provisional Research Safety Metric"
   }
 };
 
@@ -996,6 +1027,10 @@ $("#lang-switch-btn")?.addEventListener("click", () => {
   if (h1) h1.textContent = t.heroTitle;
   const eye = document.querySelector(".hero-copy .eyebrow");
   if (eye) eye.textContent = t.heroEyebrow;
+  const lede = document.querySelector(".hero-lede");
+  if (lede) lede.textContent = t.heroLede;
+  const startBtn = document.querySelector(".hero-actions .button-primary");
+  if (startBtn) startBtn.textContent = t.heroActionStart;
 
   const navLinks = document.querySelectorAll("header nav a");
   if (navLinks[0]) navLinks[0].textContent = t.navAssess;
@@ -1003,8 +1038,14 @@ $("#lang-switch-btn")?.addEventListener("click", () => {
   if (navLinks[2]) navLinks[2].textContent = t.navStats;
   if (navLinks[3]) navLinks[3].textContent = t.navMethod;
 
+  const formH2 = document.querySelector(".section-heading h2");
+  if (formH2) formH2.textContent = t.formHeading;
+
   const submitBtn = document.querySelector(".form-footer button[type='submit']");
   if (submitBtn) submitBtn.innerHTML = `${t.calcBtn} <span>→</span>`;
+
+  const kicker = document.querySelector(".result-kicker");
+  if (kicker) kicker.textContent = t.resKicker;
 
   const tabRadar = $("#tab-btn-radar");
   if (tabRadar) tabRadar.innerHTML = `<span class="tab-icon">🎯</span> ${t.radarTab.replace("🎯 ", "")}`;
