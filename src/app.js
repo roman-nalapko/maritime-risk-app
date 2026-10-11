@@ -204,6 +204,48 @@ function renderRisk(result, input, scenarioName = activeScenario, isInitial = fa
     }
   }
 
+  // Fleet Benchmark Comparison (BIMCO / ICS Fleet Baseline)
+  const hoursNum = Number(input.hours) || 2024;
+  const nightNum = Number(input.night) || 25;
+  const FLEET_HOURS_BASELINE = 2150;
+  const FLEET_NIGHT_BASELINE = 28;
+
+  const hoursFillPercent = Math.min(100, Math.max(5, (hoursNum / 3500) * 100));
+  const bmHoursFill = $("#bm-hours-fill");
+  const bmHoursStat = $("#bm-hours-stat");
+  if (bmHoursFill && bmHoursStat) {
+    bmHoursFill.style.width = `${hoursFillPercent}%`;
+    bmHoursFill.classList.toggle("excess", hoursNum > 2400 && hoursNum <= 2700);
+    bmHoursFill.classList.toggle("critical", hoursNum > 2700);
+
+    const hoursDelta = Math.round(((hoursNum - FLEET_HOURS_BASELINE) / FLEET_HOURS_BASELINE) * 100);
+    if (Math.abs(hoursDelta) <= 5) {
+      bmHoursStat.textContent = `${hoursNum.toLocaleString("uk-UA")} год (норма флоту)`;
+    } else if (hoursDelta > 0) {
+      bmHoursStat.textContent = `${hoursNum.toLocaleString("uk-UA")} год (+${hoursDelta}% до норми)`;
+    } else {
+      bmHoursStat.textContent = `${hoursNum.toLocaleString("uk-UA")} год (${hoursDelta}% від норми)`;
+    }
+  }
+
+  const nightFillPercent = Math.min(100, Math.max(5, (nightNum / 80) * 100));
+  const bmNightFill = $("#bm-night-fill");
+  const bmNightStat = $("#bm-night-stat");
+  if (bmNightFill && bmNightStat) {
+    bmNightFill.style.width = `${nightFillPercent}%`;
+    bmNightFill.classList.toggle("excess", nightNum >= 35 && nightNum < 50);
+    bmNightFill.classList.toggle("critical", nightNum >= 50);
+
+    const nightDelta = nightNum - FLEET_NIGHT_BASELINE;
+    if (Math.abs(nightDelta) <= 3) {
+      bmNightStat.textContent = `${nightNum}% (типова вахта 4/8)`;
+    } else if (nightDelta > 0) {
+      bmNightStat.textContent = `${nightNum}% (+${nightDelta}% нічних)`;
+    } else {
+      bmNightStat.textContent = `${nightNum}% (${nightDelta}% нічних)`;
+    }
+  }
+
   // Factor breakdown
   const labels = { health: "Вік і здоров'я", occupation: "Професійна експозиція", lifestyle: "Спосіб життя" };
   const sum = Object.values(result.components).reduce((total, value) => total + value, 0) || 1;

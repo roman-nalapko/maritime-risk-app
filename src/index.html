@@ -289,6 +289,32 @@
                 </div>
               </div>
 
+              <div class="benchmark-box" id="benchmark-box">
+                <div class="benchmark-header">
+                  <span class="benchmark-tag">ГАЛУЗЕВИЙ ОРІЄНТИР · BIMCO / ICS</span>
+                  <h4>Порівняння зі світовим флотом</h4>
+                </div>
+                <div class="benchmark-metrics">
+                  <div class="benchmark-row">
+                    <span class="bm-label">Річне навантаження</span>
+                    <div class="bm-bar-wrap">
+                      <div class="bm-bar-fill" id="bm-hours-fill" style="width: 50%;"></div>
+                      <span class="bm-fleet-marker" title="Базовий норматив флоту: 2150 год"></span>
+                    </div>
+                    <span class="bm-stat" id="bm-hours-stat">—</span>
+                  </div>
+                  <div class="benchmark-row">
+                    <span class="bm-label">Нічні вахти</span>
+                    <div class="bm-bar-wrap">
+                      <div class="bm-bar-fill" id="bm-night-fill" style="width: 25%;"></div>
+                      <span class="bm-fleet-marker" title="Середнє у флоті (вахта 4/8): ~28%"></span>
+                    </div>
+                    <span class="bm-stat" id="bm-night-stat">—</span>
+                  </div>
+                </div>
+                <small class="benchmark-note">Орієнтири базуються на узагальнених даних звітів BIMCO/ICS Seafarer Workforce. Не є персональною нормою.</small>
+              </div>
+
               <div class="breakdown">
                 <div class="breakdown-title"><h3>Внесок факторів</h3><button type="button" id="details-toggle" aria-expanded="true">Сховати деталі</button></div>
                 <div id="breakdown-list"></div>
@@ -351,6 +377,32 @@
             <div class="report-actions">
               <button class="button button-secondary" id="print-report" type="button">Друк / зберегти PDF</button>
               <small>Діалог друку відкривається локально у браузері.</small>
+            </div>
+
+            <div class="print-audit-block" aria-hidden="true">
+              <div class="print-audit-header">
+                <div>
+                  <span class="p-doc-type">МОРСЬКИЙ САМОАУДИТ ВАХТИ</span>
+                  <strong class="p-doc-title">КАРТКА ПЕРЕВІРКИ ФАКТОРІВ РИЗИКУ (SAFETY WATCHKEEPING)</strong>
+                </div>
+                <div class="p-doc-stamp">
+                  <span>MLC 2006 · STCW A-VIII/1</span>
+                  <small>Zero-Data Local Audit</small>
+                </div>
+              </div>
+              <div class="print-signatures">
+                <div class="print-sig-col">
+                  <span>Підпис вахтового помічника / курсанта:</span>
+                  <div class="sig-line"></div>
+                  <small>Підтверджую коректність внесених годин та стану</small>
+                </div>
+                <div class="print-sig-col">
+                  <span>Офіцер з безпеки (Safety Officer / Ch.Off):</span>
+                  <div class="sig-line"></div>
+                  <small>Ознайомлений із показниками ризику та планом вахти</small>
+                </div>
+              </div>
+              <p class="print-audit-disclaimer">SeaRisk UA (ДІ НУ «ОМА»). Розрахунок виконано локально на браузерному рушії. Документ призначений для самоконтролю безпеки мореплавства та не замінює обов'язкові суднові форми СУБ.</p>
             </div>
           </aside>
         </div>

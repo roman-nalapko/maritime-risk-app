@@ -821,6 +821,94 @@ select option { background: #071929; color: #f8fafc; }
 .lra-4 { bottom: 14px; left: 18px; }
 .lra-5 { top: 62px; left: 2px; }
 
+/* Fleet Industry Benchmark Box (BIMCO / ICS) */
+.benchmark-box {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 14px;
+  background: rgba(7, 22, 38, 0.7);
+}
+.benchmark-header {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 12px;
+}
+.benchmark-tag {
+  color: var(--cyan);
+  font-size: 8.5px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.benchmark-header h4 {
+  margin: 0;
+  font-size: 13px;
+  color: #f8fafc;
+}
+.benchmark-metrics {
+  display: grid;
+  gap: 10px;
+}
+.benchmark-row {
+  display: grid;
+  grid-template-columns: 115px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+}
+.bm-label {
+  color: #94a3b8;
+  font-weight: 600;
+}
+.bm-bar-wrap {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: visible;
+}
+.bm-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--cyan);
+  transition: width 0.4s ease, background 0.3s;
+}
+.bm-bar-fill.excess {
+  background: var(--amber);
+}
+.bm-bar-fill.critical {
+  background: var(--coral);
+}
+.bm-fleet-marker {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  left: 50%;
+  width: 2px;
+  background: #ffffff;
+  border-radius: 1px;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+}
+.bm-stat {
+  font-weight: 750;
+  font-size: 10.5px;
+  color: #f1f5f9;
+  white-space: nowrap;
+}
+.benchmark-note {
+  display: block;
+  margin-top: 10px;
+  color: #64748b;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.print-audit-block {
+  display: none;
+}
+
 .breakdown { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
 .breakdown-title { display: flex; justify-content: space-between; align-items: center; }
 .breakdown h3, .recommendations h3 { margin: 0; font-size: 14px; color: #f8fafc; }
@@ -1330,15 +1418,92 @@ footer p, footer > div > a { font-size: 12px; }
 }
 
 @media print {
-  @page { margin: 14mm; }
-  body { background: #fff; color: #000; }
+  @page { margin: 12mm; }
+  body { background: #fff !important; color: #000 !important; font-size: 10.5pt; }
   .site-header, .hero, .trust-strip, .section-heading, .assessment-form, .cases-section, .statistics, .methodology, footer, .report-actions, .breakdown-title button, .result-tabs-nav { display: none !important; }
   .result-tab-pane { display: block !important; }
   .workspace { padding: 0; }
   .assessment-grid { display: block; }
-  .result-card { position: static; padding: 0; border: 0; box-shadow: none; overflow: visible; }
+  .result-card { position: static; padding: 0; border: 0; box-shadow: none; overflow: visible; background: none !important; color: #000 !important; }
   .result-card::after { display: none; }
-  .result-card::before { content: "SeaRisk UA · освітній звіт"; display: block; margin-bottom: 18px; font-size: 22px; font-weight: 850; }
-  .evidence-details, .calculation-details { display: block; }
-  .evidence-details > summary, .calculation-details > summary { list-style: none; }
+  .result-card::before {
+    content: "SeaRisk UA · МОРСЬКИЙ САМОАУДИТ ТА ЗВІТ БЕЗПЕКИ ВАХТИ (MLC 2006 / STCW)";
+    display: block;
+    margin-bottom: 14pt;
+    font-size: 16pt;
+    font-weight: 850;
+    border-bottom: 2pt solid #000;
+    padding-bottom: 6pt;
+    letter-spacing: -0.02em;
+  }
+  .score-row strong { color: #000 !important; font-size: 24pt; }
+  .score-row span, .scientific-notation { color: #333 !important; }
+  .risk-badge { border: 1.5pt solid #000 !important; color: #000 !important; background: none !important; }
+  .benchmark-box, .mlc-advice-card, .live-radar-box, .profile-summary, .what-if-section, .checklist-section {
+    border: 1pt solid #aaa !important;
+    background: #fafafa !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    margin-top: 12pt;
+    page-break-inside: avoid;
+  }
+  .evidence-details, .calculation-details { display: block; margin-top: 12pt; page-break-inside: avoid; }
+  .evidence-details > summary, .calculation-details > summary { list-style: none; font-weight: bold; }
+  
+  .print-audit-block {
+    display: block !important;
+    margin-top: 20pt;
+    padding-top: 12pt;
+    border-top: 1.5pt solid #000;
+    page-break-inside: avoid;
+  }
+  .print-audit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14pt;
+  }
+  .p-doc-type {
+    display: block;
+    font-size: 8pt;
+    letter-spacing: 0.1em;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #444;
+  }
+  .p-doc-title {
+    display: block;
+    font-size: 11pt;
+    font-weight: 850;
+  }
+  .p-doc-stamp {
+    border: 1.5pt solid #000;
+    padding: 4pt 8pt;
+    text-align: center;
+    border-radius: 4pt;
+  }
+  .p-doc-stamp span { display: block; font-weight: 800; font-size: 8.5pt; }
+  .p-doc-stamp small { display: block; font-size: 7pt; color: #555; }
+  
+  .print-signatures {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28pt;
+    margin-top: 16pt;
+  }
+  .print-sig-col span { display: block; font-size: 8.5pt; font-weight: 600; }
+  .sig-line {
+    border-bottom: 1pt solid #000;
+    height: 24pt;
+    margin-bottom: 4pt;
+  }
+  .print-sig-col small { display: block; font-size: 7pt; color: #555; }
+  .print-audit-disclaimer {
+    margin-top: 12pt;
+    font-size: 7pt;
+    color: #555;
+    line-height: 1.4;
+    border-top: 0.5pt solid #ccc;
+    padding-top: 4pt;
+  }
 }
