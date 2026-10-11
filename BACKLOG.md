@@ -78,7 +78,7 @@ An issue is done when:
 2. [Map source fields to the internal taxonomy](https://github.com/roman-nalapko/maritime-risk-app/issues/9).
 3. [Add data-quality and privacy checks](https://github.com/roman-nalapko/maritime-risk-app/issues/15).
 4. [Publish source, period, sample, and filter metadata](https://github.com/roman-nalapko/maritime-risk-app/issues/17).
-5. [Research denominators, confidence intervals, and sparse-data warnings](https://github.com/roman-nalapko/maritime-risk-app/issues/13).
+5. [Research denominators, confidence intervals, and sparse-data warnings](https://github.com/roman-nalapko/maritime-risk-app/issues/13) — [ВИКОНАНО: Wilson Score 95% CI та маркер n < 30].
 
 ### Optional external validation
 
@@ -179,7 +179,8 @@ These items improve evidence and terminology but do not block a public education
 - [x] **Конструктор сценаріїв навчальних тривог:** Fire Drill (SOLAS III/19), Abandon Ship Drill, Enclosed Space Rescue, SOPEP Oil Spill.
 - [x] **Моделювання людського фактора:** розрахунок затримки реакції (reaction delay seconds) та ймовірності помилки (error rate %) під впливом втоми.
 - [x] **Розширення бібліотеки катастроф:** додано кейси *Exxon Valdez* (1989) та *Bourbon Dolphin* (2007).
-- [x] **Автотест:** Перевірено в `scripts/feature-checks.mjs` (тест №12).
+- [x] **Аудіогенератор тривог IMO MSC.302(87) BAM / SOLAS III/6.4.2:** 100% in-memory Web Audio API синтезатор сигналів тривоги для суднових навчань.
+- [x] **Автотест:** Перевірено в `scripts/feature-checks.mjs` (тести №12 та №19).
 
 #### Епік 5: Інструментарій наукової роботи та дипломного захисту (Academic Research Toolkit) — [ВИКОНАНО]
 - [x] **Експорт у форматі LaTeX:** генерація коду таблиці `\begin{table}` з математичними позначеннями факторів.
@@ -189,11 +190,17 @@ These items improve evidence and terminology but do not block a public education
 - [x] **Автотест:** Перевірено в `scripts/feature-checks.mjs` (тести №13 та №14).
 
 #### Епік 6: Багатомовність та міжнародна морська термінологія (IMO SMCP Localization) — [ВИКОНАНО]
-- [x] **Двомовний інтерфейс (UA / IMO SMCP EN):** швидкий перемикач мови інтерфейсу в хедері (виключно в оперативній пам'яті клієнта без збереження cookies чи сховищ).
+- [x] **Тримовний інтерфейс (UA 🇺🇦 / EN 🇬🇧 IMO SMCP / RU 🇷🇺):** повна локалізація без неперекладених вузлів форми, глосарія, статистичних карток та звітів (виключно в оперативній пам'яті клієнта без збереження cookies чи сховищ).
+- [x] **Автотест:** Перевірено в `scripts/feature-checks.mjs` (тест №17).
 
 #### Епік 7: Повна автономність та Zero-Data Retention — [ВИКОНАНО]
 - [x] **Zero-Data Privacy:** жодних викликів `localStorage`, `sessionStorage`, `indexedDB`, сторонніх трекерів чи передачі персональних даних у мережу.
 - [x] **Повна офлайн-підтримка (Service Worker v0.8.0):** миттєва робота у відкритому морі без зв'язку.
+
+#### Епік 8: Статистична надійність вибірки та довірчі інтервали Вілсона (Wilson Confidence Intervals & Sparse Warnings, Issue #13) — [ВИКОНАНО]
+- [x] **Довірчі інтервали 95% Wilson Score Interval:** оцінка невизначеності часток травм та летальних випадків у морській статистиці.
+- [x] **Попередження про малий обсяг вибірки (Sparse-Data Notice):** динамічний маркер для підгруп з $n < 30$.
+- [x] **Автотест:** Перевірено в `scripts/feature-checks.mjs` (тест №18).
 
 ## Explicitly deferred
 

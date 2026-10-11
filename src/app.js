@@ -12,7 +12,9 @@ import {
   simulateEmergencyDrillFatigue,
   generateAcademicArtifacts,
   compareProfiles,
-  generateOfflineWatchHandoverQr
+  generateOfflineWatchHandoverQr,
+  calculateWilsonInterval,
+  getBridgeAlertPattern
 } from "./model.js";
 
 const $ = (selector) => document.querySelector(selector);
@@ -293,11 +295,15 @@ function renderSensitivity(input) {
     let currSet = item.currentSetting;
     let optSet = item.optimalSetting;
     if (currentLang === "en") {
-      currSet = currSet.replace("так", "yes").replace("ні", "no").replace("год/рік", "h/yr").replace("нічних", "night");
-      optSet = optSet.replace("так", "yes").replace("ні", "no").replace("год/рік", "h/yr").replace("нічних", "night");
+      currSet = currSet.replace("Використовуються", "In use").replace("Відсутні", "Missing")
+        .replace("так", "yes").replace("ні", "no").replace("год/рік", "h/yr").replace("нічних", "night");
+      optSet = optSet.replace("Повний комплект ЗІЗ", "Full certified PPE")
+        .replace("так", "yes").replace("ні", "no").replace("год/рік", "h/yr").replace("нічних", "night");
     } else if (currentLang === "ru") {
-      currSet = currSet.replace("так", "да").replace("ні", "нет").replace("год/рік", "ч/год").replace("нічних", "ночных");
-      optSet = optSet.replace("так", "да").replace("ні", "нет").replace("год/рік", "ч/год").replace("нічних", "ночных");
+      currSet = currSet.replace("Використовуються", "Используются").replace("Відсутні", "Отсутствуют")
+        .replace("так", "да").replace("ні", "нет").replace("год/рік", "ч/год").replace("нічних", "ночных");
+      optSet = optSet.replace("Повний комплект ЗІЗ", "Полный комплект СИЗ")
+        .replace("так", "да").replace("ні", "нет").replace("год/рік", "ч/год").replace("нічних", "ночных");
     }
     return `
     <div class="tornado-row">
@@ -646,6 +652,74 @@ function renderPscSire(input) {
     } else {
       capBox.hidden = true;
     }
+  }
+}
+
+let drillAudioCtx = null;
+let activeSoundTimeouts = [];
+
+function stopDrillAlarm() {
+  activeSoundTimeouts.forEach(clearTimeout);
+  activeSoundTimeouts = [];
+  if (drillAudioCtx) {
+    drillAudioCtx.close().catch(() => {});
+    drillAudioCtx = null;
+  }
+  const btn = $("#drill-sound-btn");
+  if (btn) {
+    btn.classList.remove("sounding");
+    const t = I18N[currentLang];
+    btn.innerHTML = `<span>🔊</span> ${escapeHtml(t.drillSoundPlay)}`;
+  }
+}
+
+function playDrillAlarm() {
+  const btn = $("#drill-sound-btn");
+  if (!btn) return;
+
+  if (btn.classList.contains("sounding")) {
+    stopDrillAlarm();
+    return;
+  }
+
+  const drillType = $("#drill-type-select")?.value || "fire";
+  const pattern = getBridgeAlertPattern(drillType);
+  const t = I18N[currentLang];
+
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+    drillAudioCtx = new AudioContextClass();
+    if (drillAudioCtx.state === "suspended") {
+      drillAudioCtx.resume();
+    }
+
+    btn.classList.add("sounding");
+    btn.innerHTML = `<span>⏹</span> ${escapeHtml(t.drillSoundStop)}`;
+
+    let currentTimeOffset = 0;
+    pattern.pulses.forEach((pulse) => {
+      const osc = drillAudioCtx.createOscillator();
+      const gain = drillAudioCtx.createGain();
+      osc.type = "square";
+      osc.frequency.setValueAtTime(pattern.frequency, drillAudioCtx.currentTime + currentTimeOffset);
+      gain.gain.setValueAtTime(0.15, drillAudioCtx.currentTime + currentTimeOffset);
+      gain.gain.setValueAtTime(0, drillAudioCtx.currentTime + currentTimeOffset + pulse.duration);
+      osc.connect(gain);
+      gain.connect(drillAudioCtx.destination);
+      osc.start(drillAudioCtx.currentTime + currentTimeOffset);
+      osc.stop(drillAudioCtx.currentTime + currentTimeOffset + pulse.duration);
+
+      currentTimeOffset += pulse.duration + pulse.pause;
+    });
+
+    const totalDurationMs = currentTimeOffset * 1000;
+    const finishTimeout = setTimeout(() => {
+      stopDrillAlarm();
+    }, totalDurationMs + 200);
+    activeSoundTimeouts.push(finishTimeout);
+  } catch {
+    stopDrillAlarm();
   }
 }
 
@@ -1034,7 +1108,29 @@ function renderRisk(result, input, scenarioName = activeScenario, isInitial = fa
     } else {
       groundedFactsList.innerHTML = `<li>${escapeHtml(t.groundedWaiting)}</li>`;
     }
-    groundedExplanation.textContent = grounded.explanation || "—";
+    let explText = grounded.explanation || "—";
+    if (currentLang === "en") {
+      if (input.role === "deck") {
+        explText = "For deck crew, key MAIB hazards stem from synthetic mooring lines under tension (snap-back zones) and falls due to wet deck surfaces or heavy rolling.";
+      } else if (input.role === "engine") {
+        explText = "For engine room staff, risks are dominated by sudden pressurized fluid release, contact burns, and asphyxiation hazard in enclosed spaces.";
+      } else if (input.role === "officer") {
+        explText = "For bridge officers, leading factors in navigational casualties (groundings, collisions) are chronic night watch fatigue and loss of situational awareness.";
+      } else {
+        explText = "Analysis highlights occupational safety compliance, where mandatory PPE enforcement and Stop Work Authority are decisive.";
+      }
+    } else if (currentLang === "ru") {
+      if (input.role === "deck") {
+        explText = "Для палубной команды ключевую опасность в статистике MAIB представляют натянутые швартовные канаты (зоны snap-back) и падения из-за скользкой палубы или качки.";
+      } else if (input.role === "engine") {
+        explText = "Для машинной команды преобладают риски внезапного выброса давления, ожоги и опасность потери сознания в замкнутых пространствах (enclosed spaces).";
+      } else if (input.role === "officer") {
+        explText = "Для судоводителей ведущими факторами навигационных аварий (посадки на мель, столкновения) являются хроническая усталость на ночной вахте и потеря ситуационной осведомленности.";
+      } else {
+        explText = "Анализ подчеркивает приоритет производственной безопасности, где решающую роль играют постоянное ношение СИЗ и право на остановку работ (Stop Work Authority).";
+      }
+    }
+    groundedExplanation.textContent = explText;
   }
 
   // Actionable Safety Checklist
@@ -1319,8 +1415,12 @@ $("#presentation-mode-btn")?.addEventListener("click", () => {
   if (btn) btn.classList.toggle("active", isHud);
 });
 
-// Emergency Drill simulator selector
-$("#drill-type-select")?.addEventListener("change", () => renderEmergencyDrill(currentInput()));
+// Emergency Drill simulator selector & Web Audio BAM sound
+$("#drill-type-select")?.addEventListener("change", () => {
+  stopDrillAlarm();
+  renderEmergencyDrill(currentInput());
+});
+$("#drill-sound-btn")?.addEventListener("click", playDrillAlarm);
 
 // Academic Toolkit Artifacts copy/download
 $("#copy-latex-btn")?.addEventListener("click", () => {
@@ -1662,7 +1762,11 @@ const I18N = {
     announceCategory: "Категорія",
     riskCats: { minimal: "Мінімальний", low: "Низький", moderate: "Помірний", high: "Високий", extreme: "Дуже високий" },
     importErrorAlert: "Не вдалося імпортувати профіль. Перевірте формат JSON-файлу.",
-    importedFileLabel: "Імпортований файл"
+    importedFileLabel: "Імпортований файл",
+    ciPrefix: "95% ДІ:",
+    sparseWarning: "⚠️ Малий обсяг вибірки (n < 30): підвищена статистична невизначеність",
+    drillSoundPlay: "Сигнал тривоги (BAM)",
+    drillSoundStop: "Зупинити сигнал"
   },
   en: {
     locale: "en-GB",
@@ -1961,7 +2065,11 @@ const I18N = {
     announceCategory: "Category",
     riskCats: { minimal: "Minimal", low: "Low", moderate: "Moderate", high: "High", extreme: "Extreme" },
     importErrorAlert: "Could not import profile. Please verify JSON format.",
-    importedFileLabel: "Imported File Profile"
+    importedFileLabel: "Imported File Profile",
+    ciPrefix: "95% CI:",
+    sparseWarning: "⚠️ Small sample size (n < 30): elevated statistical uncertainty",
+    drillSoundPlay: "Alarm Signal (BAM)",
+    drillSoundStop: "Stop Alarm"
   },
   ru: {
     locale: "ru-RU",
@@ -2260,41 +2368,99 @@ const I18N = {
     announceCategory: "Категория",
     riskCats: { minimal: "Минимальный", low: "Низкий", moderate: "Умеренный", high: "Высокий", extreme: "Экстремальный" },
     importErrorAlert: "Не удалось импортировать профиль. Проверьте формат JSON-файла.",
-    importedFileLabel: "Импортированный файл"
+    importedFileLabel: "Импортированный файл",
+    ciPrefix: "95% ДИ:",
+    sparseWarning: "⚠️ Малая выборка (n < 30): повышенная статистическая неопределенность",
+    drillSoundPlay: "Звуковой сигнал (BAM)",
+    drillSoundStop: "Остановить сигнал"
   }
 };
 
 const caseStudiesByLang = {
   "vasco-de-gama": {
-    uk: { badge: "Посадка на мілину", ship: "Ультра-великий контейнеровоз (399 м) · Протока Торн-Шанел", summary: "Під час нічного заходу в Саутгемптон судно сіло на мілину. Команда містка втратила контроль курсу через накопичену перевтому вахтового помічника: понад 70% нічних годин і високий темп роботи призвели до тунельного зору." },
-    en: { badge: "Grounding", ship: "Ultra-Large Container Vessel (399m) · Thorn Channel", summary: "Grounding during nocturnal approach to Southampton. Bridge team lost track of vessel track due to cumulative fatigue of lead navigating officer: >70% night hours and intense pace led to tunnel vision." },
-    ru: { badge: "Посадка на мель", ship: "Ультра-большой контейнеровоз (399 м) · Пролив Торн-Шанел", summary: "Во время ночного захода в Саутгемптон судно село на мель. Команда мостика потеряла контроль курса из-за накопившейся усталости вахтенного помощника: более 70% ночных часов и высокий темп работы привели к туннельному зрению." }
+    uk: { badge: "Посадка на мілину", ship: "Ультра-великий контейнеровоз (399 м) · Протока Торн-Шанел", summary: "Під час нічного заходу в Саутгемптон судно сіло на мілину. Команда містка втратила контроль курсу через накопичену перевтому вахтового помічника: понад 70% нічних годин і високий темп роботи призвели до тунельного зору.", factors: ["⏰ 2 750 год/рік", "🌙 70% нічних вахт", "⚠️ Порушення MLC 2006"] },
+    en: { badge: "Grounding", ship: "Ultra-Large Container Vessel (399m) · Thorn Channel", summary: "Grounding during nocturnal approach to Southampton. Bridge team lost track of vessel track due to cumulative fatigue of lead navigating officer: >70% night hours and intense pace led to tunnel vision.", factors: ["⏰ 2,750 hrs/yr", "🌙 70% night watches", "⚠️ MLC 2006 violation"] },
+    ru: { badge: "Посадка на мель", ship: "Ультра-большой контейнеровоз (399 м) · Пролив Торн-Шанел", summary: "Во время ночного захода в Саутгемптон судно село на мель. Команда мостика потеряла контроль курса из-за накопившейся усталости вахтенного помощника: более 70% ночных часов и высокий темп работы привели к туннельному зрению.", factors: ["⏰ 2 750 ч/год", "🌙 70% ночных вахт", "⚠️ Нарушение MLC 2006"] }
   },
   "zarga": {
-    uk: { badge: "Важке травмування", ship: "Газовоз LNG (288 м) · Термінал South Hook", summary: "Розрив надміцного швартовного кінця (SBT) під натягом із зоною віддачі (Snap-back). Матрос отримав важку ЧМТ і травми кінцівок. Причини: втома палубної команди, відсутність захисту та робота в небезпечній зоні." },
-    en: { badge: "Serious Injury", ship: "LNG Carrier (288m) · South Hook Terminal", summary: "Failure of high-modulus mooring line under tension with severe snap-back. Officer suffered traumatic head and limb injuries. Causes: deck crew fatigue, lack of protection, and lingering in snap-back zone." },
-    ru: { badge: "Тяжелая травма", ship: "Газовоз LNG (288 м) · Терминал South Hook", summary: "Разрыв высокопрочного швартовного конца (SBT) под натяжением с зоной отдачи (Snap-back). Моряк получил тяжелую ЧМТ и травмы конечностей. Причины: усталость палубной команды, отсутствие защиты и работа в опасной зоне." }
+    uk: { badge: "Важке травмування", ship: "Газовоз LNG (288 м) · Термінал South Hook", summary: "Розрив надміцного швартовного кінця (SBT) під натягом із зоною віддачі (Snap-back). Матрос отримав важку ЧМТ і травми кінцівок. Причини: втома палубної команди, відсутність захисту та робота в небезпечній зоні.", factors: ["⚓ Палубна команда", "🛑 Порушення ЗІЗ", "⚠️ Snap-back zone"] },
+    en: { badge: "Serious Injury", ship: "LNG Carrier (288m) · South Hook Terminal", summary: "Failure of high-modulus mooring line under tension with severe snap-back. Officer suffered traumatic head and limb injuries. Causes: deck crew fatigue, lack of protection, and lingering in snap-back zone.", factors: ["⚓ Deck Crew", "🛑 PPE non-compliance", "⚠️ Snap-back zone"] },
+    ru: { badge: "Тяжелая травма", ship: "Газовоз LNG (288 м) · Терминал South Hook", summary: "Разрыв высокопрочного швартовного конца (SBT) под натяжением с зоной отдачи (Snap-back). Моряк получил тяжелую ЧМТ и травмы конечностей. Причины: усталость палубной команды, отсутствие защиты и работа в опасной зоне.", factors: ["⚓ Палубная команда", "🛑 Нарушение СИЗ", "⚠️ Snap-back zone"] }
   },
   "scot-carrier": {
-    uk: { badge: "Зіткнення з загибеллю", ship: "Суховантаж (90 м) · Балтійське море біля Борнгольма", summary: "Нічний таран данської самохідної баржі на швидкості 12 вузлів. Баржа перекинулася, двоє моряків загинули. Вахтовий помічник Scot Carrier був на містку сам, заснув на ходовій вахті внаслідок безсоння та алкоголю." },
-    en: { badge: "Fatal Collision", ship: "General Cargo (90m) · Baltic Sea off Bornholm", summary: "Night collision with Danish hopper barge at 12 knots. Barge capsized with loss of two lives. Sole watchkeeper on Scot Carrier fell asleep on navigation watch due to acute sleep deprivation and alcohol." },
-    ru: { badge: "Столкновение с гибелью", ship: "Сухогруз (90 м) · Балтийское море возле Борнхольма", summary: "Ночной таран датской самоходной баржи на скорости 12 узлов. Баржа опрокинулась, двое моряков погибли. Вахтенный помощник Scot Carrier нес вахту один, уснул на ходовой вахте из-за бессонницы и алкоголя." }
+    uk: { badge: "Зіткнення з загибеллю", ship: "Суховантаж (90 м) · Балтійське море біля Борнгольма", summary: "Нічний таран данської самохідної баржі на швидкості 12 вузлів. Баржа перекинулася, двоє моряків загинули. Вахтовий помічник Scot Carrier був на містку сам, заснув на ходовій вахті внаслідок безсоння та алкоголю.", factors: ["🍺 Алкоголь на вахті", "🌙 80% нічних годин", "🔴 Засинання за ECDIS"] },
+    en: { badge: "Fatal Collision", ship: "General Cargo (90m) · Baltic Sea off Bornholm", summary: "Night collision with Danish hopper barge at 12 knots. Barge capsized with loss of two lives. Sole watchkeeper on Scot Carrier fell asleep on navigation watch due to acute sleep deprivation and alcohol.", factors: ["🍺 Alcohol on watch", "🌙 80% night hours", "🔴 Asleep at ECDIS"] },
+    ru: { badge: "Столкновение с гибелью", ship: "Сухогруз (90 м) · Балтийское море возле Борнхольма", summary: "Ночной таран датской самоходной баржи на скорости 12 узлов. Баржа опрокинулась, двое моряков погибли. Вахтенный помощник Scot Carrier нес вахту один, уснул на ходовой вахте из-за бессонницы и алкоголя.", factors: ["🍺 Алкоголь на вахте", "🌙 80% ночных часов", "🔴 Засыпание за ECDIS"] }
   },
   "el-faro": {
-    uk: { badge: "Загибель судна", ship: "Контейнеровоз Ro-Ro (241 м) · Атлантичний океан / Багами", summary: "Загибель 33 членів екіпажу в урагані 4 категорії. Комплекс факторів: тиск комерційного розкладу, зміщення вантажу через послаблені талрепи (lashing), втрата остійності, авторитаризм капітана та втома від наднормових вахт." },
-    en: { badge: "Total Loss / Sinking", ship: "Ro-Ro Cargo Vessel (241m) · Atlantic Ocean / Bahamas", summary: "Loss of 33 crew members in Category 4 hurricane. Compounding factors: commercial schedule pressure, cargo shift from parted lashings, loss of stability, steep bridge hierarchy, and fatigue." },
-    ru: { badge: "Гибель судна", ship: "Контейнеровоз Ro-Ro (241 м) · Атлантический океан / Багамы", summary: "Гибель 33 членов экипажа в урагане 4 категории. Комплекс факторов: коммерческое давление расписания, смещение груза из-за ослабленных талрепов, потеря остойчивости, авторитаризм капитана и сверхурочная усталость." }
+    uk: { badge: "Загибель судна", ship: "Контейнеровоз Ro-Ro (241 м) · Атлантичний океан / Багами", summary: "Загибель 33 членів екіпажу в урагані 4 категорії. Комплекс факторів: тиск комерційного розкладу, зміщення вантажу через послаблені талрепи (lashing), втрата остійності, авторитаризм капітана та втома від наднормових вахт.", factors: ["📦 Контейнеровоз", "⏰ 2 950 год/рік", "🌪️ Втрата остійності"] },
+    en: { badge: "Total Loss / Sinking", ship: "Ro-Ro Cargo Vessel (241m) · Atlantic Ocean / Bahamas", summary: "Loss of 33 crew members in Category 4 hurricane. Compounding factors: commercial schedule pressure, cargo shift from parted lashings, loss of stability, steep bridge hierarchy, and fatigue.", factors: ["📦 Container Ro-Ro", "⏰ 2,950 hrs/yr", "🌪️ Loss of stability"] },
+    ru: { badge: "Гибель судна", ship: "Контейнеровоз Ro-Ro (241 м) · Атлантический океан / Багамы", summary: "Гибель 33 членов экипажа в урагане 4 категории. Комплекс факторов: коммерческое давление расписания, смещение груза из-за ослабленных талрепов, потеря остойчивости, авторитаризм капитана и сверхурочная усталость.", factors: ["📦 Контейнеровоз", "⏰ 2 950 ч/год", "🌪️ Потеря остойчивости"] }
   },
   "exxon-valdez": {
-    uk: { badge: "Екологічна катастрофа", ship: "Супертанкер VLCC (301 м) · Протока Принца Вільгельма", summary: "Посадка на риф Блай та вилив 41 млн літрів сирої нафти. Розслідування NTSB виявило хронічну перевтому третього помічника на ходовій вахті через безперервний вахтовий графік 6/6 та понад 18 годин без сну, що призвело до повної втрати просторової орієнтації." },
-    en: { badge: "Major Oil Spill", ship: "VLCC Supertanker (301m) · Prince William Sound", summary: "Grounding on Bligh Reef releasing 41M liters of crude oil. NTSB identified severe fatigue of 3rd mate on bridge watch after continuous 6on/6off schedule and >18h wakefulness, resulting in spatial disorientation." },
-    ru: { badge: "Экологическая катастрофа", ship: "Супертанкер VLCC (301 м) · Пролив Принца Вильгельма", summary: "Посадка на риф Блай и вылив 41 млн литров сырой нефти. Расследование NTSB выявило хроническую переутомленность третьего помощника на вахте из-за непрерывного графика 6/6 и более 18 часов без сна, приведшего к потере пространственной ориентации." }
+    uk: { badge: "Екологічна катастрофа", ship: "Супертанкер VLCC (301 м) · Протока Принца Вільгельма", summary: "Посадка на риф Блай та вилив 41 млн літрів сирої нафти. Розслідування NTSB виявило хронічну перевтому третього помічника на ходовій вахті через безперервний вахтовий графік 6/6 та понад 18 годин без сну, що призвело до повної втрати просторової орієнтації.", factors: ["🛢️ Танкер VLCC", "🌙 85% нічних вахт", "⏰ 3 200 год/рік"] },
+    en: { badge: "Major Oil Spill", ship: "VLCC Supertanker (301m) · Prince William Sound", summary: "Grounding on Bligh Reef releasing 41M liters of crude oil. NTSB identified severe fatigue of 3rd mate on bridge watch after continuous 6on/6off schedule and >18h wakefulness, resulting in spatial disorientation.", factors: ["🛢️ VLCC Tanker", "🌙 85% night watches", "⏰ 3,200 hrs/yr"] },
+    ru: { badge: "Экологическая катастрофа", ship: "Супертанкер VLCC (301 м) · Пролив Принца Вильгельма", summary: "Посадка на риф Блай и вылив 41 млн литров сырой нефти. Расследование NTSB выявило хроническую переутомленность третьего помощника на вахте из-за непрерывного графика 6/6 и более 18 часов без сна, приведшего к потере пространственной ориентации.", factors: ["🛢️ Танкер VLCC", "🌙 85% ночных вахт", "⏰ 3 200 ч/год"] }
   },
   "bourbon-dolphin": {
-    uk: { badge: "Перекидання судна", ship: "Якорезавізний буксир AHTS (75 м) · Північне море / Шетланд", summary: "Втрата динамічної остійності та перекидання під час заведення якоря бурової установки. Загинуло 8 членів екіпажу. Фактори: надмірне натягнення якірних тросів, робота палубної команди на слизькій палубі без відпочинку та екстремальна кумулятивна втома." },
-    en: { badge: "Vessel Capsizing", ship: "Anchor Handling Tug AHTS (75m) · North Sea / Shetland", summary: "Loss of dynamic stability and capsizing while running an offshore rig anchor. 8 crew fatalities. Contributing factors: heavy chain tension, deck work on slippery rolling deck without rest, and extreme fatigue." },
-    ru: { badge: "Опрокидывание судна", ship: "Якорезавозный буксир AHTS (75 м) · Северное море / Шетланд", summary: "Потеря динамической остойчивости и опрокидывание во время заводки якоря буровой установки. Погибло 8 членов экипажа. Факторы: чрезмерное натяжение тросов, работа палубной команды на скользкой палубе без отдыха и накопленная усталость." }
+    uk: { badge: "Перекидання судна", ship: "Якорезавізний буксир AHTS (75 м) · Північне море / Шетланд", summary: "Втрата динамічної остійності та перекидання під час заведення якоря бурової установки. Загинуло 8 членів екіпажу. Фактори: надмірне натягнення якірних тросів, робота палубної команди на слизькій палубі без відпочинку та екстремальна кумулятивна втома.", factors: ["⚓ Буксир / AHTS", "🛑 Відсутність ЗІЗ", "⚠️ Динамічна остійність"] },
+    en: { badge: "Vessel Capsizing", ship: "Anchor Handling Tug AHTS (75m) · North Sea / Shetland", summary: "Loss of dynamic stability and capsizing while running an offshore rig anchor. 8 crew fatalities. Contributing factors: heavy chain tension, deck work on slippery rolling deck without rest, and extreme fatigue.", factors: ["⚓ Tug / AHTS", "🛑 Lack of PPE", "⚠️ Dynamic stability"] },
+    ru: { badge: "Опрокидывание судна", ship: "Якорезавозный буксир AHTS (75 м) · Северное море / Шетланд", summary: "Потеря динамической остойчивости и опрокидывание во время заводки якоря буровой установки. Погибло 8 членов экипажа. Факторы: чрезмерное натяжение тросов, работа палубной команды на скользкой палубе без отдыха и накопленная усталость.", factors: ["⚓ Буксир / AHTS", "🛑 Отсутствие СИЗ", "⚠️ Динамическая остойчивость"] }
   }
+};
+
+const glossaryByLang = {
+  uk: [
+    { term: "MLC 2006", def: "Конвенція МОП про працю в морському судноплавстві. Встановлює обов'язкові ліміти: не менше 10 год відпочинку на добу та 77 год за 7 днів." },
+    { term: "STCW (ПДНВ)", def: "Міжнародна конвенція про підготовку і дипломування моряків та несення вахти (Розділ A-VIII/1: придатність до несення ходової вахти)." },
+    { term: "IMO FSA", def: "Formal Safety Assessment (MSC-MEPC.2/Circ.12) — формалізована оцінка безпеки суден та екіпажу на основі матриць частоти та важкості наслідків." },
+    { term: "ALARP", def: "As Low As Reasonably Practicable — фундаментальний принцип безпеки: зниження ризику до практично досяжного рівня через технічні та організаційні заходи." },
+    { term: "IMO MSC/Circ.1598", def: "Керівні рекомендації IMO з управління судновою втомою (Fatigue Management Guidelines)." },
+    { term: "ISGOTT", def: "International Safety Guide for Oil Tankers and Terminals — стандарт безпеки газового середовища, статичної електрики та наливних операцій." },
+    { term: "IMSBC Code", def: "International Maritime Solid Bulk Cargoes Code — вимоги до перевезення навалювальних вантажів, схильних до розрідження або виділення газів." },
+    { term: "Snap-Back Zone", def: "Небезпечна зона віддачі швартовного троса. Розраховується для всіх типів синтетичних і сталевих кінців." },
+    { term: "Stop Work Authority", def: "Безумовне право будь-якого члена екіпажу негайно зупинити роботу за підозри на загрозу життю без дисциплінарних наслідків." }
+  ],
+  en: [
+    { term: "MLC 2006", def: "Maritime Labour Convention (ILO). Enforces mandatory limits: minimum 10 hours rest per 24 hours and 77 hours per 7 days." },
+    { term: "STCW 1978/2010", def: "Standards of Training, Certification and Watchkeeping for Seafarers (Section A-VIII/1: fitness for duty and watchkeeping standards)." },
+    { term: "IMO FSA", def: "Formal Safety Assessment (MSC-MEPC.2/Circ.12) — structured methodology using frequency-severity matrices to evaluate risk control options." },
+    { term: "ALARP", def: "As Low As Reasonably Practicable — safety principle stating that risk must be mitigated until further reduction costs are grossly disproportionate." },
+    { term: "IMO MSC/Circ.1598", def: "IMO Guidelines on Fatigue Mitigation and Management for shipboard operations and crew scheduling." },
+    { term: "ISGOTT", def: "International Safety Guide for Oil Tankers and Terminals — benchmark for flammable atmosphere control, static electricity, and transfer operations." },
+    { term: "IMSBC Code", def: "International Maritime Solid Bulk Cargoes Code — mandatory rules for bulk cargoes subject to liquefaction or chemical gas evolution." },
+    { term: "Snap-Back Zone", def: "High-energy recoil trajectory zone when a mooring line parts under tension. Danger zone for all synthetic and steel lines." },
+    { term: "Stop Work Authority", def: "Inherent right of any crew member to halt an operation immediately without fear of reprisal if safety is compromised." }
+  ],
+  ru: [
+    { term: "MLC 2006", def: "Конвенция МОТ о труде в морском судоходстве. Устанавливает обязательные нормы: не менее 10 часов отдыха в сутки и 77 часов за 7 дней." },
+    { term: "STCW (ПДНВ)", def: "Международная конвенция о подготовке и дипломировании моряков и несении вахты (Раздел A-VIII/1: пригодность к несению вахты)." },
+    { term: "IMO FSA", def: "Formal Safety Assessment (MSC-MEPC.2/Circ.12) — формализованная оценка безопасности судов и экипажа на основе матриц частоты и последствий." },
+    { term: "ALARP", def: "As Low As Reasonably Practicable — фундаментальный принцип: снижение риска до практически достижимого уровня через инженерные и оргмеры." },
+    { term: "IMO MSC/Circ.1598", def: "Руководство IMO по управлению судовой усталостью и снижению рисков человеческого фактора (Fatigue Guidelines)." },
+    { term: "ISGOTT", def: "International Safety Guide for Oil Tankers and Terminals — стандарт безопасности газовой среды, статического электричества и налива." },
+    { term: "IMSBC Code", def: "Международный кодекс морской перевозки твердых навалочных грузов, склонных к разжижению или выделению газов." },
+    { term: "Snap-Back Zone", def: "Опасная зона отдачи швартовного троса при разрыве под натяжением. Рассчитывается для синтетических и стальных канатов." },
+    { term: "Stop Work Authority", def: "Безусловное право любого члена экипажа немедленно остановить небезопасные работы без риска дисциплинарных взысканий." }
+  ]
+};
+
+const officialContextByLang = {
+  uk: [
+    { stat: "2 659", span: "подій EMSA / EMCIP у 2024 році", text: "Європейський огляд: 2 864 залучені судна. Це окрема сукупність, не додана до MAIB.", linkText: "Звіт EMSA 2025 ↗", href: "https://www.emsa.europa.eu/emcip/items.html?cid=141&id=5562" },
+    { stat: "5", span: "аварійних подій в Україні, I півріччя 2025", text: "1 загибла людина, 1 зникла, травмованих немає; морський, внутрішній і маломірний транспорт разом.", linkText: "Звіт Адміністрації судноплавства ↗", href: "https://marad.gov.ua/storage/app/sites/1/uploaded-files/Zvit_1_2025.pdf" },
+    { stat: "GISIS", span: "міжнародний реєстр IMO", text: "Використовується як посилання на розслідування. Частина доступу потребує облікового запису й не завантажується автоматично.", linkText: "Сторінка IMO ↗", href: "https://www.imo.org/en/ourwork/msas/pages/casualties.aspx" }
+  ],
+  en: [
+    { stat: "2,659", span: "EMSA / EMCIP marine casualties in 2024", text: "European fleet overview: 2,864 vessels involved. Maintained as distinct cohort, not mixed with MAIB.", linkText: "EMSA 2025 Report ↗", href: "https://www.emsa.europa.eu/emcip/items.html?cid=141&id=5562" },
+    { stat: "5", span: "marine incidents in Ukraine, 1H 2025", text: "1 fatality, 1 missing, 0 non-fatal injuries; combines maritime, inland waterway and small craft.", linkText: "Shipping Administration Report ↗", href: "https://marad.gov.ua/storage/app/sites/1/uploaded-files/Zvit_1_2025.pdf" },
+    { stat: "GISIS", span: "IMO Global Marine Incident Database", text: "Referenced for casualty investigations. Restricted dataset requiring institutional credentials.", linkText: "IMO Portal ↗", href: "https://www.imo.org/en/ourwork/msas/pages/casualties.aspx" }
+  ],
+  ru: [
+    { stat: "2 659", span: "происшествий EMSA / EMCIP в 2024 году", text: "Европейский обзор: 2 864 судна вовлечено. Отдельная совокупность, не смешивается с MAIB.", linkText: "Отчет EMSA 2025 ↗", href: "https://www.emsa.europa.eu/emcip/items.html?cid=141&id=5562" },
+    { stat: "5", span: "аварийных событий в Украине, I полугодие 2025", text: "1 погибший, 1 пропавший без вести, травм нет; морской, речной и маломерный транспорт вместе.", linkText: "Отчет Администрации судоходства ↗", href: "https://marad.gov.ua/storage/app/sites/1/uploaded-files/Zvit_1_2025.pdf" },
+    { stat: "GISIS", span: "международный реестр IMO", text: "Используется как источник ссылок на расследования. Требует авторизации и не загружается автоматически.", linkText: "Страница IMO ↗", href: "https://www.imo.org/en/ourwork/msas/pages/casualties.aspx" }
+  ]
 };
 
 function setLanguage(lang) {
@@ -2460,6 +2626,52 @@ function setLanguage(lang) {
       opt.text = drillOpts[opt.value]?.[lang] || opt.text;
     });
     drillSel.value = cur;
+  }
+
+  // Update Form Input Labels
+  const updateLabelText = (inputSelector, text) => {
+    const input = $(inputSelector);
+    const label = input?.closest("label");
+    if (!label) return;
+    for (const node of label.childNodes) {
+      if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim().length > 0) {
+        node.nodeValue = text + "\n                  ";
+        return;
+      }
+    }
+  };
+
+  const demoLabel = document.querySelector('label[for="demo-scenario"]');
+  if (demoLabel) {
+    for (const node of demoLabel.childNodes) {
+      if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim().length > 0) {
+        node.nodeValue = t.scenarioLabel + "\n                    ";
+        break;
+      }
+    }
+  }
+
+  updateLabelText("#age", t.ageLabel);
+  updateLabelText("#sex", t.sexLabel);
+  updateLabelText("#residence", t.residenceLabel);
+  updateLabelText("#chronic", t.chronicLabel);
+  updateLabelText("#role", t.roleLabel);
+  updateLabelText("#hours", t.hoursLabel);
+  updateLabelText("#night", t.nightLabel);
+  updateLabelText("#watch-system", t.watchLabel);
+  updateLabelText("#vessel-type", t.vesselLabel);
+  updateLabelText("#ppe", t.ppeLabel);
+  updateLabelText("#previous", t.previousLabel);
+  updateLabelText("#smoking", t.smokingLabel);
+  updateLabelText("#alcohol", t.alcoholLabel);
+
+  const drillSoundBtn = $("#drill-sound-btn");
+  if (drillSoundBtn) {
+    if (drillSoundBtn.classList.contains("sounding")) {
+      drillSoundBtn.innerHTML = `<span>⏹</span> ${escapeHtml(t.drillSoundStop)}`;
+    } else {
+      drillSoundBtn.innerHTML = `<span>🔊</span> ${escapeHtml(t.drillSoundPlay)}`;
+    }
   }
 
   // Profile File Actions
@@ -2641,6 +2853,12 @@ function setLanguage(lang) {
   const dEv = document.querySelector(".evidence-details summary"); if (dEv) dEv.textContent = t.evidenceSummary;
   const dCalc = document.querySelector(".calculation-details summary"); if (dCalc) dCalc.textContent = t.calcSummary;
   const dGloss = document.querySelector(".glossary-details summary"); if (dGloss) dGloss.textContent = t.glossarySummary;
+  const glossaryList = document.querySelector(".glossary-list");
+  if (glossaryList && glossaryByLang[lang]) {
+    glossaryList.innerHTML = glossaryByLang[lang].map((item) => `
+      <div><dt>${escapeHtml(item.term)}</dt><dd>${escapeHtml(item.def)}</dd></div>
+    `).join("");
+  }
 
   // Print Report
   const pBtn = $("#print-report"); if (pBtn) pBtn.textContent = t.printReportBtn;
@@ -2668,6 +2886,10 @@ function setLanguage(lang) {
       const badge = card.querySelector(".case-badge"); if (badge) badge.textContent = cData.badge;
       const ship = card.querySelector(".case-ship"); if (ship) ship.textContent = cData.ship;
       const summ = card.querySelector(".case-summary"); if (summ) summ.textContent = cData.summary;
+      const factorsDiv = card.querySelector(".case-factors");
+      if (factorsDiv && Array.isArray(cData.factors)) {
+        factorsDiv.innerHTML = cData.factors.map((f) => `<span>${escapeHtml(f)}</span>`).join("");
+      }
     }
     if (btn) btn.textContent = t.caseLoadBtn;
     const link = card.querySelector(".case-link"); if (link) link.textContent = t.caseLink;
@@ -2688,12 +2910,13 @@ function setLanguage(lang) {
   }
   if (sumDivs[1]) {
     sumDivs[1].querySelector("span").textContent = t.statInjurySpan;
-    sumDivs[1].querySelector("small").textContent = t.statInjurySmall;
   }
   if (sumDivs[2]) {
     sumDivs[2].querySelector("span").textContent = t.statFatalSpan;
-    sumDivs[2].querySelector("small").textContent = t.statFatalSmall;
   }
+  const sparseChip = document.querySelector("#sparse-notice-box .sparse-chip");
+  if (sparseChip) sparseChip.textContent = t.sparseWarning;
+
   const ch1Heading = document.querySelector(".chart-card:nth-child(1) .chart-heading");
   if (ch1Heading) {
     ch1Heading.querySelector("span").textContent = t.eventTypesSpan;
@@ -2710,6 +2933,17 @@ function setLanguage(lang) {
   const srcNote = document.querySelector(".source-note"); if (srcNote) srcNote.innerHTML = `${escapeHtml(t.sourceNote.split(": ")[0])}: <a href="https://maps.dft.gov.uk/maib-data-portal/web-pages/download_files_section.html" target="_blank" rel="noreferrer">MAIB Data Portal</a>, ${escapeHtml(t.sourceNote.split(": ")[1] || "")}`;
   const offContextSpan = document.querySelector(".official-context .context-heading span"); if (offContextSpan) offContextSpan.textContent = t.officialContextSpan;
   const offContextH3 = document.querySelector("#official-context-title"); if (offContextH3) offContextH3.textContent = t.officialContextH3;
+  const contextGrid = document.querySelector(".official-context .context-grid");
+  if (contextGrid && officialContextByLang[lang]) {
+    contextGrid.innerHTML = officialContextByLang[lang].map((item) => `
+      <article>
+        <strong>${escapeHtml(item.stat)}</strong>
+        <span>${escapeHtml(item.span)}</span>
+        <p>${escapeHtml(item.text)}</p>
+        <a href="${escapeHtml(item.href)}" target="_blank" rel="noreferrer">${escapeHtml(item.linkText)}</a>
+      </article>
+    `).join("");
+  }
 
   // Methodology Section
   const mEye = document.querySelector(".methodology .section-heading .eyebrow"); if (mEye) mEye.textContent = t.methodEyebrow;
@@ -2803,6 +3037,30 @@ function renderIncidents() {
   $("#injury-share").textContent = total ? asWholeShare((severity.injury || 0) / total) : "—";
   $("#fatal-share").textContent = total ? asWholeShare((severity.fatal || 0) / total) : "—";
   $("#severity-total").textContent = total.toLocaleString(t.locale);
+
+  const injuryCi = calculateWilsonInterval(severity.injury || 0, total);
+  const fatalCi = calculateWilsonInterval(severity.fatal || 0, total);
+  const formatPct = (val) => `${(val * 100).toFixed(1)}%`;
+
+  const injuryCiEl = $("#injury-ci");
+  if (injuryCiEl) {
+    injuryCiEl.textContent = total
+      ? `${t.ciPrefix} [${formatPct(injuryCi.lower)} – ${formatPct(injuryCi.upper)}]`
+      : `${t.ciPrefix} [—]`;
+  }
+  const fatalCiEl = $("#fatal-ci");
+  if (fatalCiEl) {
+    fatalCiEl.textContent = total
+      ? `${t.ciPrefix} [${formatPct(fatalCi.lower)} – ${formatPct(fatalCi.upper)}]`
+      : `${t.ciPrefix} [—]`;
+  }
+
+  const sparseNotice = $("#sparse-notice-box");
+  if (sparseNotice) {
+    sparseNotice.hidden = !(total > 0 && total < 30);
+    const chip = sparseNotice.querySelector(".sparse-chip");
+    if (chip) chip.textContent = t.sparseWarning;
+  }
 
   const orderedEvents = Object.entries(events).sort((a, b) => b[1] - a[1]);
   $("#event-bars").innerHTML = total ? orderedEvents.map(([key, count]) => {

@@ -2254,6 +2254,38 @@ html[data-bridge-mode="day"] .lang-btn.active {
   font-size: 13.5px;
   color: #f8fafc;
 }
+.drill-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.drill-sound-btn {
+  font-size: 11px;
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: rgba(14, 165, 233, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: var(--cyan);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.drill-sound-btn:hover {
+  background: rgba(14, 165, 233, 0.25);
+  color: #fff;
+}
+.drill-sound-btn.sounding {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: #ef4444;
+  color: #fca5a5;
+  animation: pulse-alarm 0.8s infinite alternate;
+}
+@keyframes pulse-alarm {
+  from { opacity: 0.8; }
+  to { opacity: 1; transform: scale(1.03); }
+}
 .drill-header select {
   padding: 5px 8px;
   font-size: 11px;
@@ -2261,6 +2293,20 @@ html[data-bridge-mode="day"] .lang-btn.active {
   background: #06131e;
   border: 1px solid rgba(56, 189, 248, 0.3);
   color: #f8fafc;
+}
+.sparse-notice-box {
+  margin-top: 10px;
+  text-align: center;
+}
+.sparse-chip {
+  display: inline-block;
+  font-size: 11px;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-weight: 600;
 }
 .drill-results {
   display: grid;

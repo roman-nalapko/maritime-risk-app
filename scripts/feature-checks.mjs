@@ -13,7 +13,9 @@ import {
   simulateEmergencyDrillFatigue,
   generateAcademicArtifacts,
   compareProfiles,
-  generateOfflineWatchHandoverQr
+  generateOfflineWatchHandoverQr,
+  calculateWilsonInterval,
+  getBridgeAlertPattern
 } from "../src/model.js";
 
 console.log("Running platform feature checks...");
@@ -249,6 +251,54 @@ for (const key of ukKeys) {
 assert.equal(dict.uk.fsaMarker, "● ВИ", "Ukrainian FSA marker must be ● ВИ");
 assert.equal(dict.en.fsaMarker, "● YOU", "English FSA marker must be ● YOU");
 assert.equal(dict.ru.fsaMarker, "● ВЫ", "Russian FSA marker must be ● ВЫ");
+
+// 18. Test Wilson Score 95% Confidence Interval & Sparse Data Warnings (Issue #13)
+const zeroInterval = calculateWilsonInterval(0, 0);
+assert.equal(zeroInterval.point, 0, "Zero sample size must return point 0");
+assert.equal(zeroInterval.lower, 0, "Zero sample size must return lower bound 0");
+assert.equal(zeroInterval.upper, 0, "Zero sample size must return upper bound 0");
+assert.equal(zeroInterval.isSparse, true, "n = 0 must be marked sparse");
+
+// Small sample size (n = 20 < 30)
+const sparseInterval = calculateWilsonInterval(15, 20);
+assert.equal(sparseInterval.isSparse, true, "n = 20 must be marked sparse (n < 30)");
+assert.equal(sparseInterval.point, 0.75, "15/20 must give point estimate 0.75");
+assert.ok(sparseInterval.lower > 0.5 && sparseInterval.lower < 0.75, "Wilson lower bound must be conservative and positive");
+assert.ok(sparseInterval.upper > 0.75 && sparseInterval.upper < 1.0, "Wilson upper bound must be < 1.0");
+assert.equal(sparseInterval.confidence, 0.95, "Confidence level must be 95%");
+
+// Large sample size (n = 1000 >= 30)
+const largeInterval = calculateWilsonInterval(250, 1000);
+assert.equal(largeInterval.isSparse, false, "n = 1000 must NOT be marked sparse");
+assert.equal(largeInterval.point, 0.25, "250/1000 must give point estimate 0.25");
+assert.ok(largeInterval.lower > 0.22 && largeInterval.lower < 0.25, "Wilson lower bound for large sample");
+assert.ok(largeInterval.upper > 0.25 && largeInterval.upper < 0.28, "Wilson upper bound for large sample");
+
+// Boundary conditions: 0 positive events in 100
+const zeroCountInterval = calculateWilsonInterval(0, 100);
+assert.equal(zeroCountInterval.lower, 0, "Lower bound for 0 count must clamp to 0");
+assert.ok(zeroCountInterval.upper > 0 && zeroCountInterval.upper < 0.05, "Upper bound for 0 count must be positive non-zero");
+
+// 19. Test IMO MSC.302(87) Bridge Alert Management (BAM) & SOLAS III/6.4.2 Emergency Audio Patterns
+const generalEmergency = getBridgeAlertPattern("general_emergency");
+assert.equal(generalEmergency.frequency, 800, "General Emergency frequency must be 800 Hz");
+assert.equal(generalEmergency.pulses.length, 8, "General emergency must have 8 pulses (7 short + 1 prolonged)");
+assert.equal(generalEmergency.pulses[0].duration, 0.2, "Short pulse duration must be 0.2s");
+assert.equal(generalEmergency.pulses[7].duration, 1.5, "Prolonged pulse duration must be 1.5s");
+assert.ok(generalEmergency.code.includes("SOLAS III/6.4.2"), "Code must cite SOLAS III/6.4.2");
+
+const abandonShip = getBridgeAlertPattern("abandon_ship");
+assert.equal(abandonShip.frequency, 800, "Abandon ship must share General Emergency standard tone");
+assert.equal(abandonShip.pulses.length, 8, "Abandon ship must have 8 pulses");
+
+const fireAlarm = getBridgeAlertPattern("fire");
+assert.equal(fireAlarm.frequency, 1000, "Fire alarm frequency must be 1000 Hz");
+assert.ok(fireAlarm.pulses.length >= 4, "Fire alarm must have rapid continuous cadence");
+
+const warningChime = getBridgeAlertPattern("warning");
+assert.equal(warningChime.frequency, 880, "BAM Category A warning chime must be 880 Hz");
+assert.equal(warningChime.pulses.length, 2, "Warning chime must have 2 pulses");
+assert.ok(warningChime.code.includes("IMO MSC.302(87)"), "Warning must cite IMO MSC.302(87)");
 
 console.log("All platform feature checks passed.");
 

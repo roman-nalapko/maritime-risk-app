@@ -1085,3 +1085,92 @@ export function generateOfflineWatchHandoverQr(input, result) {
   };
 }
 
+/**
+ * Wilson Score Interval with Continuity Adjustment for Proportions (Issue #13)
+ * Provides 95% confidence intervals for small and sparse maritime accident samples.
+ * @param {number} count Number of positive events (e.g. injury or fatal count)
+ * @param {number} total Total sample size n
+ * @param {number} z Standard normal critical value (default 1.96 for 95% CI)
+ */
+export function calculateWilsonInterval(count, total, z = 1.96) {
+  const n = Number(total) || 0;
+  const k = Math.min(n, Math.max(0, Number(count) || 0));
+
+  if (n <= 0) {
+    return {
+      point: 0,
+      lower: 0,
+      upper: 0,
+      margin: 0,
+      isSparse: true,
+      confidence: 0.95
+    };
+  }
+
+  const p = k / n;
+  const z2 = z * z;
+  const denominator = 1 + z2 / n;
+  const center = (p + z2 / (2 * n)) / denominator;
+  const rad = Math.sqrt((p * (1 - p)) / n + z2 / (4 * (n * n)));
+  const margin = (z * rad) / denominator;
+
+  const lower = Math.max(0, center - margin);
+  const upper = Math.min(1, center + margin);
+
+  return {
+    point: p,
+    lower,
+    upper,
+    margin,
+    isSparse: n < 30,
+    confidence: 0.95
+  };
+}
+
+/**
+ * IMO MSC.302(87) Bridge Alert Management (BAM) & SOLAS III/6.4.2 Emergency Sound Patterns
+ * Returns deterministic audio frequency pulses and timings (for pure Web Audio API synthesis).
+ * @param {string} alarmType "general_emergency" | "fire" | "abandon_ship" | "warning"
+ */
+export function getBridgeAlertPattern(alarmType = "general_emergency") {
+  switch (alarmType) {
+    case "general_emergency":
+    case "abandon_ship":
+      return {
+        frequency: 800,
+        pulses: [
+          { duration: 0.2, pause: 0.2 },
+          { duration: 0.2, pause: 0.2 },
+          { duration: 0.2, pause: 0.2 },
+          { duration: 0.2, pause: 0.2 },
+          { duration: 0.2, pause: 0.2 },
+          { duration: 0.2, pause: 0.2 },
+          { duration: 0.2, pause: 0.2 },
+          { duration: 1.5, pause: 0.5 }
+        ],
+        code: "SOLAS III/6.4.2 General Emergency Alarm (7 short + 1 prolonged blast)"
+      };
+    case "fire":
+      return {
+        frequency: 1000,
+        pulses: [
+          { duration: 0.4, pause: 0.1 },
+          { duration: 0.4, pause: 0.1 },
+          { duration: 0.4, pause: 0.1 },
+          { duration: 0.4, pause: 0.1 }
+        ],
+        code: "Continuous Fire Alarm Bell Tone"
+      };
+    case "warning":
+    default:
+      return {
+        frequency: 880,
+        pulses: [
+          { duration: 0.25, pause: 0.1 },
+          { duration: 0.25, pause: 0.5 }
+        ],
+        code: "IMO MSC.302(87) BAM Category A Navigational Warning Chime"
+      };
+  }
+}
+

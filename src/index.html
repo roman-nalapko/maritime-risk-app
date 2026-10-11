@@ -506,13 +506,18 @@
                     <span class="drill-kicker">SOLAS III/19 · АВАРІЙНІ ТРИВОГИ</span>
                     <h3>Симуляція реакції на тривогу</h3>
                   </div>
-                  <label for="drill-type-select" class="sr-only">Тип суднової тривоги</label>
-                  <select id="drill-type-select">
-                    <option value="fire">Пожежна тривога (Fire Drill)</option>
-                    <option value="abandon_ship">Шлюпкова тривога (Abandon Ship)</option>
-                    <option value="enclosed_space">Рятування з замкненого простору</option>
-                    <option value="oil_spill">Аварійний розлив нафти (SOPEP)</option>
-                  </select>
+                  <div class="drill-header-controls">
+                    <button type="button" class="button-ghost drill-sound-btn" id="drill-sound-btn" title="Сигнал тривоги за кодом IMO BAM MSC.302(87) / SOLAS">
+                      <span>🔊</span> Сигнал тривоги (BAM)
+                    </button>
+                    <label for="drill-type-select" class="sr-only">Тип суднової тривоги</label>
+                    <select id="drill-type-select">
+                      <option value="fire">Пожежна тривога (Fire Drill)</option>
+                      <option value="abandon_ship">Шлюпкова тривога (Abandon Ship)</option>
+                      <option value="enclosed_space">Рятування з замкненого простору</option>
+                      <option value="oil_spill">Аварійний розлив нафти (SOPEP)</option>
+                    </select>
+                  </div>
                 </div>
                 <div class="drill-results">
                   <div class="drill-stat-cell">
@@ -885,8 +890,11 @@
 
           <div class="stat-summary">
             <div><span>Записів про постраждалих</span><strong id="event-total">—</strong><small>після фільтрації й подавлення</small></div>
-            <div><span>З травмуванням</span><strong id="injury-share">—</strong><small>частка опублікованих записів</small></div>
-            <div><span>З летальним наслідком</span><strong id="fatal-share">—</strong><small>частка опублікованих записів</small></div>
+            <div><span>З травмуванням</span><strong id="injury-share">—</strong><small id="injury-ci">95% ДІ: [—]</small></div>
+            <div><span>З летальним наслідком</span><strong id="fatal-share">—</strong><small id="fatal-ci">95% ДІ: [—]</small></div>
+          </div>
+          <div class="sparse-notice-box" id="sparse-notice-box" hidden>
+            <span class="sparse-chip">⚠️ Малий обсяг вибірки (n &lt; 30): підвищена статистична невизначеність</span>
           </div>
 
           <div class="stats-grid">
