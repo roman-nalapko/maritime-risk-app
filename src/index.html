@@ -172,6 +172,21 @@
                 <label>Нічні зміни, %
                   <input id="night" name="night" type="number" min="0" max="100" value="25" required />
                 </label>
+                <label>Розклад вахт
+                  <select id="watch-system" name="watchSystem">
+                    <option value="4on8off">3-вахтовий (4/8 — стандарт)</option>
+                    <option value="6on6off">2-вахтовий (6/6 — ризик втоми)</option>
+                    <option value="daywork">Денна зміна (Day-work)</option>
+                  </select>
+                </label>
+                <label>Тип судна / флот
+                  <select id="vessel-type" name="vesselType">
+                    <option value="container">Контейнеровоз</option>
+                    <option value="tanker">Танкер / Газовоз / Хімовоз</option>
+                    <option value="bulker">Балкер / Суховантаж</option>
+                    <option value="tug">Буксир / Портофлот</option>
+                  </select>
+                </label>
                 <label class="toggle-field">Завжди використовую ЗІЗ
                   <input id="ppe" name="ppe" type="checkbox" role="switch" checked />
                   <span class="toggle" aria-hidden="true"></span>

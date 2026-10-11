@@ -14,9 +14,15 @@ const roleLabels = {
 };
 const vesselLabels = {
   cargo: "Вантажне", cargo_dry: "Суховантажне", tanker: "Танкер",
+  container: "Контейнеровоз", bulker: "Балкер", tug: "Буксир",
   passenger: "Пасажирське", fishing: "Риболовне", service: "Службове",
   service_offshore: "Службове / офшорне", recreational: "Прогулянкове",
   other: "Інше", unknown: "Тип не визначено"
+};
+const watchLabels = {
+  "4on8off": "3-вахтовий (4/8 — стандарт)",
+  "6on6off": "2-вахтовий (6/6 — ризик втоми)",
+  daywork: "Денна зміна (Day-work)"
 };
 const eventLabels = {
   fall: "Падіння", machinery: "Механізми", mooring: "Швартування", fire: "Пожежа",
@@ -47,15 +53,15 @@ function escapeHtml(str) {
 const demoScenarios = {
   cadet: {
     label: "Вигаданий сценарій · курсант",
-    profile: { age: 20, sex: "male", residence: "city", chronic: false, role: "cadet", hours: 1200, night: 15, ppe: true, previous: false, smoking: false, alcohol: false }
+    profile: { age: 20, sex: "male", residence: "city", chronic: false, role: "cadet", hours: 1200, night: 15, watchSystem: "4on8off", vesselType: "container", ppe: true, previous: false, smoking: false, alcohol: false }
   },
   engine: {
     label: "Вигаданий сценарій · механік",
-    profile: { age: 38, sex: "male", residence: "city", chronic: false, role: "engine", hours: 2600, night: 45, ppe: true, previous: true, smoking: false, alcohol: false }
+    profile: { age: 38, sex: "male", residence: "city", chronic: false, role: "engine", hours: 2600, night: 45, watchSystem: "6on6off", vesselType: "tanker", ppe: true, previous: true, smoking: false, alcohol: false }
   },
   deck: {
     label: "Вигаданий сценарій · палубна команда",
-    profile: { age: 45, sex: "female", residence: "village", chronic: false, role: "deck", hours: 2800, night: 35, ppe: false, previous: false, smoking: false, alcohol: false }
+    profile: { age: 45, sex: "female", residence: "village", chronic: false, role: "deck", hours: 2800, night: 35, watchSystem: "4on8off", vesselType: "bulker", ppe: false, previous: false, smoking: false, alcohol: false }
   }
 };
 
@@ -64,12 +70,14 @@ const demoScenarios = {
 function currentInput() {
   const el = form.elements;
   return {
-    age:       el.namedItem("age").value,
-    sex:       el.namedItem("sex").value,
-    residence: el.namedItem("residence").value,
-    role:      el.namedItem("role").value,
-    hours:     el.namedItem("hours").value,
-    night:     el.namedItem("night").value,
+    age:         el.namedItem("age").value,
+    sex:         el.namedItem("sex").value,
+    residence:   el.namedItem("residence").value,
+    role:        el.namedItem("role").value,
+    hours:       el.namedItem("hours").value,
+    night:       el.namedItem("night").value,
+    watchSystem: el.namedItem("watchSystem")?.value || "4on8off",
+    vesselType:  el.namedItem("vesselType")?.value || "container",
     ...Object.fromEntries(CHECKBOX_FIELDS.map((name) => [name, el.namedItem(name).checked]))
   };
 }
@@ -172,6 +180,8 @@ function renderRisk(result, input, scenarioName = activeScenario, isInitial = fa
     ["Професійна група", roleLabels[input.role] ?? input.role],
     ["Робоча експозиція", `${Number(input.hours).toLocaleString("uk-UA")} год/рік`],
     ["Нічні зміни", `${Number(input.night)}%`],
+    ["Розклад вахт", watchLabels[input.watchSystem] ?? input.watchSystem ?? "3-вахтовий (4/8)"],
+    ["Тип судна / флот", vesselLabels[input.vesselType] ?? input.vesselType ?? "Контейнеровоз"],
     ["ЗІЗ", yesNo(input.ppe)],
     ["Додаткові маркери", [
       input.chronic   && "хронічний стан",
@@ -279,6 +289,7 @@ function renderRisk(result, input, scenarioName = activeScenario, isInitial = fa
           if (id === "night") $("#night").value = Math.round(Number($("#night").value) / 2);
           if (id === "lifestyle") { $("#smoking").checked = false; $("#alcohol").checked = false; }
           if (id === "hours") $("#hours").value = 2000;
+          if (id === "watch") $("#watch-system").value = "4on8off";
           const updated = currentInput();
           renderRisk(calculateRisk(updated), updated, "Моделювання: " + (btn.closest(".what-if-card").querySelector("strong")?.textContent || id), false);
         });
@@ -453,6 +464,8 @@ const MAIB_CASE_STUDIES = {
       role: "officer",
       hours: 2750,
       night: 70,
+      watchSystem: "4on8off",
+      vesselType: "container",
       ppe: true,
       previous: false,
       smoking: false,
@@ -469,6 +482,8 @@ const MAIB_CASE_STUDIES = {
       role: "deck",
       hours: 2900,
       night: 40,
+      watchSystem: "6on6off",
+      vesselType: "tanker",
       ppe: false,
       previous: true,
       smoking: false,
@@ -485,6 +500,8 @@ const MAIB_CASE_STUDIES = {
       role: "officer",
       hours: 3100,
       night: 80,
+      watchSystem: "6on6off",
+      vesselType: "bulker",
       ppe: true,
       previous: false,
       smoking: true,

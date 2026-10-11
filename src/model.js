@@ -121,6 +121,15 @@ export function evaluateMlcCompliance(input) {
     });
   }
 
+  if (input.watchSystem === "6on6off") {
+    findings.push({
+      rule: "IMO MSC/Circ.1598 / ICS Guidance",
+      topic: "Двовахтовий розклад 6/6",
+      severity: "warning",
+      message: "Розклад 6 через 6 годин визнаний IMO фактором високого ризику хронічної втоми через фрагментацію сну. Рекомендовано перехід на 4/8 або забезпечення додаткового компенсуючого відпочинку."
+    });
+  }
+
   return {
     hasWarnings: findings.some((f) => f.severity === "warning"),
     findings
@@ -185,6 +194,18 @@ export function generateWhatIfScenarios(input) {
       deltaPercent: Math.round(reduction),
       simulatedTotal: simResult.total,
       simulatedCategory: simResult.category
+    });
+  }
+
+  if (input.watchSystem === "6on6off") {
+    const simInput = { ...input, watchSystem: "4on8off" };
+    scenarios.push({
+      id: "watch",
+      title: "Перехід з розкладу 6/6 на 3-вахтовий 4/8",
+      description: "Перехід на класичний розклад 4/8 ліквідує фрагментацію сну та відновлює безперервні 8-годинні фази фізіологічного відпочинку.",
+      deltaPercent: 12,
+      simulatedTotal: baseResult.total * 0.88,
+      simulatedCategory: categoryFor(baseResult.total * 0.88)
     });
   }
 
@@ -313,6 +334,44 @@ export function generateChecklist(input) {
       id: "ppe-audit",
       label: "ПОВНИЙ АУДИТ ЗІЗ: використання засобів захисту обов'язкове до початку будь-яких робіт",
       category: "ЗІЗ",
+      mandatory: true
+    });
+  }
+
+  if (input.watchSystem === "6on6off") {
+    items.push({
+      id: "watch-fatigue-check",
+      label: "Оцінка кумулятивної втоми (KSS/FSS) перед заступом на 6-годинну вахту",
+      category: "Контроль втоми",
+      mandatory: true
+    });
+  }
+
+  if (input.vesselType === "tanker") {
+    items.push({
+      id: "tanker-gas",
+      label: "Контроль атмосфери та вмісту кисню в системі інертного газу (O₂ < 8%) за стандартом ISGOTT",
+      category: "Танкерна безпека",
+      mandatory: true
+    });
+    items.push({
+      id: "tanker-static",
+      label: "Заземлення вантажних рукавів, антистатичні ЗІЗ та контроль швидкості наливу вантажу",
+      category: "Танкерна безпека",
+      mandatory: true
+    });
+  } else if (input.vesselType === "container") {
+    items.push({
+      id: "container-lashing",
+      label: "Перевірка стану кріплень та натягу талрепів контейнерів (Lashing/Cargo Securing)",
+      category: "Вантажна безпека",
+      mandatory: true
+    });
+  } else if (input.vesselType === "bulker") {
+    items.push({
+      id: "bulker-holds",
+      label: "Газовий аналіз та вентиляція трюмів при перевезенні небезпечних навалювальних вантажів (IMSBC Code)",
+      category: "Вантажна безпека",
       mandatory: true
     });
   }
