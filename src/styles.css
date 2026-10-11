@@ -427,19 +427,59 @@ select option { background: #071929; color: #f8fafc; }
 /* Result Card */
 .result-card {
   padding: 28px;
-  position: sticky;
-  top: 92px;
-  max-height: calc(100vh - 108px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(56, 189, 248, 0.3) transparent;
   border: 1px solid rgba(56, 189, 248, 0.22);
   background: linear-gradient(180deg, rgba(12, 32, 52, 0.9) 0%, rgba(8, 22, 36, 0.95) 100%);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.09);
 }
-.result-card::-webkit-scrollbar { width: 5px; }
-.result-card::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.35); border-radius: 10px; }
+.result-tabs-nav {
+  margin: 20px 0 18px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  background: rgba(5, 17, 29, 0.7);
+  padding: 5px;
+  border-radius: 13px;
+  border: 1px solid var(--line);
+}
+.result-tab-btn {
+  padding: 9px 6px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  transition: all 0.15s;
+}
+.result-tab-btn:hover {
+  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.04);
+}
+.result-tab-btn.active {
+  background: rgba(14, 165, 233, 0.16);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.35);
+  box-shadow: 0 0 12px rgba(14, 165, 233, 0.15);
+}
+.tab-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+.result-tab-pane {
+  animation: fadeInPane 0.2s ease;
+}
+.result-tab-pane[hidden] {
+  display: none !important;
+}
+@keyframes fadeInPane {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .result-header { display: flex; justify-content: space-between; align-items: center; }
 .result-kicker { color: var(--cyan); font-size: 11px; font-weight: 850; text-transform: uppercase; letter-spacing: 0.12em; text-shadow: 0 0 10px rgba(34, 211, 238, 0.3); }
 .method-badge {
@@ -1031,7 +1071,8 @@ footer p, footer > div > a { font-size: 12px; }
 @media print {
   @page { margin: 14mm; }
   body { background: #fff; color: #000; }
-  .site-header, .hero, .trust-strip, .section-heading, .assessment-form, .statistics, .methodology, footer, .report-actions, .breakdown-title button { display: none !important; }
+  .site-header, .hero, .trust-strip, .section-heading, .assessment-form, .statistics, .methodology, footer, .report-actions, .breakdown-title button, .result-tabs-nav { display: none !important; }
+  .result-tab-pane { display: block !important; }
   .workspace { padding: 0; }
   .assessment-grid { display: block; }
   .result-card { position: static; padding: 0; border: 0; box-shadow: none; overflow: visible; }

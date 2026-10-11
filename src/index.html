@@ -230,94 +230,118 @@
             <div class="meter" aria-hidden="true"><i id="risk-meter"></i></div>
             <div class="meter-labels"><span>Низький</span><span>Середній</span><span>Екстремальний · навчальна шкала</span></div>
 
-            <dl class="model-context" aria-label="Статус і обмеження моделі">
-              <div><dt>Статус моделі</dt><dd id="model-status">Попередня</dd></div>
-              <div><dt>Версія</dt><dd id="model-version">SR-UA-PROTOTYPE-0.1</dd></div>
-              <div><dt>Невизначеність</dt><dd id="uncertainty-status">Не оцінена</dd></div>
-            </dl>
+            <nav class="result-tabs-nav" role="tablist" aria-label="Розділи аналізу">
+              <button type="button" role="tab" class="result-tab-btn active" data-tab="radar" aria-selected="true" id="tab-btn-radar" aria-controls="pane-radar">
+                <span class="tab-icon">🎯</span> Аналіз і радар
+              </button>
+              <button type="button" role="tab" class="result-tab-btn" data-tab="whatif" aria-selected="false" id="tab-btn-whatif" aria-controls="pane-whatif">
+                <span class="tab-icon">⚡</span> What-If
+              </button>
+              <button type="button" role="tab" class="result-tab-btn" data-tab="checklist" aria-selected="false" id="tab-btn-checklist" aria-controls="pane-checklist">
+                <span class="tab-icon">📋</span> Чек-лист
+              </button>
+              <button type="button" role="tab" class="result-tab-btn" data-tab="method" aria-selected="false" id="tab-btn-method" aria-controls="pane-method">
+                <span class="tab-icon">🔬</span> Методика
+              </button>
+            </nav>
 
-            <div class="mlc-advice-card" id="mlc-advice-card" hidden>
-              <div class="mlc-advice-heading">
-                <span class="mlc-tag">MLC 2006 · STCW</span>
-                <h4>Контроль навантаження та втоми</h4>
+            <div class="result-tab-pane" id="pane-radar" data-tab-pane="radar" role="tabpanel" aria-labelledby="tab-btn-radar">
+              <div class="mlc-advice-card" id="mlc-advice-card" hidden>
+                <div class="mlc-advice-heading">
+                  <span class="mlc-tag">MLC 2006 · STCW</span>
+                  <h4>Контроль навантаження та втоми</h4>
+                </div>
+                <ul id="mlc-findings-list"></ul>
               </div>
-              <ul id="mlc-findings-list"></ul>
-            </div>
 
-            <section class="profile-summary" aria-labelledby="profile-summary-title">
-              <div class="profile-summary-heading"><h3 id="profile-summary-title">Вхідний профіль</h3><span id="scenario-name">Користувацький профіль</span></div>
-              <dl id="profile-summary-list"></dl>
-              <p>Сформовано локально: <time id="report-date">—</time>. Дані не збережено.</p>
-            </section>
-
-            <div class="live-radar-box" id="live-radar-box">
-              <div class="live-radar-header">
-                <h3>Профіль факторів (LIVE)</h3>
-                <small>Нормований радар поточного розрахунку</small>
-              </div>
-              <div class="live-radar-wrapper">
-                <svg viewBox="0 0 240 190" id="live-radar-svg" role="img" aria-label="Радарна діаграма поточного розрахунку">
-                  <g class="live-radar-bg-grid">
-                    <polygon points="120,20 200,68 180,150 60,150 40,68" fill="none" stroke="rgba(16,37,54,0.12)" stroke-width="1" />
-                    <polygon points="120,52 170,82 155,130 85,130 70,82" fill="none" stroke="rgba(16,37,54,0.08)" stroke-width="1" />
-                    <line x1="120" y1="98" x2="120" y2="20" stroke="rgba(16,37,54,0.1)" />
-                    <line x1="120" y1="98" x2="200" y2="68" stroke="rgba(16,37,54,0.1)" />
-                    <line x1="120" y1="98" x2="180" y2="150" stroke="rgba(16,37,54,0.1)" />
-                    <line x1="120" y1="98" x2="60" y2="150" stroke="rgba(16,37,54,0.1)" />
-                    <line x1="120" y1="98" x2="40" y2="68" stroke="rgba(16,37,54,0.1)" />
-                  </g>
-                  <polygon id="live-radar-poly" points="120,60 160,95 140,135 90,135 75,95" fill="rgba(34,199,184,0.22)" stroke="#087a72" stroke-width="2" />
-                  <g id="live-radar-markers"></g>
-                </svg>
-                <div class="live-radar-axis-labels">
-                  <span class="lra-1">Здоров'я</span>
-                  <span class="lra-2">Експозиція</span>
-                  <span class="lra-3">Нічні</span>
-                  <span class="lra-4">Звички</span>
-                  <span class="lra-5">ЗІЗ</span>
+              <div class="live-radar-box" id="live-radar-box">
+                <div class="live-radar-header">
+                  <h3>Профіль факторів (LIVE)</h3>
+                  <small>Нормований радар поточного розрахунку</small>
+                </div>
+                <div class="live-radar-wrapper">
+                  <svg viewBox="0 0 240 190" id="live-radar-svg" role="img" aria-label="Радарна діаграма поточного розрахунку">
+                    <g class="live-radar-bg-grid">
+                      <polygon points="120,20 200,68 180,150 60,150 40,68" fill="none" stroke="rgba(16,37,54,0.12)" stroke-width="1" />
+                      <polygon points="120,52 170,82 155,130 85,130 70,82" fill="none" stroke="rgba(16,37,54,0.08)" stroke-width="1" />
+                      <line x1="120" y1="98" x2="120" y2="20" stroke="rgba(16,37,54,0.1)" />
+                      <line x1="120" y1="98" x2="200" y2="68" stroke="rgba(16,37,54,0.1)" />
+                      <line x1="120" y1="98" x2="180" y2="150" stroke="rgba(16,37,54,0.1)" />
+                      <line x1="120" y1="98" x2="60" y2="150" stroke="rgba(16,37,54,0.1)" />
+                      <line x1="120" y1="98" x2="40" y2="68" stroke="rgba(16,37,54,0.1)" />
+                    </g>
+                    <polygon id="live-radar-poly" points="120,60 160,95 140,135 90,135 75,95" fill="rgba(34,199,184,0.22)" stroke="#087a72" stroke-width="2" />
+                    <g id="live-radar-markers"></g>
+                  </svg>
+                  <div class="live-radar-axis-labels">
+                    <span class="lra-1">Здоров'я</span>
+                    <span class="lra-2">Експозиція</span>
+                    <span class="lra-3">Нічні</span>
+                    <span class="lra-4">Звички</span>
+                    <span class="lra-5">ЗІЗ</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="breakdown">
-              <div class="breakdown-title"><h3>Внесок факторів</h3><button type="button" id="details-toggle" aria-expanded="true">Сховати деталі</button></div>
-              <div id="breakdown-list"></div>
-            </div>
-
-            <div class="what-if-section" id="what-if-section">
-              <div class="what-if-header">
-                <h3>Симуляція «Що, якщо?»</h3>
-                <small>Оцінка потенційного зниження ризику</small>
+              <div class="breakdown">
+                <div class="breakdown-title"><h3>Внесок факторів</h3><button type="button" id="details-toggle" aria-expanded="true">Сховати деталі</button></div>
+                <div id="breakdown-list"></div>
               </div>
-              <div class="what-if-grid" id="what-if-grid"></div>
+
+              <div class="recommendations">
+                <h3>Що варто контролювати</h3>
+                <ul id="recommendation-list"></ul>
+              </div>
+
+              <section class="profile-summary" aria-labelledby="profile-summary-title">
+                <div class="profile-summary-heading"><h3 id="profile-summary-title">Вхідний профіль</h3><span id="scenario-name">Користувацький профіль</span></div>
+                <dl id="profile-summary-list"></dl>
+                <p>Сформовано локально: <time id="report-date">—</time>. Дані не збережено.</p>
+              </section>
             </div>
 
-            <details class="evidence-details">
-              <summary>Джерела компонентів і статус перевірки</summary>
-              <div id="component-evidence"></div>
-            </details>
-
-            <div class="recommendations">
-              <h3>Що варто контролювати</h3>
-              <ul id="recommendation-list"></ul>
-            </div>
-
-            <div class="checklist-section" id="checklist-section">
-              <div class="checklist-header">
-                <div>
-                  <span class="checklist-kicker">ОПБ / ПЕРЕДЗМІННИЙ ЧЕК-ЛИСТ</span>
-                  <h3>Контрольний список вахти</h3>
+            <div class="result-tab-pane" id="pane-whatif" data-tab-pane="whatif" role="tabpanel" aria-labelledby="tab-btn-whatif" hidden>
+              <div class="what-if-section" id="what-if-section">
+                <div class="what-if-header">
+                  <h3>Симуляція «Що, якщо?»</h3>
+                  <small>Оцінка потенційного зниження ризику</small>
                 </div>
-                <span class="checklist-progress" id="checklist-progress">0 / 0</span>
+                <div class="what-if-grid" id="what-if-grid"></div>
               </div>
-              <ul class="checklist-list" id="checklist-list"></ul>
             </div>
 
-            <details class="calculation-details">
-              <summary>Формула та припущення</summary>
-              <p id="formula-copy"></p>
-              <ul id="assumption-list"></ul>
-            </details>
+            <div class="result-tab-pane" id="pane-checklist" data-tab-pane="checklist" role="tabpanel" aria-labelledby="tab-btn-checklist" hidden>
+              <div class="checklist-section" id="checklist-section">
+                <div class="checklist-header">
+                  <div>
+                    <span class="checklist-kicker">ОПБ / ПЕРЕДЗМІННИЙ ЧЕК-ЛИСТ</span>
+                    <h3>Контрольний список вахти</h3>
+                  </div>
+                  <span class="checklist-progress" id="checklist-progress">0 / 0</span>
+                </div>
+                <ul class="checklist-list" id="checklist-list"></ul>
+              </div>
+            </div>
+
+            <div class="result-tab-pane" id="pane-method" data-tab-pane="method" role="tabpanel" aria-labelledby="tab-btn-method" hidden>
+              <dl class="model-context" aria-label="Статус і обмеження моделі">
+                <div><dt>Статус моделі</dt><dd id="model-status">Попередня</dd></div>
+                <div><dt>Версія</dt><dd id="model-version">SR-UA-PROTOTYPE-0.1</dd></div>
+                <div><dt>Невизначеність</dt><dd id="uncertainty-status">Не оцінена</dd></div>
+              </dl>
+
+              <details class="evidence-details" open>
+                <summary>Джерела компонентів і статус перевірки</summary>
+                <div id="component-evidence"></div>
+              </details>
+
+              <details class="calculation-details">
+                <summary>Формула та припущення</summary>
+                <p id="formula-copy"></p>
+                <ul id="assumption-list"></ul>
+              </details>
+            </div>
+
             <div class="report-actions">
               <button class="button button-secondary" id="print-report" type="button">Друк / зберегти PDF</button>
               <small>Діалог друку відкривається локально у браузері.</small>

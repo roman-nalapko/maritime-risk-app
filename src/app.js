@@ -354,12 +354,31 @@ $("#import-profile-input")?.addEventListener("change", (event) => {
 $("#print-report").addEventListener("click", () => window.print());
 
 let printDetailsState = [];
+let printTabsState = [];
 window.addEventListener("beforeprint", () => {
   printDetailsState = [...document.querySelectorAll("#result-panel details")].map((details) => details.open);
   document.querySelectorAll("#result-panel details").forEach((details) => { details.open = true; });
+  printTabsState = [...document.querySelectorAll(".result-tab-pane")].map((pane) => pane.hidden);
+  document.querySelectorAll(".result-tab-pane").forEach((pane) => { pane.hidden = false; });
 });
 window.addEventListener("afterprint", () => {
   document.querySelectorAll("#result-panel details").forEach((details, index) => { details.open = printDetailsState[index]; });
+  document.querySelectorAll(".result-tab-pane").forEach((pane, index) => { pane.hidden = printTabsState[index] ?? false; });
+});
+
+// Result Panel Segmented Tabs
+document.querySelectorAll(".result-tab-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const target = btn.dataset.tab;
+    document.querySelectorAll(".result-tab-btn").forEach((b) => {
+      const isActive = b === btn;
+      b.classList.toggle("active", isActive);
+      b.setAttribute("aria-selected", String(isActive));
+    });
+    document.querySelectorAll(".result-tab-pane").forEach((pane) => {
+      pane.hidden = pane.dataset.tabPane !== target;
+    });
+  });
 });
 
 $("#details-toggle").addEventListener("click", (event) => {
