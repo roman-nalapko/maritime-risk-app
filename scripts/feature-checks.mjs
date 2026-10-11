@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { calculateRisk, evaluateMlcCompliance, generateWhatIfScenarios, generateChecklist } from "../src/model.js";
+import { calculateRisk, evaluateMlcCompliance, generateWhatIfScenarios, generateChecklist, retrieveSimilarIncidents } from "../src/model.js";
 
 console.log("Running platform feature checks...");
 
@@ -86,6 +86,13 @@ assert.ok(injuries + fatal <= totalIncidents, "Severity counts must not exceed t
 const testRadarResult = calculateRisk({ age: 25, hours: 2000, night: 20, ppe: true, role: "deck" });
 assert.ok(testRadarResult.components.health > 0, "Health component must be positive");
 assert.ok(testRadarResult.components.occupation > 0, "Occupation component must be positive");
+
+// 6. Test Grounded Similar-Incident Retrieval (Issue #11)
+const retrieval = retrieveSimilarIncidents({ role: "deck", vesselType: "tanker" }, incidentsData.cells);
+assert.ok(retrieval.sampleSize > 0, "Must retrieve records for deck role");
+assert.ok(Array.isArray(retrieval.retrievedFacts) && retrieval.retrievedFacts.length >= 2, "Must return separated factual statements");
+assert.ok(typeof retrieval.explanation === "string" && retrieval.explanation.length > 10, "Must return neutral grounded explanation");
+assert.ok(retrieval.disclaimer.includes("не є персональною ймовірністю"), "Must include explicit disclaimer separating records from probability");
 
 console.log("All platform feature checks passed.");
 

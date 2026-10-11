@@ -392,3 +392,94 @@ function recommendationsFor(input, components) {
   }
   return items.slice(0, 3);
 }
+
+export function retrieveSimilarIncidents(input, cells = []) {
+  if (!Array.isArray(cells) || cells.length === 0) {
+    return {
+      sampleSize: 0,
+      topEventTypes: [],
+      severityShare: { injury: 0, fatal: 0, none: 0 },
+      retrievedFacts: [
+        "Агреговані дані розслідувань MAIB наразі завантажуються.",
+        "Після завершення з'являться статистичні підтвердження для вашої групи."
+      ],
+      explanation: "Для відображення джерельно-підтвердженого контексту інцидентів очікується підключення локальної вибірки.",
+      disclaimer: "Це статистика записів про постраждалих у вибірці MAIB; показник не є персональною ймовірністю настання події."
+    };
+  }
+
+  const role = input.role || "deck";
+  let filtered = cells.filter((c) => c.role === role);
+  if (filtered.length === 0) filtered = cells;
+
+  const total = filtered.reduce((acc, c) => acc + (c.count || 0), 0);
+  if (total === 0) {
+    return {
+      sampleSize: 0,
+      topEventTypes: [],
+      severityShare: { injury: 0, fatal: 0, none: 0 },
+      retrievedFacts: ["Немає опублікованих записів для обраної комбінації фільтрів."],
+      explanation: "Схожих записів не виявлено в опублікованій агрегації через поріг захисту приватності (n < 5).",
+      disclaimer: "Це статистика записів про постраждалих у вибірці MAIB; показник не є персональною ймовірністю настання події."
+    };
+  }
+
+  const eventCounts = {};
+  const severityCounts = { none: 0, injury: 0, fatal: 0 };
+  for (const c of filtered) {
+    eventCounts[c.eventType] = (eventCounts[c.eventType] || 0) + c.count;
+    severityCounts[c.severity] = (severityCounts[c.severity] || 0) + c.count;
+  }
+
+  const eventTypeUkrainian = {
+    fall: "Падіння / послизання",
+    machinery: "Робота з механізмами",
+    mooring: "Швартовні операції",
+    fire: "Пожежа або задимлення",
+    collision: "Зіткнення суден",
+    overboard: "Людина за бортом",
+    exposure: "Вплив шкідливих речовин",
+    personal_accident: "Виробнича травма",
+    grounding_stranding: "Посадка на мілину"
+  };
+
+  const sortedEvents = Object.entries(eventCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([type, count]) => ({
+      type,
+      label: eventTypeUkrainian[type] || type,
+      count,
+      share: count / total
+    }));
+
+  const injuryShare = (severityCounts.injury || 0) / total;
+  const fatalShare = (severityCounts.fatal || 0) / total;
+
+  const facts = [
+    `У вибірці MAIB для цієї професійної групи налічується ${total.toLocaleString("uk-UA")} записів про постраждалих.`,
+    `Провідний механізм нещасних випадків: ${sortedEvents[0]?.label ?? "Виробничий фактор"} (${Math.round((sortedEvents[0]?.share ?? 0) * 100)}% зафіксованих подій).`,
+    `Частка інцидентів із тілесними ушкодженнями становить ${Math.round(injuryShare * 100)}% (летальних: ${Math.round(fatalShare * 100)}%).`
+  ];
+
+  let explanation = "";
+  if (role === "deck") {
+    explanation = "Для палубної команди ключову небезпеку у статистиці MAIB становлять швартовні кінці під натягом (зони snap-back) та падіння через слизьку палубу або бортову качку.";
+  } else if (role === "engine") {
+    explanation = "Для машинної команди домінують ризики раптового вивільнення залишкового тиску, опіки та небезпека втрати свідомості в замкнених просторах (enclosed spaces).";
+  } else if (role === "officer") {
+    explanation = "Для судноводіїв провідними факторами навігаційних катастроф (посадки на мілину, тарани) є хронічна втома на нічній вахті та втрата ситуаційної обізнаності.";
+  } else {
+    explanation = "Аналіз показує перевагу факторів виробничої безпеки, де вирішальну роль відіграє безперервний контроль ЗІЗ та право зупинки небезпечних робіт.";
+  }
+
+  return {
+    sampleSize: total,
+    topEventTypes: sortedEvents,
+    severityShare: { injury: injuryShare, fatal: fatalShare, none: 1 - injuryShare - fatalShare },
+    retrievedFacts: facts,
+    facts,
+    explanation,
+    disclaimer: "Це статистика записів про постраждалих у вибірці MAIB; показник не є персональною ймовірністю настання події."
+  };
+}

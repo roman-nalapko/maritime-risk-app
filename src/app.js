@@ -1,4 +1,4 @@
-import { calculateRisk, evaluateMlcCompliance, generateWhatIfScenarios, generateChecklist } from "./model.js";
+import { calculateRisk, evaluateMlcCompliance, generateWhatIfScenarios, generateChecklist, retrieveSimilarIncidents } from "./model.js";
 
 const $ = (selector) => document.querySelector(selector);
 const form = $("#risk-form");
@@ -314,6 +314,19 @@ function renderRisk(result, input, scenarioName = activeScenario, isInitial = fa
   // Recommendations
   $("#recommendation-list").innerHTML = result.recommendations.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
 
+  // Grounded Incident Retrieval from official records
+  const grounded = retrieveSimilarIncidents(input, incidents);
+  const groundedFactsList = $("#grounded-facts-list");
+  const groundedExplanation = $("#grounded-explanation");
+  if (groundedFactsList && groundedExplanation) {
+    if (grounded.facts && grounded.facts.length > 0) {
+      groundedFactsList.innerHTML = grounded.facts.map((fact) => `<li>${escapeHtml(fact)}</li>`).join("");
+    } else {
+      groundedFactsList.innerHTML = `<li>Очікування завантаження даних або профіль не має точних збігів.</li>`;
+    }
+    groundedExplanation.textContent = grounded.explanation || "—";
+  }
+
   // Actionable Safety Checklist
   const checklist = generateChecklist(input);
   const checklistList = $("#checklist-list");
@@ -623,6 +636,14 @@ async function loadIncidents() {
     $("#stats-role").addEventListener("change", renderIncidents);
     $("#stats-vessel").addEventListener("change", renderIncidents);
     renderIncidents();
+    const cur = currentInput();
+    const grounded = retrieveSimilarIncidents(cur, incidents);
+    const groundedFactsList = $("#grounded-facts-list");
+    const groundedExplanation = $("#grounded-explanation");
+    if (groundedFactsList && groundedExplanation && grounded.facts?.length) {
+      groundedFactsList.innerHTML = grounded.facts.map((fact) => `<li>${escapeHtml(fact)}</li>`).join("");
+      groundedExplanation.textContent = grounded.explanation || "—";
+    }
   } catch (error) {
     $("#event-bars").innerHTML = `<p>Не вдалося завантажити агреговані дані: ${escapeHtml(error.message)}</p>`;
   }
