@@ -405,7 +405,14 @@ assert.ok(appContent.includes("renderMlcRestValidator"), "app.js must implement 
 assert.ok(appContent.includes("validateRestHoursSchedule"), "app.js must use validateRestHoursSchedule");
 assert.ok(appContent.includes("createDefaultWatchSchedule"), "app.js must use createDefaultWatchSchedule");
 
+// 24. Test Select Dropdown Styling and Custom Chevron Guard
+assert.ok(cssContent.includes("--select-chevron:"), "styles.css must declare --select-chevron token");
+assert.ok(cssContent.includes("appearance: none;"), "styles.css must disable native select appearance");
+assert.ok(cssContent.includes("background-image: var(--select-chevron);"), "styles.css must use custom chevron icon for select");
+assert.ok(cssContent.includes("padding: 0 38px 0 14px;"), "styles.css must set safe right padding for select chevron");
+
 console.log("All platform feature checks passed.");
+
 
 
 

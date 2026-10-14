@@ -38,6 +38,9 @@
   --line:      rgba(255,255,255,0.07);
   --line-mid:  rgba(255,255,255,0.12);
 
+  /* Dropdown icon */
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238aa4b8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+
   /* Layout */
   --shell-max: 1180px;
   --radius-sm: 8px;
@@ -68,6 +71,7 @@ html[data-bridge-mode="red"] {
   --blue-dim:   rgba(248, 113, 113, 0.12);
   --line:      rgba(239, 68, 68, 0.12);
   --line-mid:  rgba(239, 68, 68, 0.2);
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23f87171' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
 }
 
 html[data-bridge-mode="day"] {
@@ -86,6 +90,7 @@ html[data-bridge-mode="day"] {
   --blue-dim:   rgba(2, 132, 199, 0.1);
   --line:      rgba(15, 23, 42, 0.1);
   --line-mid:  rgba(15, 23, 42, 0.16);
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
 }
 
 /* ── Reset & Base ── */
@@ -575,8 +580,7 @@ label {
 }
 label.wide { grid-column: 1 / -1; }
 
-input[type="number"],
-select {
+input[type="number"] {
   width: 100%;
   height: 42px;
   padding: 0 12px;
@@ -588,7 +592,37 @@ select {
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-input[type="number"]:focus,
+input[type="number"]:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px var(--teal-dim);
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 100%;
+  height: 42px;
+  padding: 0 38px 0 14px;
+  border: 1px solid var(--line-mid);
+  border-radius: var(--radius-sm);
+  background-color: var(--raised);
+  background-image: var(--select-chevron);
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px 16px;
+  color: var(--text-primary);
+  font-size: 13.5px;
+  outline: none;
+  cursor: pointer;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+select::-ms-expand {
+  display: none;
+}
 select:focus {
   border-color: var(--teal);
   box-shadow: 0 0 0 3px var(--teal-dim);
