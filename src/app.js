@@ -2419,7 +2419,11 @@ const glossaryByLang = {
     { term: "ISGOTT", def: "International Safety Guide for Oil Tankers and Terminals — стандарт безпеки газового середовища, статичної електрики та наливних операцій." },
     { term: "IMSBC Code", def: "International Maritime Solid Bulk Cargoes Code — вимоги до перевезення навалювальних вантажів, схильних до розрідження або виділення газів." },
     { term: "Snap-Back Zone", def: "Небезпечна зона віддачі швартовного троса. Розраховується для всіх типів синтетичних і сталевих кінців." },
-    { term: "Stop Work Authority", def: "Безумовне право будь-якого члена екіпажу негайно зупинити роботу за підозри на загрозу життю без дисциплінарних наслідків." }
+    { term: "Stop Work Authority", def: "Безумовне право будь-якого члена екіпажу негайно зупинити роботу за підозри на загрозу життю без дисциплінарних наслідків." },
+    { term: "GMDSS / ГМЗЛБ", def: "Глобальна морська система зв'язку під час лиха та для забезпечення безпеки мореплавства (SOLAS IV)." },
+    { term: "Профіль ризику судна", def: "Визначення у порядку, встановленому Чорноморським меморандумом, категорії високого, стандартного або низького ризику на основі типу, віку, кількості затримань (Правила z0353-04)." },
+    { term: "GISIS IMO", def: "Глобальна інтегрована система інформації про судноплавство IMO — офіційна база даних аварій та розслідувань." },
+    { term: "CleanSeaNet", def: "Європейська супутникова служба виявлення розливів нафти та моніторингу аварійного забруднення." }
   ],
   en: [
     { term: "MLC 2006", def: "Maritime Labour Convention (ILO). Enforces mandatory limits: minimum 10 hours rest per 24 hours and 77 hours per 7 days." },
@@ -2430,7 +2434,11 @@ const glossaryByLang = {
     { term: "ISGOTT", def: "International Safety Guide for Oil Tankers and Terminals — benchmark for flammable atmosphere control, static electricity, and transfer operations." },
     { term: "IMSBC Code", def: "International Maritime Solid Bulk Cargoes Code — mandatory rules for bulk cargoes subject to liquefaction or chemical gas evolution." },
     { term: "Snap-Back Zone", def: "High-energy recoil trajectory zone when a mooring line parts under tension. Danger zone for all synthetic and steel lines." },
-    { term: "Stop Work Authority", def: "Inherent right of any crew member to halt an operation immediately without fear of reprisal if safety is compromised." }
+    { term: "Stop Work Authority", def: "Inherent right of any crew member to halt an operation immediately without fear of reprisal if safety is compromised." },
+    { term: "GMDSS", def: "Global Maritime Distress and Safety System (SOLAS Chapter IV) for automated distress alerting and maritime safety information." },
+    { term: "Vessel Risk Profile", def: "Classification into High, Standard, or Low Risk Profile based on parameters under the Black Sea MoU (inspection frequency, flag state, RO performance)." },
+    { term: "GISIS IMO", def: "Global Integrated Shipping Information System by IMO — official database of marine casualties and incidents." },
+    { term: "CleanSeaNet", def: "European satellite-based oil spill monitoring and vessel detection service operated by EMSA." }
   ],
   ru: [
     { term: "MLC 2006", def: "Конвенция МОТ о труде в морском судоходстве. Устанавливает обязательные нормы: не менее 10 часов отдыха в сутки и 77 часов за 7 дней." },
@@ -2441,7 +2449,11 @@ const glossaryByLang = {
     { term: "ISGOTT", def: "International Safety Guide for Oil Tankers and Terminals — стандарт безопасности газовой среды, статического электричества и налива." },
     { term: "IMSBC Code", def: "Международный кодекс морской перевозки твердых навалочных грузов, склонных к разжижению или выделению газов." },
     { term: "Snap-Back Zone", def: "Опасная зона отдачи швартовного троса при разрыве под натяжением. Рассчитывается для синтетических и стальных канатов." },
-    { term: "Stop Work Authority", def: "Безусловное право любого члена экипажа немедленно остановить небезопасные работы без риска дисциплинарных взысканий." }
+    { term: "Stop Work Authority", def: "Безусловное право любого члена экипажа немедленно остановить небезопасные работы без риска дисциплинарных взысканий." },
+    { term: "ГМСББ / GMDSS", def: "Глобальная морская система связи при бедствии для обеспечения безопасности мореплавания (SOLAS IV)." },
+    { term: "Профиль риска судна", def: "Определение категории высокого, стандартного или низкого риска согласно Черноморскому меморандуму на основе типа, возраста и задержаний судна." },
+    { term: "GISIS IMO", def: "Глобальная интегрированная система информации о судоходстве ИМО — официальная база данных аварий." },
+    { term: "Служба CleanSeaNet", def: "Европейская спутниковая служба обнаружения нефтяных разливов и мониторинга судов." }
   ]
 };
 

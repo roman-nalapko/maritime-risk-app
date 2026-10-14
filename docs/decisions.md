@@ -175,3 +175,12 @@
 **Why:** Educators and seafarers need to see the controllable impact of protective factors (e.g. 25% reduction with full PPE, fatigue abatement by halving night shifts) and share anonymized training profiles without any server-side database.
 
 **Consequence:** All operations are in-memory (`Blob`, `FileReader`, pure functions). No remote API, local storage, cookies, or telemetry are used. Tested with automated platform checks in `scripts/feature-checks.mjs`.
+
+## ADR-022: Complete UI/UX declutter redesign and Ukrainian maritime safety regulation integration
+
+**Decision:** Perform a full UI/UX redesign of the application to remove visual clutter, excessive card borders, and emoji noise while maintaining high readability, mobile-first responsiveness, and WCAG AA contrast. Integrate citations from Ukrainian maritime safety regulations (Правила контролю суден z0353-04) covering vessel risk profiles, GMDSS, GISIS, and CleanSeaNet.
+
+**Why:** User feedback revealed that the previous interface was overly dense and visually overloaded with redundant labels and competing visual elements. The redesign establishes a clean, disciplined information hierarchy, streamlines form and results presentation, and enriches the maritime glossary with national safety definitions.
+
+**Consequence:** CSS footprint was reduced by ~1300 lines of clutter while preserving all 114 interactive element IDs and WCAG AA contrast standards. All 6 automated test suites and build steps pass with exit code 0.
+
