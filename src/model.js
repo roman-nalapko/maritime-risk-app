@@ -1174,3 +1174,112 @@ export function getBridgeAlertPattern(alarmType = "general_emergency") {
   }
 }
 
+/**
+ * Bridge Resource Management (BRM) & Navigation Watch Team Risk Coupling (STCW A-VIII/2, COLREG Rule 5)
+ * Evaluates the synergistic safety redundancy of the bridge watch team.
+ */
+export function evaluateWatchTeamRisk(oowInput, lookoutInput = null, options = {}) {
+  const isNight = options.isNight ?? ((oowInput?.night ?? 0) >= 25);
+  const pilotOnBoard = Boolean(options.pilotOnBoard);
+  const hasLookout = Boolean(lookoutInput);
+
+  const oowRisk = calculateRisk(oowInput || { role: "officer", hours: 2000 });
+  const oowFatigue = calculateCircadianFatigue(oowInput || { watchSystem: "4on8off" }, options);
+
+  let lookoutRisk = null;
+  let lookoutFatigue = null;
+  if (hasLookout) {
+    lookoutRisk = calculateRisk(lookoutInput);
+    lookoutFatigue = calculateCircadianFatigue(lookoutInput, options);
+  }
+
+  const findings = [];
+  const recommendations = [];
+
+  let soleWatchkeeperNight = false;
+  let mutualFatigueNadir = false;
+  let penaltyMultiplier = 1.0;
+
+  // Rule 1: STCW A-VIII/2 Part 4-1 & COLREGs Rule 5: Sole watchkeeper during night
+  if (!hasLookout && isNight) {
+    soleWatchkeeperNight = true;
+    penaltyMultiplier *= 2.2;
+    findings.push({
+      rule: "STCW A-VIII/2 Part 4-1 / COLREG Rule 5",
+      severity: "critical",
+      title: "Відсутність окремого впередсмотрящого вночі",
+      text: "Несення ходової вахти одним помічником капітана в темний час доби є грубим порушенням STCW та фактором №1 нічних зіткнень (урок MAIB Scot Carrier)."
+    });
+    recommendations.push("Негайно виставити окремого матроса-впередсмотрящого (Lookout) на місток на весь темний час доби.");
+  } else if (!hasLookout && !isNight) {
+    findings.push({
+      rule: "STCW A-VIII/2 Part 4-1",
+      severity: "info",
+      title: "Одноособова денна вахта (Sole Day Watch)",
+      text: "Дозволяється в світлий час доби лише за сприятливої видимості, спокійного трафіку та без додаткових обов'язків."
+    });
+  }
+
+  // Rule 2: Mutual Fatigue during Circadian Nadir
+  if (hasLookout) {
+    const oowExhausted = oowFatigue.sleepDebtHours >= 4 || oowInput?.watchSystem === "6on6off" || (Number(oowInput?.hours) || 0) >= 2800;
+    const lookoutExhausted = lookoutFatigue.sleepDebtHours >= 4 || lookoutInput?.watchSystem === "6on6off" || (Number(lookoutInput?.hours) || 0) >= 2800;
+
+    if (oowExhausted && lookoutExhausted) {
+      mutualFatigueNadir = true;
+      penaltyMultiplier *= 1.8;
+      findings.push({
+        rule: "IMO MSC/Circ.1598 & BRM Principles",
+        severity: "critical",
+        title: "Синхронна кумулятивна втома вахти (BRM Redundancy Failure)",
+        text: "Обидва члени ходової вахти мають високий дефіцит сну (графік 6/6 або навантаження > 2800 год). Взаємна перевірка дій (Cross-check) повністю скомпрометована."
+      });
+      recommendations.push("Задіяти підміну з відпочилої зміни або ввести додатковий нагляд капітана.");
+    } else if (oowExhausted || lookoutExhausted) {
+      penaltyMultiplier *= 1.3;
+      findings.push({
+        rule: "IMO MSC/Circ.1598",
+        severity: "warning",
+        title: "Асиметрична втома вахти",
+        text: `Один із членів вахти (${oowExhausted ? "вахтовий помічник" : "впередсмотрящий"}) має ознаки кумулятивної перевтоми.`
+      });
+      recommendations.push("Посилити вербальну комунікацію (Closed-loop communication) та перевірку орієнтирів кожні 15 хвилин.");
+    }
+  }
+
+  // Rule 3: Pilot on board integration (IMO Res. A.960)
+  if (pilotOnBoard) {
+    findings.push({
+      rule: "IMO Res. A.960 & BRM Standards",
+      severity: "info",
+      title: "Лоцманська проводка (Bridge Team / Pilot Integration)",
+      text: "Присутність лоцмана на містку не звільняє вахтового помічника від обов'язку безперервного моніторингу курсу та положення судна."
+    });
+    recommendations.push("Провести Master/Pilot Information Exchange (MPX) та узгодити план переходу до початку маневрів.");
+  }
+
+  // Calculate combined score
+  const baseRate = oowRisk.total * 1000;
+  const lookoutFactor = hasLookout ? (lookoutRisk.total * 1000) * 0.4 : (isNight ? baseRate * 1.2 : baseRate * 0.3);
+  const rawTeamScore = (baseRate + lookoutFactor) * penaltyMultiplier;
+  const teamScore = Math.min(100, Math.max(1, Math.round(rawTeamScore * 10) / 10));
+
+  let redundancyLevel = "optimal";
+  if (soleWatchkeeperNight || mutualFatigueNadir || teamScore >= 60) {
+    redundancyLevel = "compromised";
+  } else if (teamScore >= 25 || !hasLookout || penaltyMultiplier > 1.0) {
+    redundancyLevel = "degraded";
+  }
+
+  return {
+    teamScore,
+    redundancyLevel,
+    soleWatchkeeperNight,
+    mutualFatigueNadir,
+    hasLookout,
+    pilotOnBoard,
+    findings,
+    recommendations
+  };
+}
+

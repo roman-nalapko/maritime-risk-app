@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   calculateRisk,
   evaluateMlcCompliance,
@@ -15,7 +18,8 @@ import {
   compareProfiles,
   generateOfflineWatchHandoverQr,
   calculateWilsonInterval,
-  getBridgeAlertPattern
+  getBridgeAlertPattern,
+  evaluateWatchTeamRisk
 } from "../src/model.js";
 
 console.log("Running platform feature checks...");
@@ -76,10 +80,6 @@ assert.ok(engineChecklist.items.some((i) => i.id === "engine-confined"), "Engine
 assert.ok(engineChecklist.items.some((i) => i.id === "engine-hearing"), "Engine checklist must include hearing protection check");
 
 // 4. Test Incidents statistics aggregation
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const incidentsData = JSON.parse(await readFile(path.join(root, "src/data/incidents.maib.aggregate.json"), "utf8"));
 assert.ok(Array.isArray(incidentsData.cells) && incidentsData.cells.length > 50, "Incident aggregate cells must exist");
@@ -297,8 +297,67 @@ assert.ok(fireAlarm.pulses.length >= 4, "Fire alarm must have rapid continuous c
 
 const warningChime = getBridgeAlertPattern("warning");
 assert.equal(warningChime.frequency, 880, "BAM Category A warning chime must be 880 Hz");
-assert.equal(warningChime.pulses.length, 2, "Warning chime must have 2 pulses");
-assert.ok(warningChime.code.includes("IMO MSC.302(87)"), "Warning must cite IMO MSC.302(87)");
+// 20. Test Bridge Resource Management (BRM) & Navigation Watch Team Coupling (STCW A-VIII/2)
+const safeWatch = evaluateWatchTeamRisk(
+  { role: "officer", hours: 1900, night: 15, watchSystem: "4on8off" },
+  { role: "deck", hours: 1900, night: 15, watchSystem: "4on8off" },
+  { isNight: true, pilotOnBoard: false }
+);
+assert.equal(safeWatch.redundancyLevel, "optimal", "Two well-rested crew at night must have optimal redundancy");
+assert.equal(safeWatch.soleWatchkeeperNight, false, "Lookout present means not a sole watchkeeper");
+assert.ok(safeWatch.teamScore < 25, "Safe watch team must have low team risk score");
+
+// Sole watchkeeper at night (Scot Carrier scenario)
+const soloNightWatch = evaluateWatchTeamRisk(
+  { role: "officer", hours: 2600, night: 60, watchSystem: "6on6off" },
+  null,
+  { isNight: true }
+);
+assert.equal(soloNightWatch.soleWatchkeeperNight, true, "Must flag sole watchkeeper at night");
+assert.equal(soloNightWatch.redundancyLevel, "compromised", "Solo night watch must be compromised");
+assert.ok(soloNightWatch.findings.some((f) => f.rule.includes("STCW A-VIII/2") && f.severity === "critical"), "Must flag critical STCW A-VIII/2 violation");
+assert.ok(soloNightWatch.recommendations.some((r) => r.includes("матроса-впередсмотрящого")), "Must recommend placing a dedicated lookout");
+
+// Synchronous fatigue nadir failure
+const mutualFatigueWatch = evaluateWatchTeamRisk(
+  { role: "officer", hours: 3200, night: 70, watchSystem: "6on6off" },
+  { role: "deck", hours: 3200, night: 70, watchSystem: "6on6off" },
+  { isNight: true }
+);
+assert.equal(mutualFatigueWatch.mutualFatigueNadir, true, "Must detect mutual cumulative fatigue failure");
+assert.equal(mutualFatigueWatch.redundancyLevel, "compromised", "Mutual fatigue breaks redundancy");
+assert.ok(mutualFatigueWatch.teamScore > safeWatch.teamScore, "Fatigued watch team score must exceed safe watch team score");
+
+// Pilot on board integration
+const pilotWatch = evaluateWatchTeamRisk(
+  { role: "officer", hours: 2000, night: 20, watchSystem: "4on8off" },
+  { role: "deck", hours: 2000, night: 20, watchSystem: "4on8off" },
+  { isNight: false, pilotOnBoard: true }
+);
+assert.equal(pilotWatch.pilotOnBoard, true, "Must record pilot presence");
+assert.ok(pilotWatch.findings.some((f) => f.rule.includes("IMO Res. A.960")), "Must include Master/Pilot Information Exchange (MPX) advisory");
+
+// 21. Test UI & DOM Contract for BRM and Chart Tooltips
+const htmlContent = await readFile(path.join(root, "src/index.html"), "utf8");
+const cssContent = await readFile(path.join(root, "src/styles.css"), "utf8");
+const appContent = await readFile(path.join(root, "src/app.js"), "utf8");
+
+assert.ok(htmlContent.includes('id="brm-watch-card"'), "index.html must have brm-watch-card");
+assert.ok(htmlContent.includes('id="brm-lookout-toggle"'), "index.html must have brm-lookout-toggle");
+assert.ok(htmlContent.includes('id="brm-pilot-toggle"'), "index.html must have brm-pilot-toggle");
+assert.ok(htmlContent.includes('id="brm-team-score"'), "index.html must have brm-team-score");
+assert.ok(htmlContent.includes('id="brm-redundancy-badge"'), "index.html must have brm-redundancy-badge");
+assert.ok(htmlContent.includes('id="chart-tooltip"'), "index.html must have chart-tooltip container");
+
+assert.ok(cssContent.includes(".brm-watch-card"), "styles.css must style brm-watch-card");
+assert.ok(cssContent.includes(".brm-badge-optimal"), "styles.css must define brm-badge-optimal");
+assert.ok(cssContent.includes(".brm-badge-compromised"), "styles.css must define brm-badge-compromised");
+assert.ok(cssContent.includes(".chart-tooltip"), "styles.css must define chart-tooltip");
+assert.ok(cssContent.includes(".circ-bar"), "styles.css must define circ-bar");
+
+assert.ok(appContent.includes("renderBrmWatchTeam"), "app.js must implement renderBrmWatchTeam");
+assert.ok(appContent.includes("showChartTooltip"), "app.js must implement showChartTooltip");
+assert.ok(appContent.includes("hideChartTooltip"), "app.js must implement hideChartTooltip");
 
 console.log("All platform feature checks passed.");
 

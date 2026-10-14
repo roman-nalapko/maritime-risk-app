@@ -14,11 +14,34 @@ import {
   compareProfiles,
   generateOfflineWatchHandoverQr,
   calculateWilsonInterval,
-  getBridgeAlertPattern
+  getBridgeAlertPattern,
+  evaluateWatchTeamRisk
 } from "./model.js";
 
 const $ = (selector) => document.querySelector(selector);
 const form = $("#risk-form");
+
+function showChartTooltip(targetEl, htmlContent) {
+  const tooltip = $("#chart-tooltip");
+  if (!tooltip) return;
+  tooltip.innerHTML = htmlContent;
+  tooltip.classList.add("is-active");
+  tooltip.setAttribute("aria-hidden", "false");
+
+  const rect = targetEl.getBoundingClientRect();
+  const left = rect.left + rect.width / 2 + window.scrollX;
+  const top = rect.top + window.scrollY;
+
+  tooltip.style.left = `${left}px`;
+  tooltip.style.top = `${top}px`;
+}
+
+function hideChartTooltip() {
+  const tooltip = $("#chart-tooltip");
+  if (!tooltip) return;
+  tooltip.classList.remove("is-active");
+  tooltip.setAttribute("aria-hidden", "true");
+}
 
 // Declarative list of checkbox field names — adding a new checkbox here is enough
 const CHECKBOX_FIELDS = ["chronic", "ppe", "previous", "smoking", "alcohol"];
@@ -256,10 +279,34 @@ function renderLiveRadar(result, input) {
     return [x, y];
   });
 
+  const t = I18N[currentLang];
+  const axisDescriptions = [
+    `${t.radarLabel3}: ${formatEngineeringValue(result.components.health)}`,
+    `${t.radarLabel2}: ${input.hours} ${t.hoursUnit}`,
+    `${t.radarLabel1}: ${input.night}%`,
+    `${t.radarLabel4}: ${input.smoking || input.alcohol ? (currentLang === "en" ? "Elevated" : (currentLang === "ru" ? "Повышенный" : "Підвищений")) : (currentLang === "en" ? "Controlled" : (currentLang === "ru" ? "Контролируемый" : "Контрольований"))}`,
+    `${t.radarLabel5}: ${input.ppe ? (currentLang === "en" ? "Compliant" : (currentLang === "ru" ? "Соблюдается" : "Використовується")) : (currentLang === "en" ? "Deficient" : (currentLang === "ru" ? "Нарушение" : "Дефіцит"))}`
+  ];
+
   poly.setAttribute("points", points.map(([x, y]) => `${x},${y}`).join(" "));
-  markers.innerHTML = points.map(([x, y]) =>
-    `<circle cx="${x}" cy="${y}" r="3.5" fill="var(--cyan-dark)" stroke="#ffffff" stroke-width="1.5" />`
-  ).join("");
+  markers.innerHTML = points.map(([x, y], i) => {
+    const desc = axisDescriptions[i];
+    return `<circle class="radar-marker" cx="${x}" cy="${y}" r="3.5" fill="var(--cyan-dark)" stroke="#ffffff" stroke-width="1.5" tabindex="0" role="img" aria-label="${escapeHtml(desc)}" data-tooltip="${escapeHtml(desc)}" />`;
+  }).join("");
+
+  if (!markers._hasTooltipListener) {
+    markers._hasTooltipListener = true;
+    markers.addEventListener("mouseenter", (e) => {
+      const c = e.target.closest(".radar-marker");
+      if (c && c.dataset.tooltip) showChartTooltip(c, c.dataset.tooltip);
+    }, true);
+    markers.addEventListener("mouseleave", () => hideChartTooltip(), true);
+    markers.addEventListener("focusin", (e) => {
+      const c = e.target.closest(".radar-marker");
+      if (c && c.dataset.tooltip) showChartTooltip(c, c.dataset.tooltip);
+    });
+    markers.addEventListener("focusout", () => hideChartTooltip());
+  }
 }
 
 function renderSensitivity(input) {
@@ -494,8 +541,25 @@ function renderCircadian(input) {
         p.isWatchTime ? "is-watch" : "",
         isNadir ? "is-nadir" : ""
       ].filter(Boolean).join(" ");
-      return `<div class="${barClass}" style="--bar-h:${heightPercent}%" title="${String(p.hour).padStart(2, "0")}:00 · ${t.circAlertness} ${p.alertness}%${p.isWatchTime ? " (" + t.circWatchBadge + ")" : ""}"></div>`;
+      const nadirText = isNadir ? (currentLang === "en" ? " · Nadir" : (currentLang === "ru" ? " · Минимум" : " · Мінімум")) : "";
+      const watchText = p.isWatchTime ? ` (${t.circWatchBadge})` : "";
+      const tipText = `<strong>${String(p.hour).padStart(2, "0")}:00</strong> · ${t.circAlertness} ${p.alertness}%${watchText}${nadirText}`;
+      return `<div class="${barClass}" style="--bar-h:${heightPercent}%" tabindex="0" role="img" aria-label="${escapeHtml(tipText.replace(/<[^>]+>/g, ""))}" data-tooltip="${escapeHtml(tipText)}"></div>`;
     }).join("");
+
+    if (!bars._hasTooltipListener) {
+      bars._hasTooltipListener = true;
+      bars.addEventListener("mouseenter", (e) => {
+        const bar = e.target.closest(".circ-bar");
+        if (bar && bar.dataset.tooltip) showChartTooltip(bar, bar.dataset.tooltip);
+      }, true);
+      bars.addEventListener("mouseleave", () => hideChartTooltip(), true);
+      bars.addEventListener("focusin", (e) => {
+        const bar = e.target.closest(".circ-bar");
+        if (bar && bar.dataset.tooltip) showChartTooltip(bar, bar.dataset.tooltip);
+      });
+      bars.addEventListener("focusout", () => hideChartTooltip());
+    }
   }
 
   if (recsList) {
@@ -651,6 +715,109 @@ function renderPscSire(input) {
       }).join("");
     } else {
       capBox.hidden = true;
+    }
+  }
+}
+
+function renderBrmWatchTeam(input) {
+  const card = $("#brm-watch-card");
+  if (!card) return;
+  const t = I18N[currentLang];
+
+  const hasLookout = Boolean($("#brm-lookout-toggle")?.checked);
+  const pilotOnBoard = Boolean($("#brm-pilot-toggle")?.checked);
+  const isNight = (Number(input?.night) || 0) >= 25;
+
+  const lookoutInput = hasLookout
+    ? { role: "deck", hours: input.hours, night: input.night, watchSystem: input.watchSystem, ppe: true }
+    : null;
+
+  const brm = evaluateWatchTeamRisk(input, lookoutInput, { isNight, pilotOnBoard });
+
+  const scoreEl = $("#brm-team-score");
+  if (scoreEl) scoreEl.textContent = brm.teamScore;
+
+  const badgeEl = $("#brm-redundancy-badge");
+  if (badgeEl) {
+    badgeEl.className = `brm-badge brm-badge-${brm.redundancyLevel}`;
+    if (brm.redundancyLevel === "optimal") badgeEl.textContent = t.brmOptimalBadge;
+    else if (brm.redundancyLevel === "degraded") badgeEl.textContent = t.brmDegradedBadge;
+    else badgeEl.textContent = t.brmCompromisedBadge;
+  }
+
+  const findingsList = $("#brm-findings-list");
+  if (findingsList) {
+    findingsList.innerHTML = brm.findings.map((f) => {
+      let title = f.title;
+      let text = f.text;
+      if (currentLang === "en") {
+        if (f.rule.includes("STCW A-VIII/2 Part 4-1 / COLREG")) {
+          title = "Absence of dedicated lookout at night";
+          text = "Sole watchkeeping by OOW during night hours is a severe STCW violation and #1 factor in nighttime collisions (MAIB Scot Carrier).";
+        } else if (f.rule.includes("STCW A-VIII/2 Part 4-1")) {
+          title = "Sole Day Watch";
+          text = "Permitted during daylight only under clear visibility, light traffic, and without secondary duties.";
+        } else if (f.rule.includes("IMO MSC/Circ.1598 & BRM")) {
+          title = "Synchronous cumulative watch fatigue (BRM Redundancy Failure)";
+          text = "Both bridge watch members have high sleep debt (6/6 schedule or >2,800 hrs/yr). Cross-check redundancy is completely compromised.";
+        } else if (f.rule.includes("IMO MSC/Circ.1598")) {
+          title = "Asymmetrical watch fatigue";
+          text = "One member of the watch team exhibits significant cumulative fatigue.";
+        } else if (f.rule.includes("IMO Res. A.960")) {
+          title = "Pilotage Integration (Bridge Team / Pilot)";
+          text = "Pilot presence does not relieve the officer of the watch from continuous monitoring of ship's position and track.";
+        }
+      } else if (currentLang === "ru") {
+        if (f.rule.includes("STCW A-VIII/2 Part 4-1 / COLREG")) {
+          title = "Отсутствие отдельного впередсмотрящего ночью";
+          text = "Несение ходовой вахты одним помощником в темное время суток — грубое нарушение STCW и фактор №1 ночных столкновений (урок MAIB Scot Carrier).";
+        } else if (f.rule.includes("STCW A-VIII/2 Part 4-1")) {
+          title = "Одноособовая дневная вахта (Sole Day Watch)";
+          text = "Разрешается в светлое время суток исключительно при хорошей видимости, спокойном трафике и без посторонних обязанностей.";
+        } else if (f.rule.includes("IMO MSC/Circ.1598 & BRM")) {
+          title = "Синхронная кумулятивная усталость вахты (BRM Redundancy Failure)";
+          text = "Оба члена ходовой вахты имеют высокий дефицит сна (график 6/6 или нагрузка > 2800 ч/год). Взаимная перекрестная проверка действий полностью нарушена.";
+        } else if (f.rule.includes("IMO MSC/Circ.1598")) {
+          title = "Асимметричная усталость вахты";
+          text = "Один из членов вахтенной команды имеет признаки кумулятивного переутомления.";
+        } else if (f.rule.includes("IMO Res. A.960")) {
+          title = "Лоцманская проводка (Bridge Team / Pilot Integration)";
+          text = "Присутствие лоцмана на мостике не освобождает вахтенного помощника от обязанности непрерывного контроля места судна и курса.";
+        }
+      }
+      return `
+        <div class="brm-finding-item brm-sev-${f.severity}">
+          <div class="brm-finding-meta">
+            <span>${escapeHtml(f.rule)}</span>
+            <span>${f.severity.toUpperCase()}</span>
+          </div>
+          <div class="brm-finding-title">${escapeHtml(title)}</div>
+          <div class="brm-finding-text">${escapeHtml(text)}</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  const recsList = $("#brm-recs-list");
+  if (recsList) {
+    if (brm.recommendations.length > 0) {
+      recsList.innerHTML = brm.recommendations.map((r) => {
+        let text = r;
+        if (currentLang === "en") {
+          if (r.includes("впередсмотрящого")) text = "Immediately post a dedicated lookout on the navigation bridge for all hours of darkness.";
+          else if (r.includes("Задіяти підміну")) text = "Deploy relief from a rested watch or introduce direct Master supervision.";
+          else if (r.includes("Посилити вербальну")) text = "Reinforce closed-loop communication and position cross-checks every 15 minutes.";
+          else if (r.includes("Master/Pilot")) text = "Conduct Master/Pilot Information Exchange (MPX) and agree on transit passage plan.";
+        } else if (currentLang === "ru") {
+          if (r.includes("впередсмотрящого")) text = "Немедленно выставить отдельного матроса-впередсмотрящего (Lookout) на мостик на всё темное время суток.";
+          else if (r.includes("Задіяти підміну")) text = "Задействовать подмену из отдохнувшей смены или ввести непосредственный надзор капитана.";
+          else if (r.includes("Посилити вербальну")) text = "Усилить вербальную коммуникацию (Closed-loop) и перекрестную проверку счисления каждые 15 минут.";
+          else if (r.includes("Master/Pilot")) text = "Провести обмен информацией Master/Pilot (MPX) и согласовать план перехода до начала маневрирования.";
+        }
+        return `<li>${escapeHtml(text)}</li>`;
+      }).join("");
+    } else {
+      recsList.innerHTML = `<li>${escapeHtml(currentLang === "en" ? "Watch team composition and vigilance redundancy meet STCW A-VIII/2 requirements." : (currentLang === "ru" ? "Состав ходовой вахты и резервирование бдительности соответствуют требованиям STCW A-VIII/2." : "Склад ходової вахти та резервування пильності відповідають вимогам STCW A-VIII/2."))}</li>`;
     }
   }
 }
@@ -1185,6 +1352,9 @@ function renderRisk(result, input, scenarioName = activeScenario, isInitial = fa
   // Epic 4: Emergency Drills Simulation
   renderEmergencyDrill(input);
 
+  // Epic 10: Bridge Resource Management (BRM) & Navigation Watch Team Coupling
+  renderBrmWatchTeam(input);
+
   // Epic 5: Academic Research Artifacts & Profile Comparison
   renderAcademicArtifacts(result, input);
   renderProfileCompare(input);
@@ -1406,6 +1576,10 @@ $("#engine-heat-toggle")?.addEventListener("change", () => renderWeatherRisk(cur
 
 // Timezone shift slider listener
 $("#tz-shift-slider")?.addEventListener("input", () => renderCircadian(currentInput()));
+
+// BRM Watch Team synergy toggles
+$("#brm-lookout-toggle")?.addEventListener("change", () => renderBrmWatchTeam(currentInput()));
+$("#brm-pilot-toggle")?.addEventListener("change", () => renderBrmWatchTeam(currentInput()));
 
 // Fullscreen Presentation Mode (Defense HUD)
 $("#presentation-mode-btn")?.addEventListener("click", () => {
@@ -1639,6 +1813,16 @@ const I18N = {
     pscCritical: "Критичний ризик",
     pscCleanText: "Невідповідностей за MLC 2006 та STCW A-VIII/1 не виявлено. Профіль відповідає вимогам конвенцій.",
     pscCapTitle: "План коригувальних дій (CAP):",
+    brmKicker: "BRM · STCW A-VIII/2 & COLREG RULE 5",
+    brmTitle: "Синергія ходової вахти (BRM)",
+    brmScoreSubLabel: "Ризик вахти",
+    brmLookoutText: "Окремий впередсмотрящий (Lookout)",
+    brmPilotText: "Лоцман на борту (Pilotage / MPX)",
+    brmFindingsTitle: "Оцінка структури вахти та взаємодії",
+    brmRecsTitle: "Рекомендації капітану та вахтовому помічнику",
+    brmOptimalBadge: "Оптимальний рівень",
+    brmDegradedBadge: "Деградований рівень",
+    brmCompromisedBadge: "Скомпрометований рівень",
     drillKicker: "SOLAS III/19 · АВАРІЙНІ ТРИВОГИ",
     drillTitle: "Симуляція реакції на тривогу",
     drillDelaySpan: "Затримка реакції",
@@ -1942,6 +2126,16 @@ const I18N = {
     pscCritical: "Critical Risk",
     pscCleanText: "Zero non-conformities under MLC 2006 and STCW A-VIII/1. Profile fully satisfies convention standards.",
     pscCapTitle: "Corrective Action Plan (CAP):",
+    brmKicker: "BRM · STCW A-VIII/2 & COLREG RULE 5",
+    brmTitle: "Bridge Resource Management (BRM)",
+    brmScoreSubLabel: "Watch Risk",
+    brmLookoutText: "Dedicated Lookout on Bridge",
+    brmPilotText: "Pilot on Board (MPX Protocol)",
+    brmFindingsTitle: "Watch Team Structure & Redundancy Assessment",
+    brmRecsTitle: "Bridge Team & Master Recommendations",
+    brmOptimalBadge: "Optimal Redundancy",
+    brmDegradedBadge: "Degraded Redundancy",
+    brmCompromisedBadge: "Compromised Redundancy",
     drillKicker: "SOLAS III/19 · EMERGENCY DRILLS",
     drillTitle: "Emergency Response Simulation",
     drillDelaySpan: "Reaction delay",
@@ -2245,6 +2439,16 @@ const I18N = {
     pscCritical: "Критический риск",
     pscCleanText: "Несоответствий по MLC 2006 и STCW A-VIII/1 не обнаружено. Профиль соответствует конвенционным требованиям.",
     pscCapTitle: "План корректирующих действий (CAP):",
+    brmKicker: "BRM · STCW A-VIII/2 & COLREG RULE 5",
+    brmTitle: "Синергия ходовой вахты (BRM)",
+    brmScoreSubLabel: "Риск вахты",
+    brmLookoutText: "Выделенный впередсмотрящий (Lookout)",
+    brmPilotText: "Лоцман на борту (Pilotage / MPX)",
+    brmFindingsTitle: "Оценка структуры вахты и взаимодействия",
+    brmRecsTitle: "Рекомендации капитану и вахтенному помощнику",
+    brmOptimalBadge: "Оптимальный уровень",
+    brmDegradedBadge: "Деградированный уровень",
+    brmCompromisedBadge: "Скомпрометированный уровень",
     drillKicker: "SOLAS III/19 · СУДОВЫЕ ТРЕВОГИ",
     drillTitle: "Симуляция реакции на тревогу",
     drillDelaySpan: "Задержка реакции",
@@ -2816,6 +3020,15 @@ function setLanguage(lang) {
   const pscKicker = document.querySelector(".psc-kicker"); if (pscKicker) pscKicker.textContent = t.pscKicker;
   const pscH3 = document.querySelector(".psc-header h3"); if (pscH3) pscH3.textContent = t.pscTitle;
   const pscCapStrong = document.querySelector("#psc-cap-box strong"); if (pscCapStrong) pscCapStrong.textContent = t.pscCapTitle;
+
+  // BRM Watch Team Synergy
+  const brmKicker = document.querySelector(".brm-kicker"); if (brmKicker) brmKicker.textContent = t.brmKicker;
+  const brmH3 = document.querySelector("#brm-card-title"); if (brmH3) brmH3.textContent = t.brmTitle;
+  const brmScoreSub = document.querySelector("#brm-score-sub-label"); if (brmScoreSub) brmScoreSub.textContent = t.brmScoreSubLabel;
+  const brmLookoutSpan = document.querySelector("#brm-lookout-text"); if (brmLookoutSpan) brmLookoutSpan.textContent = t.brmLookoutText;
+  const brmPilotSpan = document.querySelector("#brm-pilot-text"); if (brmPilotSpan) brmPilotSpan.textContent = t.brmPilotText;
+  const brmFindingsTitle = document.querySelector("#brm-findings-title"); if (brmFindingsTitle) brmFindingsTitle.textContent = t.brmFindingsTitle;
+  const brmRecsTitle = document.querySelector("#brm-recs-title"); if (brmRecsTitle) brmRecsTitle.textContent = t.brmRecsTitle;
 
   // Drill Simulator
   const drillKicker = document.querySelector(".drill-kicker"); if (drillKicker) drillKicker.textContent = t.drillKicker;

@@ -184,3 +184,12 @@
 
 **Consequence:** CSS footprint was reduced by ~1300 lines of clutter while preserving all 114 interactive element IDs and WCAG AA contrast standards. All 6 automated test suites and build steps pass with exit code 0.
 
+## ADR-023: Bridge Resource Management (BRM) & Navigation Watch Team Coupling
+
+**Decision:** Model bridge watch team safety synergy and fatigue coupling via `evaluateWatchTeamRisk()` based on STCW Section A-VIII/2 (Part 4-1), COLREGs Rule 5, IMO MSC/Circ.1598, and IMO Res. A.960 (recommendation on operational procedures for maritime pilots). Surface the watch redundancy level (optimal / degraded / compromised) and actionable recommendations in `pane-checklist`. Provide interactive accessible tooltips for the 24-hour circadian curve and live factor radar.
+
+**Why:** Casualty investigation statistics (e.g. MAIB Scot Carrier night collision) demonstrate that solitary night watchkeeping without a dedicated lookout is the primary human factor in navigational collisions and groundings. Furthermore, when both the officer of the watch and lookout suffer cumulative sleep debt during the circadian nadir (02:00–05:00), cross-checking redundancy fails synchronously.
+
+**Consequence:** The calculation remains 100% pure client-side JavaScript without runtime dependencies or data retention. The questionnaire accessibility rule of exactly 5 `role="switch"` controls is preserved (helper toggles use standard checkbox semantics). Verified with automated tests in `scripts/feature-checks.mjs`.
+
+

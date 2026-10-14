@@ -209,6 +209,13 @@ These items improve evidence and terminology but do not block a public education
 - [x] **Інтеграція морських правил України:** додано визначення профілю ризику судна, GMDSS, GISIS та CleanSeaNet згідно з Правилами контролю суден (z0353-04) до глосарія трьома мовами.
 - [x] **Автотести та збірка:** усі 6 тестових наборів та білд проходять із кодом 0.
 
+#### Епік 10: Управління ресурсами містка (BRM) та синергія ходової вахти (STCW A-VIII/2 & COLREG Rule 5) — [ВИКОНАНО]
+- [x] **Моделювання структури ходової вахти (`evaluateWatchTeamRisk`):** перевірка наявності окремого впередсмотрящого (Lookout) у нічний час (COLREG Rule 5), виявлення критичних порушень STCW Section A-VIII/2 Part 4-1 (урок розслідування зіткнення Scot Carrier).
+- [x] **Аналіз взаємної кумулятивної втоми:** детекція збоїв взаємної перевірки дій (Cross-check redundancy failure) при одночасній втомі вахтового помічника та впередсмотрящого (IMO MSC/Circ.1598).
+- [x] **Інтеграція лоцманської проводки (IMO Res. A.960):** контрольні процедури обміну інформацією Master/Pilot Information Exchange (MPX).
+- [x] **Інтерактивні доступні тултіпи:** спливаючі підказки для 24-годинної циркадної кривої (`#circadian-bars`) та живого радара факторів (`#live-radar-svg`) з повною підтримкою клавіатури (`tabindex="0"`, `:focus-visible`).
+- [x] **Автотести:** Перевірено в `scripts/feature-checks.mjs` (тести №20 та №21).
+
 ## Explicitly deferred
 
 - employee ranking or fitness-for-duty decisions;

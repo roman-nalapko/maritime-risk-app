@@ -517,6 +517,40 @@
                   </div>
                 </div>
 
+                <div class="brm-watch-card" id="brm-watch-card">
+                  <div class="brm-header">
+                    <div>
+                      <span class="brm-kicker">BRM · STCW A-VIII/2 &amp; COLREG RULE 5</span>
+                      <h3 id="brm-card-title">Синергія ходової вахти (BRM)</h3>
+                    </div>
+                    <div class="brm-score-badge-wrap">
+                      <div class="brm-team-score-box">
+                        <span class="brm-score-sub" id="brm-score-sub-label">Ризик вахти</span>
+                        <strong id="brm-team-score">18</strong>
+                      </div>
+                      <span class="brm-badge brm-badge-optimal" id="brm-redundancy-badge">Оптимальний рівень</span>
+                    </div>
+                  </div>
+                  <div class="brm-controls-bar">
+                    <label class="brm-toggle-label">
+                      <input type="checkbox" id="brm-lookout-toggle" checked />
+                      <span id="brm-lookout-text">Окремий впередсмотрящий (Lookout)</span>
+                    </label>
+                    <label class="brm-toggle-label">
+                      <input type="checkbox" id="brm-pilot-toggle" />
+                      <span id="brm-pilot-text">Лоцман на борту (Pilotage / MPX)</span>
+                    </label>
+                  </div>
+                  <div class="brm-findings-box" id="brm-findings-box">
+                    <h4 id="brm-findings-title">Оцінка структури вахти та взаємодії</h4>
+                    <div class="brm-findings-list" id="brm-findings-list"></div>
+                  </div>
+                  <div class="brm-recs-box" id="brm-recs-box">
+                    <h4 id="brm-recs-title">Рекомендації капітану та вахтовому помічнику</h4>
+                    <ul class="brm-recs-list" id="brm-recs-list"></ul>
+                  </div>
+                </div>
+
                 <div class="emergency-drill-card" id="emergency-drill-card">
                   <div class="drill-header">
                     <div>
@@ -1004,6 +1038,8 @@
         </div>
       </div>
     </footer>
+
+    <div id="chart-tooltip" class="chart-tooltip" role="tooltip" aria-hidden="true"></div>
 
     <script type="module" src="app.js"></script>
   </body>
