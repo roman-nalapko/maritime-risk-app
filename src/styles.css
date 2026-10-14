@@ -854,7 +854,7 @@ select option { background: var(--surface); color: var(--text-primary); }
 
 .live-radar-box, .benchmark-box, .circadian-card, .weather-hazard-card,
 .grounded-retrieval-box, .profile-summary, .what-if-section, .sensitivity-section,
-.checklist-section, .psc-sire-card, .brm-watch-card, .emergency-drill-card, .qr-handover-card,
+.checklist-section, .psc-sire-card, .brm-watch-card, .mlc-rest-validator-card, .emergency-drill-card, .qr-handover-card,
 .fsa-matrix-section, .academic-export-card, .profile-compare-card {
   background: var(--raised);
   border: 1px solid var(--line);
@@ -887,7 +887,7 @@ select option { background: var(--surface); color: var(--text-primary); }
 
 .benchmark-header h4 { font-size: 13.5px; color: var(--text-primary); margin-top: 2px; }
 .benchmark-tag, .circadian-kicker, .weather-kicker, .grounded-kicker,
-.sensitivity-kicker, .checklist-kicker, .psc-kicker, .brm-kicker, .drill-kicker,
+.sensitivity-kicker, .checklist-kicker, .psc-kicker, .brm-kicker, .mlc-val-kicker, .drill-kicker,
 .qr-kicker, .fsa-matrix-kicker, .academic-kicker, .compare-kicker {
   font-size: 9.5px; font-weight: 700;
   color: var(--text-muted);
@@ -905,7 +905,7 @@ select option { background: var(--surface); color: var(--text-primary); }
 .benchmark-note { font-size: 10.5px; color: var(--text-muted); }
 
 .circadian-header, .weather-header, .grounded-header, .sensitivity-header,
-.checklist-header, .psc-header, .brm-header, .drill-header, .qr-header, .fsa-matrix-header, .compare-header {
+.checklist-header, .psc-header, .brm-header, .mlc-val-header, .drill-header, .qr-header, .fsa-matrix-header, .compare-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -913,7 +913,7 @@ select option { background: var(--surface); color: var(--text-primary); }
   margin-bottom: 10px;
 }
 .circadian-header h3, .weather-header h3, .grounded-header h4, .sensitivity-header h3,
-.checklist-header h3, .psc-header h3, .brm-header h3, .drill-header h3, .qr-header h3, .fsa-matrix-header h3,
+.checklist-header h3, .psc-header h3, .brm-header h3, .mlc-val-header h3, .drill-header h3, .qr-header h3, .fsa-matrix-header h3,
 .academic-header h3, .compare-header h3 {
   font-size: 13.5px; font-weight: 600; color: var(--text-primary); margin: 2px 0 0;
 }
@@ -1085,6 +1085,101 @@ select option { background: var(--surface); color: var(--text-primary); }
 .chart-tooltip.is-active {
   opacity: 1;
 }
+
+/* MLC 2006 / STCW 7-Day Rest Hours Validator */
+.mlc-val-status-wrap { display: flex; align-items: center; gap: 10px; }
+.mlc-val-total-box { text-align: right; }
+.mlc-val-total-sub { font-size: 9.5px; color: var(--text-muted); display: block; }
+#mlc-val-total-hours { font-size: 18px; font-weight: 800; color: var(--teal); line-height: 1; }
+.mlc-val-badge {
+  font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 999px;
+  background: var(--overlay); color: var(--text-secondary);
+}
+.mlc-val-badge-compliant { background: rgba(34, 197, 94, 0.15); color: var(--ok); }
+.mlc-val-badge-violation { background: rgba(244, 63, 94, 0.15); color: var(--danger); }
+
+.mlc-val-desc { font-size: 11.5px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 10px; }
+
+.mlc-val-presets-bar {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;
+}
+.mlc-presets-label { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-right: 4px; }
+.mlc-preset-btn {
+  font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: var(--radius-sm);
+  background: var(--overlay); border: 1px solid var(--line); color: var(--text-secondary);
+  cursor: pointer; transition: all 0.15s ease;
+}
+.mlc-preset-btn:hover { background: var(--surface); color: var(--teal); border-color: var(--teal-dim); }
+.mlc-preset-btn.active { background: var(--teal-dim); color: var(--teal); border-color: var(--teal); }
+
+.mlc-val-days-bar {
+  display: flex; gap: 4px; overflow-x: auto; margin-bottom: 10px; padding-bottom: 2px;
+}
+.mlc-day-tab {
+  flex: 1; min-width: 48px; font-size: 10.5px; font-weight: 600; padding: 5px 6px;
+  text-align: center; border-radius: var(--radius-sm); background: var(--overlay);
+  border: 1px solid var(--line); color: var(--text-secondary); cursor: pointer;
+  transition: all 0.15s ease;
+}
+.mlc-day-tab:hover { background: var(--surface); color: var(--text-primary); }
+.mlc-day-tab.active { background: var(--surface); border-color: var(--teal); color: var(--teal); }
+.mlc-day-tab.has-violation { border-color: var(--danger); }
+
+.mlc-timeline-wrapper {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm);
+  padding: 10px; margin-bottom: 10px;
+}
+.mlc-timeline-meta {
+  display: flex; justify-content: space-between; align-items: baseline; font-size: 11px;
+  color: var(--text-muted); margin-bottom: 8px; flex-wrap: wrap; gap: 4px;
+}
+.mlc-timeline-meta span { font-weight: 600; color: var(--text-primary); }
+
+.mlc-hours-grid {
+  display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px;
+}
+@media (min-width: 620px) {
+  .mlc-hours-grid { grid-template-columns: repeat(24, 1fr); }
+}
+.mlc-hour-slot {
+  height: 38px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border-radius: 4px; border: 1px solid var(--line); cursor: pointer;
+  transition: all 0.15s ease; background: var(--overlay); color: var(--text-muted);
+  user-select: none;
+}
+.mlc-hour-slot:hover, .mlc-hour-slot:focus-visible {
+  outline: 2px solid var(--teal); outline-offset: 1px;
+}
+.mlc-hour-slot.is-rest {
+  background: rgba(29, 184, 168, 0.22); border-color: rgba(29, 184, 168, 0.45); color: var(--teal);
+}
+.mlc-hour-slot.is-work {
+  background: rgba(244, 63, 94, 0.12); border-color: rgba(244, 63, 94, 0.3); color: var(--text-secondary);
+}
+.slot-hour { font-size: 8px; font-weight: 700; line-height: 1; margin-bottom: 2px; }
+.slot-badge { font-size: 8px; font-weight: 800; text-transform: uppercase; line-height: 1; }
+
+.mlc-rules-checklist {
+  display: grid; grid-template-columns: 1fr; gap: 6px; margin-bottom: 10px;
+}
+@media (min-width: 620px) {
+  .mlc-rules-checklist { grid-template-columns: 1fr 1fr; }
+}
+.mlc-rule-item {
+  display: flex; align-items: flex-start; gap: 8px; padding: 6px 8px;
+  background: var(--overlay); border-radius: var(--radius-sm); font-size: 11px;
+}
+.mlc-rule-icon { font-weight: 800; color: var(--ok); flex-shrink: 0; line-height: 1.2; }
+.mlc-rule-item.is-failed .mlc-rule-icon { color: var(--danger); }
+.mlc-rule-content strong { display: block; font-size: 11px; color: var(--text-primary); line-height: 1.3; }
+.mlc-rule-content small { font-size: 9.5px; color: var(--text-muted); display: block; line-height: 1.3; }
+
+.mlc-violations-box {
+  padding: 8px 10px; background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.3);
+  border-radius: var(--radius-sm); margin-top: 8px;
+}
+.mlc-violations-box h4 { font-size: 11px; font-weight: 700; color: var(--danger); margin-bottom: 4px; }
+.mlc-violations-list { margin: 0; padding-left: 14px; font-size: 11px; color: var(--text-secondary); line-height: 1.5; }
 
 .drill-results { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; }
 .drill-stat-cell { padding: 8px; background: var(--overlay); border-radius: var(--radius-sm); text-align: center; }

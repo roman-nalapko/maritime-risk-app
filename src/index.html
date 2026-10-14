@@ -551,6 +551,94 @@
                   </div>
                 </div>
 
+                <div class="mlc-rest-validator-card" id="mlc-rest-validator-card">
+                  <div class="mlc-val-header">
+                    <div>
+                      <span class="mlc-val-kicker">MLC 2006 STANDARD A2.3 &amp; STCW A-VIII/1</span>
+                      <h3 id="mlc-val-title">Валідатор годин відпочинку (Table of Hours of Rest)</h3>
+                    </div>
+                    <div class="mlc-val-status-wrap">
+                      <div class="mlc-val-total-box">
+                        <span class="mlc-val-total-sub" id="mlc-val-total-sub-label">Відпочинок за 7 діб</span>
+                        <strong id="mlc-val-total-hours">112 / 77 год</strong>
+                      </div>
+                      <span class="mlc-val-badge mlc-val-badge-compliant" id="mlc-compliance-badge">Відповідає конвенції</span>
+                    </div>
+                  </div>
+
+                  <p class="mlc-val-desc" id="mlc-val-desc">
+                    Симуляція суднового журналу обліку праці та відпочинку. Перевірка ковзних 24-годинних та 7-денних вікон за стандартами Paris MoU / PSC.
+                  </p>
+
+                  <div class="mlc-val-presets-bar">
+                    <span class="mlc-presets-label" id="mlc-presets-label">Шаблони вахт:</span>
+                    <button type="button" class="mlc-preset-btn active" id="mlc-preset-48">Вахта 4/8 (STCW)</button>
+                    <button type="button" class="mlc-preset-btn" id="mlc-preset-66">Вахта 6/6 (Feeder)</button>
+                    <button type="button" class="mlc-preset-btn" id="mlc-preset-overtime">Порт / Овертайм</button>
+                  </div>
+
+                  <div class="mlc-val-days-bar" id="mlc-day-tabs" role="tablist" aria-label="Дні тижня розкладу">
+                    <button type="button" class="mlc-day-tab active" data-day="0" role="tab" aria-selected="true">День 1</button>
+                    <button type="button" class="mlc-day-tab" data-day="1" role="tab" aria-selected="false">День 2</button>
+                    <button type="button" class="mlc-day-tab" data-day="2" role="tab" aria-selected="false">День 3</button>
+                    <button type="button" class="mlc-day-tab" data-day="3" role="tab" aria-selected="false">День 4</button>
+                    <button type="button" class="mlc-day-tab" data-day="4" role="tab" aria-selected="false">День 5</button>
+                    <button type="button" class="mlc-day-tab" data-day="5" role="tab" aria-selected="false">День 6</button>
+                    <button type="button" class="mlc-day-tab" data-day="6" role="tab" aria-selected="false">День 7</button>
+                  </div>
+
+                  <div class="mlc-timeline-wrapper">
+                    <div class="mlc-timeline-meta">
+                      <span id="mlc-active-day-label">День 1: погодинний графік</span>
+                      <small id="mlc-timeline-hint">Натисніть на слот, щоб перемкнути: Відпочинок / Робота</small>
+                    </div>
+                    <div class="mlc-hours-grid" id="mlc-hours-grid" role="region" aria-label="Погодинний графік 24 години"></div>
+                  </div>
+
+                  <div class="mlc-rules-checklist">
+                    <div class="mlc-rule-item" id="mlc-rule-daily">
+                      <span class="mlc-rule-icon">✓</span>
+                      <div class="mlc-rule-content">
+                        <strong>Мінімум 10 год відпочинку за кожні 24 год</strong>
+                        <small>MLC Standard A2.3.5(b) / STCW Section A-VIII/1</small>
+                      </div>
+                    </div>
+                    <div class="mlc-rule-item" id="mlc-rule-splits">
+                      <span class="mlc-rule-icon">✓</span>
+                      <div class="mlc-rule-content">
+                        <strong>Не більше 2 періодів відпочинку за добу</strong>
+                        <small>MLC Standard A2.3.6 / Нерозривність відновлення</small>
+                      </div>
+                    </div>
+                    <div class="mlc-rule-item" id="mlc-rule-blocklen">
+                      <span class="mlc-rule-icon">✓</span>
+                      <div class="mlc-rule-content">
+                        <strong>Один нерозривний блок відпочинку ≥ 6 годин</strong>
+                        <small>STCW A-VIII/1.3 / Профілактика хронічної втоми</small>
+                      </div>
+                    </div>
+                    <div class="mlc-rule-item" id="mlc-rule-interval">
+                      <span class="mlc-rule-icon">✓</span>
+                      <div class="mlc-rule-content">
+                        <strong>Інтервал між періодами відпочинку ≤ 14 годин</strong>
+                        <small>MLC Standard A2.3.6 / Максимальний безперервний цикл</small>
+                      </div>
+                    </div>
+                    <div class="mlc-rule-item" id="mlc-rule-weekly">
+                      <span class="mlc-rule-icon">✓</span>
+                      <div class="mlc-rule-content">
+                        <strong>Мінімум 77 год відпочинку за будь-які 7 діб</strong>
+                        <small>MLC Standard A2.3.5(b) / Тижневий баланс праці</small>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mlc-violations-box" id="mlc-violations-box" hidden>
+                    <h4 id="mlc-violations-title">Зафіксовані невідповідності (Non-Conformities):</h4>
+                    <ul class="mlc-violations-list" id="mlc-violations-list"></ul>
+                  </div>
+                </div>
+
                 <div class="emergency-drill-card" id="emergency-drill-card">
                   <div class="drill-header">
                     <div>

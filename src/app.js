@@ -15,7 +15,9 @@ import {
   generateOfflineWatchHandoverQr,
   calculateWilsonInterval,
   getBridgeAlertPattern,
-  evaluateWatchTeamRisk
+  evaluateWatchTeamRisk,
+  createDefaultWatchSchedule,
+  validateRestHoursSchedule
 } from "./model.js";
 
 const $ = (selector) => document.querySelector(selector);
@@ -822,6 +824,115 @@ function renderBrmWatchTeam(input) {
   }
 }
 
+let currentMlcSchedule = createDefaultWatchSchedule("4on8off");
+let currentMlcActiveDay = 0; // 0..6
+
+function renderMlcRestValidator() {
+  const card = $("#mlc-rest-validator-card");
+  if (!card) return;
+  const t = I18N[currentLang];
+
+  const val = validateRestHoursSchedule(currentMlcSchedule);
+
+  const totalHoursEl = $("#mlc-val-total-hours");
+  if (totalHoursEl) {
+    totalHoursEl.textContent = `${val.totalRest7Days} / 77 ${t.hoursUnit}`;
+  }
+
+  const badgeEl = $("#mlc-compliance-badge");
+  if (badgeEl) {
+    if (val.isCompliant) {
+      badgeEl.className = "mlc-val-badge mlc-val-badge-compliant";
+      badgeEl.textContent = t.mlcCompliantBadge || "Відповідає конвенції";
+    } else {
+      badgeEl.className = "mlc-val-badge mlc-val-badge-violation";
+      badgeEl.textContent = `${val.violations.length} ${t.mlcViolationBadge || "Порушення MLC"}`;
+    }
+  }
+
+  // Active day label
+  const dayName = t.mlcDayNames ? t.mlcDayNames[currentMlcActiveDay] : `День ${currentMlcActiveDay + 1}`;
+  const activeDayLabel = $("#mlc-active-day-label");
+  if (activeDayLabel) {
+    activeDayLabel.textContent = `${dayName}: ${t.mlcTimelineTitle || "погодинний графік"}`;
+  }
+
+  // Day tabs
+  const dayTabs = document.querySelectorAll(".mlc-day-tab");
+  dayTabs.forEach((tab) => {
+    const d = Number(tab.dataset.day);
+    tab.classList.toggle("active", d === currentMlcActiveDay);
+    tab.setAttribute("aria-selected", d === currentMlcActiveDay ? "true" : "false");
+    const hasViolation = val.violations.some((v) => v.day === d + 1);
+    tab.classList.toggle("has-violation", hasViolation);
+    if (t.mlcDayNames && t.mlcDayNames[d]) {
+      tab.textContent = t.mlcDayNames[d];
+    }
+  });
+
+  // Render 24 hour slots for current day
+  const grid = $("#mlc-hours-grid");
+  if (grid) {
+    const dayHours = currentMlcSchedule[currentMlcActiveDay] || new Array(24).fill(1);
+    grid.innerHTML = dayHours.map((isRest, h) => {
+      const stateClass = isRest ? "is-rest" : "is-work";
+      const stateText = isRest ? (t.mlcStateRest || "Відпочинок") : (t.mlcStateWork || "Робота");
+      const badgeText = isRest ? "REST" : "WORK";
+      const hourStr = `${String(h).padStart(2, "0")}:00`;
+      const tip = `${hourStr} · ${stateText}`;
+      return `
+        <button type="button" class="mlc-hour-slot ${stateClass}" data-hour="${h}" aria-label="${hourStr} ${stateText}" data-tooltip="${escapeHtml(tip)}">
+          <span class="slot-hour">${String(h).padStart(2, "0")}</span>
+          <span class="slot-badge">${badgeText}</span>
+        </button>
+      `;
+    }).join("");
+  }
+
+  // Update rule checklist items
+  const updateRule = (elemId, isPassed) => {
+    const el = $(elemId);
+    if (!el) return;
+    el.classList.toggle("is-failed", !isPassed);
+    const icon = el.querySelector(".mlc-rule-icon");
+    if (icon) icon.textContent = isPassed ? "✓" : "✕";
+  };
+  updateRule("#mlc-rule-daily", val.summary.dailyRestOk);
+  updateRule("#mlc-rule-splits", val.summary.blockSplitsOk);
+  updateRule("#mlc-rule-blocklen", val.summary.blockLenOk);
+  updateRule("#mlc-rule-interval", val.summary.maxIntervalOk);
+  updateRule("#mlc-rule-weekly", val.summary.weeklyRestOk);
+
+  // Update violations box
+  const violBox = $("#mlc-violations-box");
+  const violList = $("#mlc-violations-list");
+  if (violBox && violList) {
+    if (val.isCompliant) {
+      violBox.hidden = true;
+      violList.innerHTML = "";
+    } else {
+      violBox.hidden = false;
+      violList.innerHTML = val.violations.map((v) => {
+        let msg = v.message;
+        if (currentLang === "en") {
+          if (v.type === "daily_minimum") msg = `Day ${v.day}, ${String(v.hour).padStart(2, "0")}:00 — rest in 24h window is only ${val.minDailyRest}h (minimum 10h required).`;
+          else if (v.type === "split_count") msg = `Day ${v.day}, ${String(v.hour).padStart(2, "0")}:00 — rest fragmented into >2 periods (maximum 2 allowed).`;
+          else if (v.type === "block_length") msg = `Day ${v.day}, ${String(v.hour).padStart(2, "0")}:00 — no single continuous rest period of at least 6 hours.`;
+          else if (v.type === "max_interval") msg = `Day ${v.day}, ${String(v.hour).padStart(2, "0")}:00 — interval between rest periods exceeds 14 hours.`;
+          else if (v.type === "weekly_minimum") msg = `Total rest over 7 days is ${val.totalRest7Days}h (mandatory minimum 77h).`;
+        } else if (currentLang === "ru") {
+          if (v.type === "daily_minimum") msg = `День ${v.day}, ${String(v.hour).padStart(2, "0")}:00 — отдых за 24-часовое окно составляет ${val.minDailyRest} ч (минимум 10 ч).`;
+          else if (v.type === "split_count") msg = `День ${v.day}, ${String(v.hour).padStart(2, "0")}:00 — отдых разбит на более чем 2 периода (разрешено максимум 2).`;
+          else if (v.type === "block_length") msg = `День ${v.day}, ${String(v.hour).padStart(2, "0")}:00 — отсутствует непрерывный блок отдыха длительностью не менее 6 ч.`;
+          else if (v.type === "max_interval") msg = `День ${v.day}, ${String(v.hour).padStart(2, "0")}:00 — интервал между периодами отдыха превышает 14 ч.`;
+          else if (v.type === "weekly_minimum") msg = `Общий отдых за 7 суток составляет ${val.totalRest7Days} ч (обязательный минимум 77 ч).`;
+        }
+        return `<li><strong>${escapeHtml(v.rule)}:</strong> ${escapeHtml(msg)}</li>`;
+      }).join("");
+    }
+  }
+}
+
 let drillAudioCtx = null;
 let activeSoundTimeouts = [];
 
@@ -1355,6 +1466,9 @@ function renderRisk(result, input, scenarioName = activeScenario, isInitial = fa
   // Epic 10: Bridge Resource Management (BRM) & Navigation Watch Team Coupling
   renderBrmWatchTeam(input);
 
+  // Epic 11: MLC 2006 Standard A2.3 & STCW A-VIII/1 Hours of Rest Validator
+  renderMlcRestValidator();
+
   // Epic 5: Academic Research Artifacts & Profile Comparison
   renderAcademicArtifacts(result, input);
   renderProfileCompare(input);
@@ -1580,6 +1694,39 @@ $("#tz-shift-slider")?.addEventListener("input", () => renderCircadian(currentIn
 // BRM Watch Team synergy toggles
 $("#brm-lookout-toggle")?.addEventListener("change", () => renderBrmWatchTeam(currentInput()));
 $("#brm-pilot-toggle")?.addEventListener("change", () => renderBrmWatchTeam(currentInput()));
+
+// MLC 2006 Rest Hours Validator presets, day tabs & slots
+$("#mlc-preset-48")?.addEventListener("click", () => {
+  currentMlcSchedule = createDefaultWatchSchedule("4on8off");
+  document.querySelectorAll(".mlc-preset-btn").forEach((b) => b.classList.toggle("active", b.id === "mlc-preset-48"));
+  renderMlcRestValidator();
+});
+$("#mlc-preset-66")?.addEventListener("click", () => {
+  currentMlcSchedule = createDefaultWatchSchedule("6on6off");
+  document.querySelectorAll(".mlc-preset-btn").forEach((b) => b.classList.toggle("active", b.id === "mlc-preset-66"));
+  renderMlcRestValidator();
+});
+$("#mlc-preset-overtime")?.addEventListener("click", () => {
+  currentMlcSchedule = createDefaultWatchSchedule("cargo_overtime");
+  document.querySelectorAll(".mlc-preset-btn").forEach((b) => b.classList.toggle("active", b.id === "mlc-preset-overtime"));
+  renderMlcRestValidator();
+});
+
+$("#mlc-day-tabs")?.addEventListener("click", (e) => {
+  const tab = e.target.closest(".mlc-day-tab");
+  if (!tab) return;
+  currentMlcActiveDay = Number(tab.dataset.day);
+  renderMlcRestValidator();
+});
+
+$("#mlc-hours-grid")?.addEventListener("click", (e) => {
+  const slot = e.target.closest(".mlc-hour-slot");
+  if (!slot) return;
+  const h = Number(slot.dataset.hour);
+  currentMlcSchedule[currentMlcActiveDay][h] = currentMlcSchedule[currentMlcActiveDay][h] ? 0 : 1;
+  document.querySelectorAll(".mlc-preset-btn").forEach((b) => b.classList.remove("active"));
+  renderMlcRestValidator();
+});
 
 // Fullscreen Presentation Mode (Defense HUD)
 $("#presentation-mode-btn")?.addEventListener("click", () => {
@@ -1823,6 +1970,32 @@ const I18N = {
     brmOptimalBadge: "Оптимальний рівень",
     brmDegradedBadge: "Деградований рівень",
     brmCompromisedBadge: "Скомпрометований рівень",
+    mlcValKicker: "MLC 2006 STANDARD A2.3 & STCW A-VIII/1",
+    mlcValTitle: "Валідатор годин відпочинку (Table of Hours of Rest)",
+    mlcValTotalSub: "Відпочинок за 7 діб",
+    mlcCompliantBadge: "Відповідає конвенції",
+    mlcViolationBadge: "Порушень MLC",
+    mlcValDesc: "Симуляція суднового журналу обліку праці та відпочинку. Перевірка ковзних 24-годинних та 7-денних вікон за стандартами Paris MoU / PSC.",
+    mlcPresetsLabel: "Шаблони вахт:",
+    mlcPreset48: "Вахта 4/8 (STCW)",
+    mlcPreset66: "Вахта 6/6 (Feeder)",
+    mlcPresetOvertime: "Порт / Овертайм",
+    mlcDayNames: ["День 1", "День 2", "День 3", "День 4", "День 5", "День 6", "День 7"],
+    mlcTimelineTitle: "погодинний графік",
+    mlcTimelineHint: "Натисніть на слот, щоб перемкнути: Відпочинок / Робота",
+    mlcStateRest: "Відпочинок",
+    mlcStateWork: "Робота",
+    mlcRuleDailyTitle: "Мінімум 10 год відпочинку за кожні 24 год",
+    mlcRuleDailySub: "MLC Standard A2.3.5(b) / STCW Section A-VIII/1",
+    mlcRuleSplitsTitle: "Не більше 2 періодів відпочинку за добу",
+    mlcRuleSplitsSub: "MLC Standard A2.3.6 / Нерозривність відновлення",
+    mlcRuleBlocklenTitle: "Один нерозривний блок відпочинку ≥ 6 годин",
+    mlcRuleBlocklenSub: "STCW A-VIII/1.3 / Профілактика хронічної втоми",
+    mlcRuleIntervalTitle: "Інтервал між періодами відпочинку ≤ 14 годин",
+    mlcRuleIntervalSub: "MLC Standard A2.3.6 / Максимальний безперервний цикл",
+    mlcRuleWeeklyTitle: "Мінімум 77 год відпочинку за будь-які 7 діб",
+    mlcRuleWeeklySub: "MLC Standard A2.3.5(b) / Тижневий баланс праці",
+    mlcViolationsTitle: "Зафіксовані невідповідності (Non-Conformities):",
     drillKicker: "SOLAS III/19 · АВАРІЙНІ ТРИВОГИ",
     drillTitle: "Симуляція реакції на тривогу",
     drillDelaySpan: "Затримка реакції",
@@ -2136,6 +2309,32 @@ const I18N = {
     brmOptimalBadge: "Optimal Redundancy",
     brmDegradedBadge: "Degraded Redundancy",
     brmCompromisedBadge: "Compromised Redundancy",
+    mlcValKicker: "MLC 2006 STANDARD A2.3 & STCW A-VIII/1",
+    mlcValTitle: "Hours of Rest Validator (Table of Hours of Rest)",
+    mlcValTotalSub: "7-Day Rest Total",
+    mlcCompliantBadge: "Fully Compliant",
+    mlcViolationBadge: "MLC Deficiencies",
+    mlcValDesc: "Simulation of shipboard record of hours of rest. Sliding 24-hour and 7-day compliance checks under Paris MoU / PSC standards.",
+    mlcPresetsLabel: "Watch Presets:",
+    mlcPreset48: "4/8 Watch (STCW)",
+    mlcPreset66: "6/6 Watch (Feeder)",
+    mlcPresetOvertime: "Port / Overtime",
+    mlcDayNames: ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6", "Day 7"],
+    mlcTimelineTitle: "hourly schedule",
+    mlcTimelineHint: "Click any hour slot to toggle: Rest / Work",
+    mlcStateRest: "Rest",
+    mlcStateWork: "Work",
+    mlcRuleDailyTitle: "Minimum 10 hours rest in any 24h window",
+    mlcRuleDailySub: "MLC Standard A2.3.5(b) / STCW Section A-VIII/1",
+    mlcRuleSplitsTitle: "Maximum 2 rest periods per 24 hours",
+    mlcRuleSplitsSub: "MLC Standard A2.3.6 / Rest continuity principle",
+    mlcRuleBlocklenTitle: "One continuous rest period of ≥ 6 hours",
+    mlcRuleBlocklenSub: "STCW A-VIII/1.3 / Prevention of acute fatigue",
+    mlcRuleIntervalTitle: "Interval between rest periods ≤ 14 hours",
+    mlcRuleIntervalSub: "MLC Standard A2.3.6 / Max continuous duty cycle",
+    mlcRuleWeeklyTitle: "Minimum 77 hours rest in any 7-day period",
+    mlcRuleWeeklySub: "MLC Standard A2.3.5(b) / Weekly fatigue safeguard",
+    mlcViolationsTitle: "Recorded Non-Conformities (PSC Deficiencies):",
     drillKicker: "SOLAS III/19 · EMERGENCY DRILLS",
     drillTitle: "Emergency Response Simulation",
     drillDelaySpan: "Reaction delay",
@@ -2449,6 +2648,32 @@ const I18N = {
     brmOptimalBadge: "Оптимальный уровень",
     brmDegradedBadge: "Деградированный уровень",
     brmCompromisedBadge: "Скомпрометированный уровень",
+    mlcValKicker: "MLC 2006 STANDARD A2.3 & STCW A-VIII/1",
+    mlcValTitle: "Валидатор часов отдыха (Table of Hours of Rest)",
+    mlcValTotalSub: "Отдых за 7 суток",
+    mlcCompliantBadge: "Соответствует конвенции",
+    mlcViolationBadge: "Нарушений MLC",
+    mlcValDesc: "Симуляция судового журнала учета труда и отдыха. Проверка скользящих 24-часовых и 7-дневных окон по стандартам Paris MoU / PSC.",
+    mlcPresetsLabel: "Шаблоны вахт:",
+    mlcPreset48: "Вахта 4/8 (STCW)",
+    mlcPreset66: "Вахта 6/6 (Feeder)",
+    mlcPresetOvertime: "Порт / Овертайм",
+    mlcDayNames: ["День 1", "День 2", "День 3", "День 4", "День 5", "День 6", "День 7"],
+    mlcTimelineTitle: "почасовой график",
+    mlcTimelineHint: "Нажмите на слот, чтобы переключить: Отдых / Работа",
+    mlcStateRest: "Отдых",
+    mlcStateWork: "Работа",
+    mlcRuleDailyTitle: "Минимум 10 ч отдыха за каждые 24 ч",
+    mlcRuleDailySub: "MLC Standard A2.3.5(b) / STCW Section A-VIII/1",
+    mlcRuleSplitsTitle: "Не более 2 периодов отдыха за сутки",
+    mlcRuleSplitsSub: "MLC Standard A2.3.6 / Непрерывность восстановления",
+    mlcRuleBlocklenTitle: "Один непрерывный блок отдыха ≥ 6 часов",
+    mlcRuleBlocklenSub: "STCW A-VIII/1.3 / Профилактика хронической усталости",
+    mlcRuleIntervalTitle: "Интервал между периодами отдыха ≤ 14 часов",
+    mlcRuleIntervalSub: "MLC Standard A2.3.6 / Максимальный непрерывный цикл",
+    mlcRuleWeeklyTitle: "Минимум 77 ч отдыха за любые 7 суток",
+    mlcRuleWeeklySub: "MLC Standard A2.3.5(b) / Недельный баланс труда",
+    mlcViolationsTitle: "Зафиксированные несоответствия (Non-Conformities):",
     drillKicker: "SOLAS III/19 · СУДОВЫЕ ТРЕВОГИ",
     drillTitle: "Симуляция реакции на тревогу",
     drillDelaySpan: "Задержка реакции",
@@ -3029,6 +3254,45 @@ function setLanguage(lang) {
   const brmPilotSpan = document.querySelector("#brm-pilot-text"); if (brmPilotSpan) brmPilotSpan.textContent = t.brmPilotText;
   const brmFindingsTitle = document.querySelector("#brm-findings-title"); if (brmFindingsTitle) brmFindingsTitle.textContent = t.brmFindingsTitle;
   const brmRecsTitle = document.querySelector("#brm-recs-title"); if (brmRecsTitle) brmRecsTitle.textContent = t.brmRecsTitle;
+
+  // MLC 2006 Rest Hours Validator
+  const mlcKicker = document.querySelector(".mlc-val-kicker"); if (mlcKicker) mlcKicker.textContent = t.mlcValKicker;
+  const mlcTitle = document.querySelector("#mlc-val-title"); if (mlcTitle) mlcTitle.textContent = t.mlcValTitle;
+  const mlcTotalSub = document.querySelector("#mlc-val-total-sub-label"); if (mlcTotalSub) mlcTotalSub.textContent = t.mlcValTotalSub;
+  const mlcDesc = document.querySelector("#mlc-val-desc"); if (mlcDesc) mlcDesc.textContent = t.mlcValDesc;
+  const mlcPresetsLbl = document.querySelector("#mlc-presets-label"); if (mlcPresetsLbl) mlcPresetsLbl.textContent = t.mlcPresetsLabel;
+  const mlc48 = document.querySelector("#mlc-preset-48"); if (mlc48) mlc48.textContent = t.mlcPreset48;
+  const mlc66 = document.querySelector("#mlc-preset-66"); if (mlc66) mlc66.textContent = t.mlcPreset66;
+  const mlcOt = document.querySelector("#mlc-preset-overtime"); if (mlcOt) mlcOt.textContent = t.mlcPresetOvertime;
+  const mlcHint = document.querySelector("#mlc-timeline-hint"); if (mlcHint) mlcHint.textContent = t.mlcTimelineHint;
+  const mlcViolH4 = document.querySelector("#mlc-violations-title"); if (mlcViolH4) mlcViolH4.textContent = t.mlcViolationsTitle;
+
+  const rDaily = document.querySelector("#mlc-rule-daily");
+  if (rDaily) {
+    const s = rDaily.querySelector("strong"); if (s) s.textContent = t.mlcRuleDailyTitle;
+    const sm = rDaily.querySelector("small"); if (sm) sm.textContent = t.mlcRuleDailySub;
+  }
+  const rSplits = document.querySelector("#mlc-rule-splits");
+  if (rSplits) {
+    const s = rSplits.querySelector("strong"); if (s) s.textContent = t.mlcRuleSplitsTitle;
+    const sm = rSplits.querySelector("small"); if (sm) sm.textContent = t.mlcRuleSplitsSub;
+  }
+  const rBlock = document.querySelector("#mlc-rule-blocklen");
+  if (rBlock) {
+    const s = rBlock.querySelector("strong"); if (s) s.textContent = t.mlcRuleBlocklenTitle;
+    const sm = rBlock.querySelector("small"); if (sm) sm.textContent = t.mlcRuleBlocklenSub;
+  }
+  const rInterval = document.querySelector("#mlc-rule-interval");
+  if (rInterval) {
+    const s = rInterval.querySelector("strong"); if (s) s.textContent = t.mlcRuleIntervalTitle;
+    const sm = rInterval.querySelector("small"); if (sm) sm.textContent = t.mlcRuleIntervalSub;
+  }
+  const rWeekly = document.querySelector("#mlc-rule-weekly");
+  if (rWeekly) {
+    const s = rWeekly.querySelector("strong"); if (s) s.textContent = t.mlcRuleWeeklyTitle;
+    const sm = rWeekly.querySelector("small"); if (sm) sm.textContent = t.mlcRuleWeeklySub;
+  }
+  renderMlcRestValidator();
 
   // Drill Simulator
   const drillKicker = document.querySelector(".drill-kicker"); if (drillKicker) drillKicker.textContent = t.drillKicker;

@@ -192,4 +192,13 @@
 
 **Consequence:** The calculation remains 100% pure client-side JavaScript without runtime dependencies or data retention. The questionnaire accessibility rule of exactly 5 `role="switch"` controls is preserved (helper toggles use standard checkbox semantics). Verified with automated tests in `scripts/feature-checks.mjs`.
 
+## ADR-024: Interactive MLC 2006 Standard A2.3 & STCW Section A-VIII/1 7-Day Hours of Rest Validator
+
+**Decision:** Implement an interactive 7-day (168-hour) maritime watchkeeper rest table validator (`createDefaultWatchSchedule`, `validateRestHoursSchedule`) simulating the IMO/ILO Model Table of Hours of Rest and Port State Control (Paris MoU) sliding-window compliance algorithms. Surface watch presets (`4on8off`, `6on6off`, `cargo_overtime`), day tabs, interactive hourly toggles (`is-rest` / `is-work`), a 5-point convention checklist, and non-conformity deficiency reports.
+
+**Why:** Under Maritime Labour Convention (MLC 2006) Standard A2.3 and STCW Section A-VIII/1, compliance is not simply evaluated on a calendar day basis, but across every sliding 24-hour window (minimum 10 hours rest, max 2 periods, at least one block ≥ 6 hours, max interval between rest periods ≤ 14 hours) and sliding 7-day windows (minimum 77 hours rest). Officers of the Watch, masters, and cadets need an explainable, interactive tool to simulate and verify roster compliance before PSC inspections without risking data exposure to commercial platforms.
+
+**Consequence:** The validation algorithm is 100% pure client-side in-memory JavaScript with zero external runtime dependencies and zero data retention. Hour slots use standard accessible `<button>` elements with keyboard focus and tooltips, preserving the strict accessibility mandate of exactly 5 `role="switch"` controls in the questionnaire. All calculations are covered by automated unit and DOM contract tests in `scripts/feature-checks.mjs`.
+
+
 

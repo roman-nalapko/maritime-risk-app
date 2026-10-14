@@ -19,7 +19,9 @@ import {
   generateOfflineWatchHandoverQr,
   calculateWilsonInterval,
   getBridgeAlertPattern,
-  evaluateWatchTeamRisk
+  evaluateWatchTeamRisk,
+  createDefaultWatchSchedule,
+  validateRestHoursSchedule
 } from "../src/model.js";
 
 console.log("Running platform feature checks...");
@@ -359,6 +361,51 @@ assert.ok(appContent.includes("renderBrmWatchTeam"), "app.js must implement rend
 assert.ok(appContent.includes("showChartTooltip"), "app.js must implement showChartTooltip");
 assert.ok(appContent.includes("hideChartTooltip"), "app.js must implement hideChartTooltip");
 
+// 22. Test MLC 2006 Standard A2.3 & STCW A-VIII/1 7-Day Rest Hours Validator
+const sched48 = createDefaultWatchSchedule("4on8off");
+const val48 = validateRestHoursSchedule(sched48);
+assert.equal(val48.isCompliant, true, "Standard 4/8 watch must be fully compliant with MLC/STCW");
+assert.equal(val48.totalRest7Days, 112, "4/8 watch provides 112 rest hours in 7 days");
+assert.equal(val48.minDailyRest, 16, "4/8 watch provides 16 rest hours in each 24h window");
+assert.equal(val48.complianceScore, 100, "Compliant 4/8 schedule must have 100% compliance score");
+assert.equal(val48.violations.length, 0, "Compliant schedule must have zero violations");
+
+const sched66 = createDefaultWatchSchedule("6on6off");
+const val66 = validateRestHoursSchedule(sched66);
+assert.equal(val66.isCompliant, true, "Standard 6/6 watch without overtime is compliant on paper");
+assert.equal(val66.totalRest7Days, 84, "6/6 watch provides 84 rest hours in 7 days");
+assert.equal(val66.minDailyRest, 12, "6/6 watch provides 12 rest hours in each 24h window");
+
+const schedOvertime = createDefaultWatchSchedule("cargo_overtime");
+const valOvertime = validateRestHoursSchedule(schedOvertime);
+assert.equal(valOvertime.isCompliant, false, "Heavy port overtime must trigger MLC non-conformities");
+assert.ok(valOvertime.totalRest7Days < 77, "Overtime schedule must fail weekly 77h minimum");
+assert.ok(valOvertime.minDailyRest < 10, "Overtime schedule must fail daily 10h minimum");
+assert.ok(valOvertime.violations.some((v) => v.type === "daily_minimum"), "Must flag daily minimum violation");
+assert.ok(valOvertime.violations.some((v) => v.type === "weekly_minimum"), "Must flag weekly minimum violation");
+assert.ok(valOvertime.complianceScore < 60, "Non-compliant schedule must have low compliance score");
+
+// 23. Test UI & DOM Contract for MLC 2006 Rest Hours Validator
+assert.ok(htmlContent.includes('id="mlc-rest-validator-card"'), "index.html must have mlc-rest-validator-card");
+assert.ok(htmlContent.includes('id="mlc-hours-grid"'), "index.html must have mlc-hours-grid");
+assert.ok(htmlContent.includes('id="mlc-day-tabs"'), "index.html must have mlc-day-tabs");
+assert.ok(htmlContent.includes('id="mlc-preset-48"'), "index.html must have mlc-preset-48");
+assert.ok(htmlContent.includes('id="mlc-preset-66"'), "index.html must have mlc-preset-66");
+assert.ok(htmlContent.includes('id="mlc-preset-overtime"'), "index.html must have mlc-preset-overtime");
+assert.ok(htmlContent.includes('id="mlc-compliance-badge"'), "index.html must have mlc-compliance-badge");
+assert.ok(htmlContent.includes('id="mlc-violations-box"'), "index.html must have mlc-violations-box");
+
+assert.ok(cssContent.includes(".mlc-rest-validator-card"), "styles.css must style mlc-rest-validator-card");
+assert.ok(cssContent.includes(".mlc-hour-slot"), "styles.css must style mlc-hour-slot");
+assert.ok(cssContent.includes(".mlc-day-tab"), "styles.css must style mlc-day-tab");
+assert.ok(cssContent.includes(".mlc-val-badge-compliant"), "styles.css must style mlc-val-badge-compliant");
+assert.ok(cssContent.includes(".mlc-val-badge-violation"), "styles.css must style mlc-val-badge-violation");
+
+assert.ok(appContent.includes("renderMlcRestValidator"), "app.js must implement renderMlcRestValidator");
+assert.ok(appContent.includes("validateRestHoursSchedule"), "app.js must use validateRestHoursSchedule");
+assert.ok(appContent.includes("createDefaultWatchSchedule"), "app.js must use createDefaultWatchSchedule");
+
 console.log("All platform feature checks passed.");
+
 
 

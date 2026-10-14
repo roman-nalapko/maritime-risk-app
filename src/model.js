@@ -1283,3 +1283,207 @@ export function evaluateWatchTeamRisk(oowInput, lookoutInput = null, options = {
   };
 }
 
+/**
+ * Generates a default 7-day binary rest schedule (7 days x 24 hours).
+ * 1 = Rest, 0 = Work.
+ * @param {string} system - "4on8off", "6on6off", "cargo_overtime"
+ * @returns {Array<Array<number>>} 7 arrays of 24 numbers (0 or 1)
+ */
+export function createDefaultWatchSchedule(system = "4on8off") {
+  const schedule = [];
+  for (let day = 0; day < 7; day++) {
+    const hours = new Array(24).fill(1); // default all rest
+    if (system === "4on8off") {
+      // 4 on / 8 off: work 00:00-04:00 and 12:00-16:00
+      for (let h = 0; h < 4; h++) hours[h] = 0;
+      for (let h = 12; h < 16; h++) hours[h] = 0;
+    } else if (system === "6on6off") {
+      // 6 on / 6 off: work 00:00-06:00 and 12:00-18:00
+      for (let h = 0; h < 6; h++) hours[h] = 0;
+      for (let h = 12; h < 18; h++) hours[h] = 0;
+    } else if (system === "cargo_overtime") {
+      // Heavy port operations: work 00:00-06:00, 08:00-13:00, 15:00-20:00
+      for (let h = 0; h < 6; h++) hours[h] = 0;
+      for (let h = 8; h < 13; h++) hours[h] = 0;
+      for (let h = 15; h < 20; h++) hours[h] = 0;
+    }
+    schedule.push(hours);
+  }
+  return schedule;
+}
+
+/**
+ * Validates a 7-day rest hours schedule against MLC 2006 Standard A2.3 & STCW Section A-VIII/1.
+ * Checks:
+ * 1. Minimum 10 hours rest in any sliding 24-hour period.
+ * 2. Rest divided into no more than two periods in any 24-hour window.
+ * 3. At least one rest period >= 6 continuous hours in any 24-hour window.
+ * 4. Interval between consecutive rest periods <= 14 hours.
+ * 5. Minimum 77 hours rest in 7-day period.
+ */
+export function validateRestHoursSchedule(schedule, options = {}) {
+  const flat = [];
+  for (let d = 0; d < 7; d++) {
+    const dayHours = schedule[d] || new Array(24).fill(1);
+    for (let h = 0; h < 24; h++) {
+      flat.push(dayHours[h] ? 1 : 0);
+    }
+  }
+
+  const totalRest7Days = flat.reduce((sum, val) => sum + val, 0);
+  const violations = [];
+  let minDailyRest = 24;
+  let hasSplitViolation = false;
+  let hasBlockLenViolation = false;
+  let hasIntervalViolation = false;
+
+  const step = options.slidingStep || 1;
+  for (let t = 0; t <= flat.length - 24; t += step) {
+    const window = flat.slice(t, t + 24);
+    const windowRest = window.reduce((sum, val) => sum + val, 0);
+    if (windowRest < minDailyRest) {
+      minDailyRest = windowRest;
+    }
+
+    const dayNum = Math.floor(t / 24) + 1;
+    const hourNum = t % 24;
+
+    // Rule 1: Min 10 hours rest in any 24h period
+    if (windowRest < 10) {
+      violations.push({
+        type: "daily_minimum",
+        day: dayNum,
+        hour: hourNum,
+        rule: "MLC 2006 Standard A2.3.5(b) / STCW A-VIII/1.2",
+        message: `День ${dayNum}, ${String(hourNum).padStart(2, "0")}:00 — відпочинок за 24-годинне вікно складає лише ${windowRest} год (мінімум 10 год).`
+      });
+    }
+
+    // Identify continuous rest blocks in the 24h window (accounting for boundary continuity)
+    const restBlocks = [];
+    let currentBlock = 0;
+    for (let i = 0; i < 24; i++) {
+      if (window[i] === 1) {
+        currentBlock++;
+      } else {
+        if (currentBlock > 0) {
+          restBlocks.push(currentBlock);
+          currentBlock = 0;
+        }
+      }
+    }
+    if (currentBlock > 0) restBlocks.push(currentBlock);
+    if (window[0] === 1 && window[23] === 1 && restBlocks.length > 1) {
+      restBlocks[0] += restBlocks.pop();
+    }
+
+    // Rule 2: Rest divided into no more than two periods
+    if (restBlocks.length > 2) {
+      hasSplitViolation = true;
+      violations.push({
+        type: "split_count",
+        day: dayNum,
+        hour: hourNum,
+        rule: "MLC 2006 Standard A2.3.6 / STCW A-VIII/1.3",
+        message: `День ${dayNum}, ${String(hourNum).padStart(2, "0")}:00 — відпочинок розбитий на ${restBlocks.length} інтервали (дозволено максимум 2).`
+      });
+    }
+
+    // Rule 3: At least one rest period >= 6 continuous hours
+    const maxRestBlock = restBlocks.length > 0 ? Math.max(...restBlocks) : 0;
+    if (windowRest >= 10 && maxRestBlock < 6) {
+      hasBlockLenViolation = true;
+      violations.push({
+        type: "block_length",
+        day: dayNum,
+        hour: hourNum,
+        rule: "MLC 2006 Standard A2.3.6 / STCW A-VIII/1.3",
+        message: `День ${dayNum}, ${String(hourNum).padStart(2, "0")}:00 — відсутній нерозривний відпочинок тривалістю не менше 6 год (найбільший блок: ${maxRestBlock} год).`
+      });
+    }
+
+    // Rule 4: Interval between consecutive rest periods shall not exceed 14 hours
+    const workBlocks = [];
+    let curWork = 0;
+    for (let i = 0; i < 24; i++) {
+      if (window[i] === 0) {
+        curWork++;
+      } else {
+        if (curWork > 0) {
+          workBlocks.push(curWork);
+          curWork = 0;
+        }
+      }
+    }
+    if (curWork > 0) workBlocks.push(curWork);
+    if (window[0] === 0 && window[23] === 0 && workBlocks.length > 1) {
+      workBlocks[0] += workBlocks.pop();
+    }
+
+    const maxWorkBlock = workBlocks.length > 0 ? Math.max(...workBlocks) : 0;
+    if (maxWorkBlock > 14) {
+      hasIntervalViolation = true;
+      violations.push({
+        type: "max_interval",
+        day: dayNum,
+        hour: hourNum,
+        rule: "MLC 2006 Standard A2.3.6 / STCW A-VIII/1.3",
+        message: `День ${dayNum}, ${String(hourNum).padStart(2, "0")}:00 — інтервал між періодами відпочинку становить ${maxWorkBlock} год (максимум 14 год).`
+      });
+    }
+  }
+
+  // Rule 5: 7-day minimum 77 hours
+  const weeklyRestOk = totalRest7Days >= 77;
+  if (!weeklyRestOk) {
+    violations.push({
+      type: "weekly_minimum",
+      day: 7,
+      hour: 23,
+      rule: "MLC 2006 Standard A2.3.5(b) / STCW A-VIII/1.2",
+      message: `Загальний відпочинок за 7 діб складає ${totalRest7Days} год при обов'язковому мінімумі 77 год (дефіцит: ${77 - totalRest7Days} год).`
+    });
+  }
+
+  const uniqueViolations = [];
+  const seenTypes = new Set();
+  for (const v of violations) {
+    const key = `${v.type}_${v.day}`;
+    if (!seenTypes.has(key)) {
+      seenTypes.add(key);
+      uniqueViolations.push(v);
+    }
+  }
+
+  const isCompliant = violations.length === 0;
+  const dailyRestOk = minDailyRest >= 10;
+  const blockSplitsOk = !hasSplitViolation;
+  const blockLenOk = !hasBlockLenViolation;
+  const maxIntervalOk = !hasIntervalViolation;
+
+  let complianceScore = 100;
+  if (!weeklyRestOk) complianceScore -= 35;
+  if (!dailyRestOk) complianceScore -= 30;
+  if (!blockLenOk) complianceScore -= 15;
+  if (!blockSplitsOk) complianceScore -= 10;
+  if (!maxIntervalOk) complianceScore -= 10;
+  complianceScore = Math.max(0, Math.min(100, complianceScore));
+
+  return {
+    isCompliant,
+    complianceScore,
+    totalRest7Days,
+    minDailyRest,
+    violations: uniqueViolations,
+    rawViolationCount: violations.length,
+    summary: {
+      weeklyRestOk,
+      dailyRestOk,
+      blockSplitsOk,
+      blockLenOk,
+      maxIntervalOk
+    }
+  };
+}
+
+
