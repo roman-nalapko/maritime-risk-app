@@ -30,7 +30,7 @@
           </span>
           <span>
             <span class="brand-name"><strong>SeaRisk</strong> UA</span>
-            <span class="brand-sub">public hypothesis</span>
+            <span class="brand-sub">прототип</span>
           </span>
         </a>
 
@@ -44,7 +44,7 @@
         <div class="header-controls">
           <div class="bridge-mode-switch" role="group" aria-label="Світловий режим містка (IMO MSC.252 / IEC 62288)">
             <button type="button" class="bridge-mode-btn active" data-bridge-mode="cockpit" title="Режим містка (OpenBridge Cockpit)">Ніч</button>
-            <button type="button" class="bridge-mode-btn" data-bridge-mode="red" title="Червоне підсвічування містка">Red</button>
+            <button type="button" class="bridge-mode-btn" data-bridge-mode="red" title="Червоне підсвічування містка">Чер</button>
             <button type="button" class="bridge-mode-btn" data-bridge-mode="day" title="Денний морський режим">День</button>
           </div>
           <div class="lang-switch-group" role="group" aria-label="Мова інтерфейсу">
@@ -235,10 +235,10 @@
 
               <div class="profile-file-actions">
                 <button class="button-ghost" id="export-profile-btn" type="button">
-                  <span>📥</span> Експорт профілю (.json)
+                  Експорт профілю (.json)
                 </button>
                 <label class="button-ghost file-label" for="import-profile-input">
-                  <span>📤</span> Імпорт з файлу
+                  Імпорт з файлу
                   <input id="import-profile-input" type="file" accept=".json" class="sr-only" />
                 </label>
               </div>
@@ -246,7 +246,7 @@
               <p class="privacy-note"><strong>Приватність:</strong> вводьте лише власні дані й лише добровільно. Значення обробляються в цьому браузері, не зберігаються та не надсилаються. Не вводьте ПІБ, контакти чи дані іншої людини.</p>
 
               <div class="form-footer">
-                <p><span aria-hidden="true">ⓘ</span> Результат є дослідницькою оцінкою, а не медичним чи професійним висновком.</p>
+                <p>Результат є дослідницькою оцінкою, а не медичним чи професійним висновком.</p>
                 <button class="button button-primary" type="submit">Розрахувати ризик <span>→</span></button>
               </div>
             </form>
@@ -275,16 +275,16 @@
 
               <nav class="result-tabs-nav" role="tablist" aria-label="Розділи аналізу">
                 <button type="button" role="tab" class="result-tab-btn active" data-tab="radar" aria-selected="true" id="tab-btn-radar" aria-controls="pane-radar">
-                  <span class="tab-icon">🎯</span> Аналіз і радар
+                  Аналіз і радар
                 </button>
                 <button type="button" role="tab" class="result-tab-btn" data-tab="whatif" aria-selected="false" id="tab-btn-whatif" aria-controls="pane-whatif">
-                  <span class="tab-icon">⚡</span> What-If
+                  What-If
                 </button>
                 <button type="button" role="tab" class="result-tab-btn" data-tab="checklist" aria-selected="false" id="tab-btn-checklist" aria-controls="pane-checklist">
-                  <span class="tab-icon">📋</span> Чек-лист
+                  Чек-лист
                 </button>
                 <button type="button" role="tab" class="result-tab-btn" data-tab="method" aria-selected="false" id="tab-btn-method" aria-controls="pane-method">
-                  <span class="tab-icon">🔬</span> Методика
+                  Методика
                 </button>
               </nav>
 
@@ -300,7 +300,7 @@
 
                 <div class="live-radar-box" id="live-radar-box">
                   <div class="live-radar-header">
-                    <h3>Профіль факторів (LIVE)</h3>
+                    <h3>Профіль факторів</h3>
                     <small>Нормований радар поточного розрахунку</small>
                   </div>
                   <div class="live-radar-wrapper">
@@ -356,7 +356,7 @@
                 <div class="circadian-card" id="circadian-card">
                   <div class="circadian-header">
                     <div>
-                      <span class="circadian-kicker">SAFTE / FAST BIODYNAMICS · IMO MSC/CIRC.1598</span>
+                      <span class="circadian-kicker">IMO MSC/Circ.1598</span>
                       <h3>Циркадна уважність і сонливість (KSS)</h3>
                     </div>
                     <div class="kss-pill" id="kss-pill">
@@ -438,7 +438,7 @@
                 <div class="grounded-retrieval-box" id="grounded-retrieval-box">
                   <div class="grounded-header">
                     <div>
-                      <span class="grounded-kicker">MAIB GROUNDED RETRIEVAL · ОФІЦІЙНА ВИБІРКА</span>
+                      <span class="grounded-kicker">Вибірка MAIB</span>
                       <h4>Релевантні інциденти у флоті</h4>
                     </div>
                     <span class="grounded-badge">Джерельно прив'язано</span>
@@ -476,7 +476,7 @@
                 <div class="sensitivity-section" id="sensitivity-section">
                   <div class="sensitivity-header">
                     <div>
-                      <span class="sensitivity-kicker">ФАКТОРНИЙ АНАЛІЗ · TORNADO RANKING</span>
+                      <span class="sensitivity-kicker">Факторний аналіз</span>
                       <h3>Чутливість та маржинальний вплив</h3>
                     </div>
                     <span class="sensitivity-lead-badge" id="sensitivity-lead-factor">—</span>
@@ -647,7 +647,7 @@
                     </div>
                     <div class="drill-header-controls">
                       <button type="button" class="button-ghost drill-sound-btn" id="drill-sound-btn" title="Сигнал тривоги за кодом IMO BAM MSC.302(87) / SOLAS">
-                        <span>🔊</span> Сигнал тривоги (BAM)
+                        Сигнал тривоги (BAM)
                       </button>
                       <label for="drill-type-select" class="sr-only">Тип суднової тривоги</label>
                       <select id="drill-type-select">
@@ -681,7 +681,7 @@
                 <div class="qr-handover-card" id="qr-handover-card">
                   <div class="qr-header">
                     <div>
-                      <span class="qr-kicker">ZERO-DATA OFFLINE HANDOVER · PURE 2D MATRIX</span>
+                      <span class="qr-kicker">Офлайн-передача вахти</span>
                       <h3>Офлайн-передача стану вахти (QR)</h3>
                     </div>
                     <span class="qr-badge">Без мережі</span>
@@ -721,13 +721,13 @@
                 <div class="academic-export-card" id="academic-export-card">
                   <div class="academic-header">
                     <div>
-                      <span class="academic-kicker">ACADEMIC RESEARCH TOOLKIT · REPRODUCIBILITY</span>
+                      <span class="academic-kicker">Експорт для публікації</span>
                       <h3>Експорт наукових артефактів (LaTeX / BibTeX / CSV)</h3>
                     </div>
-                    <span class="academic-format-badge">Open Science</span>
+                    <span class="academic-format-badge">LaTeX / CSV</span>
                   </div>
                   <p class="academic-lead">
-                    Генеруйте верифіковані матриці даних та готові таблиці для публікацій у наукових журналах (Scopus, WoS) або дипломних робіт.
+                    Таблиці та цитування для курсових, дипломних або наукових робіт.
                   </p>
                   <div class="academic-actions">
                     <button type="button" class="button button-secondary" id="copy-latex-btn">Копіювати LaTeX таблицю</button>
@@ -742,7 +742,7 @@
                 <div class="profile-compare-card" id="profile-compare-card">
                   <div class="compare-header">
                     <div>
-                      <span class="compare-kicker">COMPARATIVE RISK ASSESSMENT</span>
+                      <span class="compare-kicker">Порівняння профілів</span>
                       <h3>Порівняння вахтових профілів</h3>
                     </div>
                     <span class="compare-badge" id="compare-verdict-badge">Δ 0%</span>
@@ -861,13 +861,13 @@
                 через накопичену перевтому вахтового помічника: понад 70% нічних годин і високий темп роботи призвели до тунельного зору.
               </p>
               <div class="case-factors">
-                <span>⏰ 2 750 год/рік</span>
-                <span>🌙 70% нічних вахт</span>
-                <span>⚠️ Порушення MLC 2006</span>
+                <span>2 750 год/рік</span>
+                <span>70% нічних вахт</span>
+                <span>Порушення MLC 2006</span>
               </div>
               <div class="case-actions">
                 <button type="button" class="button button-primary case-load-btn" data-case="vasco-de-gama">
-                  ⚡ Завантажити в калькулятор
+                  Завантажити в калькулятор
                 </button>
                 <a href="https://www.gov.uk/maib-reports/grounding-of-ultra-large-container-vessel-cma-cgm-vasco-de-gama" target="_blank" rel="noreferrer" class="case-link">
                   Звіт розслідування ↗
@@ -887,13 +887,13 @@
                 Матрос отримав важку ЧМТ і травми кінцівок. Причини: втома палубної команди, відсутність захисту та робота в небезпечній зоні.
               </p>
               <div class="case-factors">
-                <span>⚓ Палубна команда</span>
-                <span>🛑 Порушення ЗІЗ</span>
-                <span>⚠️ Snap-back zone</span>
+                <span>Палубна команда</span>
+                <span>Порушення ЗІЗ</span>
+                <span>Snap-back zone</span>
               </div>
               <div class="case-actions">
                 <button type="button" class="button button-primary case-load-btn" data-case="zarga">
-                  ⚡ Завантажити в калькулятор
+                  Завантажити в калькулятор
                 </button>
                 <a href="https://www.gov.uk/maib-reports/failure-of-a-mooring-line-on-board-the-lng-carrier-zarga-resulting-in-serious-injury-to-an-officer" target="_blank" rel="noreferrer" class="case-link">
                   Звіт розслідування ↗
@@ -913,13 +913,13 @@
                 Вахтовий помічник Scot Carrier був на містку сам, заснув на ходовій вахті внаслідок безсоння та алкоголю.
               </p>
               <div class="case-factors">
-                <span>🍺 Алкоголь на вахті</span>
-                <span>🌙 80% нічних годин</span>
-                <span>🔴 Засинання за ECDIS</span>
+                <span>Алкоголь на вахті</span>
+                <span>80% нічних годин</span>
+                <span>Засинання за ECDIS</span>
               </div>
               <div class="case-actions">
                 <button type="button" class="button button-primary case-load-btn" data-case="scot-carrier">
-                  ⚡ Завантажити в калькулятор
+                  Завантажити в калькулятор
                 </button>
                 <a href="https://www.gov.uk/maib-reports/collision-between-general-cargo-vessel-scot-carrier-and-split-hopper-barge-karin-hoj-with-loss-of-2-lives" target="_blank" rel="noreferrer" class="case-link">
                   Звіт розслідування ↗
@@ -939,13 +939,13 @@
                 зміщення вантажу через послаблені талрепи (lashing), втрата остійності, авторитаризм капітана та втома від наднормових вахт.
               </p>
               <div class="case-factors">
-                <span>📦 Контейнеровоз</span>
-                <span>⏰ 2 950 год/рік</span>
-                <span>🌪️ Втрата остійності</span>
+                <span>Контейнеровоз</span>
+                <span>2 950 год/рік</span>
+                <span>Втрата остійності</span>
               </div>
               <div class="case-actions">
                 <button type="button" class="button button-primary case-load-btn" data-case="el-faro">
-                  ⚡ Завантажити в калькулятор
+                  Завантажити в калькулятор
                 </button>
                 <a href="https://www.ntsb.gov/investigations/AccidentReports/Pages/MAR1701.aspx" target="_blank" rel="noreferrer" class="case-link">
                   Звіт розслідування ↗
@@ -965,13 +965,13 @@
                 на ходовій вахті через безперервний вахтовий графік 6/6 та понад 18 годин без сну, що призвело до повної втрати просторової орієнтації.
               </p>
               <div class="case-factors">
-                <span>🛢️ Танкер VLCC</span>
-                <span>🌙 85% нічних вахт</span>
-                <span>⏰ 3 200 год/рік</span>
+                <span>Танкер VLCC</span>
+                <span>85% нічних вахт</span>
+                <span>3 200 год/рік</span>
               </div>
               <div class="case-actions">
                 <button type="button" class="button button-primary case-load-btn" data-case="exxon-valdez">
-                  ⚡ Завантажити в калькулятор
+                  Завантажити в калькулятор
                 </button>
                 <a href="https://www.ntsb.gov/investigations/AccidentReports/Reports/MAR9004.pdf" target="_blank" rel="noreferrer" class="case-link">
                   Звіт розслідування ↗
@@ -991,13 +991,13 @@
                 Фактори: надмірне натягнення якірних тросів, робота палубної команди на слизькій палубі без відпочинку та екстремальна кумулятивна втома.
               </p>
               <div class="case-factors">
-                <span>⚓ Буксир / AHTS</span>
-                <span>🛑 Відсутність ЗІЗ</span>
-                <span>⚠️ Динамічна остійність</span>
+                <span>Буксир / AHTS</span>
+                <span>Відсутність ЗІЗ</span>
+                <span>Динамічна остійність</span>
               </div>
               <div class="case-actions">
                 <button type="button" class="button button-primary case-load-btn" data-case="bourbon-dolphin">
-                  ⚡ Завантажити в калькулятор
+                  Завантажити в калькулятор
                 </button>
                 <a href="https://www.havarikommisjonen.no/Sjofart/Rapporter/Rapport/?accidentId=241" target="_blank" rel="noreferrer" class="case-link">
                   Звіт розслідування ↗
@@ -1032,7 +1032,7 @@
             <div><span>З летальним наслідком</span><strong id="fatal-share">—</strong><small id="fatal-ci">95% ДІ: [—]</small></div>
           </div>
           <div class="sparse-notice-box" id="sparse-notice-box" hidden>
-            <span class="sparse-chip">⚠️ Малий обсяг вибірки (n &lt; 30): підвищена статистична невизначеність</span>
+            <span class="sparse-chip">Малий обсяг вибірки (n &lt; 30): підвищена статистична невизначеність</span>
           </div>
 
           <div class="stats-grid">

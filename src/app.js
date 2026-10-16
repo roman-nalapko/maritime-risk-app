@@ -947,7 +947,7 @@ function stopDrillAlarm() {
   if (btn) {
     btn.classList.remove("sounding");
     const t = I18N[currentLang];
-    btn.innerHTML = `<span>🔊</span> ${escapeHtml(t.drillSoundPlay)}`;
+    btn.textContent = t.drillSoundPlay;
   }
 }
 
@@ -973,7 +973,7 @@ function playDrillAlarm() {
     }
 
     btn.classList.add("sounding");
-    btn.innerHTML = `<span>⏹</span> ${escapeHtml(t.drillSoundStop)}`;
+    btn.textContent = t.drillSoundStop;
 
     let currentTimeOffset = 0;
     pattern.pulses.forEach((pulse) => {
@@ -1815,15 +1815,15 @@ const I18N = {
     navCases: "Аварії MAIB",
     navStats: "Статистика",
     navMethod: "Методика",
-    bridgeCockpit: "⚓ Ніч",
-    bridgeRed: "🔴 Red",
-    bridgeDay: "☀️ День",
+    bridgeCockpit: "Ніч",
+    bridgeRed: "Чер",
+    bridgeDay: "День",
     statusPill: "Дослідницький прототип",
     calcBtn: "Розрахувати ризик",
-    radarTab: "🎯 Аналіз і радар",
-    whatifTab: "⚡ What-If",
-    checklistTab: "📋 Чек-лист",
-    methodTab: "🔬 Методика",
+    radarTab: "Аналіз і радар",
+    whatifTab: "What-If",
+    checklistTab: "Чек-лист",
+    methodTab: "Методика",
     sectionEyebrow: "Індивідуальне оцінювання",
     formHeading: "Профіль працівника",
     sectionSubtitle: "Заповнення займає приблизно дві хвилини. Поля не зберігаються після закриття сторінки.",
@@ -1869,7 +1869,7 @@ const I18N = {
     meterLow: "Низький",
     meterMid: "Середній",
     meterHigh: "Екстремальний · навчальна шкала",
-    liveRadarTitle: "Профіль факторів (LIVE)",
+    liveRadarTitle: "Профіль факторів",
     liveRadarSubtitle: "Нормований радар поточного розрахунку",
     lra1: "Здоров'я", lra2: "Експозиція", lra3: "Нічні", lra4: "Звички", lra5: "ЗІЗ",
     bmTag: "ГАЛУЗЕВИЙ ОРІЄНТИР · BIMCO / ICS",
@@ -1883,7 +1883,7 @@ const I18N = {
     bmNightMore: "нічних",
     bmNightLess: "нічних",
     bmNote: "Орієнтири базуються на узагальнених даних звітів BIMCO/ICS Seafarer Workforce. Не є персональною нормою.",
-    circKicker: "SAFTE / FAST BIODYNAMICS · IMO MSC/CIRC.1598",
+    circKicker: "IMO MSC/Circ.1598",
     circTitle: "Циркадна уважність і сонливість (KSS)",
     circDebtLabel: "Дефіцит сну",
     circNadirLabel: "Пік уразливості",
@@ -1918,7 +1918,7 @@ const I18N = {
     factorBreakdownLabels: { health: "Вік і здоров'я", occupation: "Професійна експозиція", lifestyle: "Спосіб життя" },
     factorShare: "внеску",
     recsTitle: "Що варто контролювати",
-    groundedKicker: "MAIB GROUNDED RETRIEVAL · ОФІЦІЙНА ВИБІРКА",
+    groundedKicker: "Вибірка MAIB",
     groundedTitle: "Релевантні інциденти у флоті",
     groundedBadge: "Джерельно прив'язано",
     groundedFactsTitle: "Факти вибірки розслідувань:",
@@ -1942,7 +1942,7 @@ const I18N = {
     whatIfBtn: "Змоделювати",
     whatIfSimPrefix: "Моделювання",
     whatIfEmpty: "Для поточного профілю оптимізовані ключові керовані параметри (використовуються ЗІЗ, нормальний графік відпочинку).",
-    sensKicker: "ФАКТОРНИЙ АНАЛІЗ · TORNADO RANKING",
+    sensKicker: "Факторний аналіз",
     sensTitle: "Чутливість та маржинальний вплив",
     sensSubtitle: "Маржинальна еластичність: ранжування факторів за силою впливу на зміну загального показника безпеки.",
     sensLeadFactor: "Провідний фактор",
@@ -2005,7 +2005,7 @@ const I18N = {
     drillReadinessSpan: "Рівень готовності",
     drillReadinessSmall: "за розкладом Muster List",
     drillReadinessLabels: { optimal: "Оптимальний", degraded: "Знижений", critical: "Критичний" },
-    qrKicker: "ZERO-DATA OFFLINE HANDOVER · PURE 2D MATRIX",
+    qrKicker: "Офлайн-передача вахти",
     qrTitle: "Офлайн-передача стану вахти (QR)",
     qrBadge: "Без мережі",
     qrLead: "Скануйте з екрана для миттєвої передачі параметрів безпеки вахтовому помічнику (Relieving Officer) без Інтернету чи супутникового каналу.",
@@ -2016,15 +2016,15 @@ const I18N = {
     fsaHeaderCell: "Наслідки ↓ / Частота →",
     fsaMarker: "● ВИ",
     fsaRiskIndex: "Індекс ризику",
-    academicKicker: "ACADEMIC RESEARCH TOOLKIT · REPRODUCIBILITY",
+    academicKicker: "Експорт для публікації",
     academicTitle: "Експорт наукових артефактів (LaTeX / BibTeX / CSV)",
-    academicLead: "Генеруйте верифіковані матриці даних та готові таблиці для публікацій у наукових журналах (Scopus, WoS) або дипломних робіт.",
-    copyLatexBtn: "📋 Копіювати LaTeX таблицю",
-    copyBibtexBtn: "📚 Копіювати BibTeX цитування",
-    downloadCsvBtn: "📊 Завантажити CSV зріз",
-    copiedLatexNotice: "✓ Скопійовано!",
-    copiedBibtexNotice: "✓ Скопійовано!",
-    compareKicker: "COMPARATIVE RISK ASSESSMENT",
+    academicLead: "Таблиці та цитування для курсових, дипломних або наукових робіт.",
+    copyLatexBtn: "Копіювати LaTeX таблицю",
+    copyBibtexBtn: "Копіювати BibTeX цитування",
+    downloadCsvBtn: "Завантажити CSV зріз",
+    copiedLatexNotice: "Скопійовано!",
+    copiedBibtexNotice: "Скопійовано!",
+    compareKicker: "Порівняння профілів",
     compareTitle: "Порівняння вахтових профілів",
     compareColA: "Поточний розрахунок",
     compareColB: "Альтернативний графік (3-вахтовий 4/8 + ЗІЗ)",
@@ -2047,7 +2047,7 @@ const I18N = {
     printReportSmall: "Діалог друку відкривається локально у браузері.",
     pDocType: "МОРСЬКИЙ САМОАУДИТ ВАХТИ",
     pDocTitle: "КАРТКА ПЕРЕВІРКИ ФАКТОРІВ РИЗИКУ (SAFETY WATCHKEEPING)",
-    pDocStamp: "Zero-Data Local Audit",
+    pDocStamp: "Локальний самоаудит",
     sigCol1Span: "Підпис вахтового помічника / курсанта:",
     sigCol1Small: "Підтверджую коректність внесених годин та стану",
     sigCol2Span: "Офіцер з безпеки (Safety Officer / Ch.Off):",
@@ -2056,7 +2056,7 @@ const I18N = {
     casesEyebrow: "Уроки розслідувань · MAIB Lessons Learned",
     casesTitle: "Розбір реальних морських аварій",
     casesDesc: "Офіційні розслідування Marine Accident Investigation Branch (MAIB) доводять: перевтома, порушення режиму праці (MLC 2006) та людський фактор призводять до катастроф. Завантажте профіль інциденту в калькулятор, щоб побачити факторний аналіз ризику.",
-    caseLoadBtn: "⚡ Завантажити в калькулятор",
+    caseLoadBtn: "Завантажити в калькулятор",
     caseLink: "Звіт розслідування ↗",
     statsEyebrow: "Контекст інцидентів",
     statsTitle: "Що відбувається у вибірці",
@@ -2121,7 +2121,7 @@ const I18N = {
     importErrorAlert: "Не вдалося імпортувати профіль. Перевірте формат JSON-файлу.",
     importedFileLabel: "Імпортований файл",
     ciPrefix: "95% ДІ:",
-    sparseWarning: "⚠️ Малий обсяг вибірки (n < 30): підвищена статистична невизначеність",
+    sparseWarning: "Малий обсяг вибірки (n < 30): підвищена статистична невизначеність",
     drillSoundPlay: "Сигнал тривоги (BAM)",
     drillSoundStop: "Зупинити сигнал"
   },
@@ -2154,15 +2154,15 @@ const I18N = {
     navCases: "Accidents (MAIB)",
     navStats: "Statistics",
     navMethod: "Methodology",
-    bridgeCockpit: "⚓ Night",
-    bridgeRed: "🔴 Red",
-    bridgeDay: "☀️ Day",
+    bridgeCockpit: "Night",
+    bridgeRed: "Red",
+    bridgeDay: "Day",
     statusPill: "Research Prototype",
     calcBtn: "Calculate Risk Index",
-    radarTab: "🎯 Analysis & Radar",
-    whatifTab: "⚡ What-If Simulation",
-    checklistTab: "📋 Watch Checklist",
-    methodTab: "🔬 Methodology & FSA",
+    radarTab: "Analysis & Radar",
+    whatifTab: "What-If",
+    checklistTab: "Checklist",
+    methodTab: "Method",
     sectionEyebrow: "Individual Assessment",
     formHeading: "Seafarer Watch Profile",
     sectionSubtitle: "Takes about two minutes. Fields are never retained after closing the page.",
@@ -2208,7 +2208,7 @@ const I18N = {
     meterLow: "Low",
     meterMid: "Moderate",
     meterHigh: "Extreme · academic scale",
-    liveRadarTitle: "Factor Profile (LIVE)",
+    liveRadarTitle: "Factor Profile",
     liveRadarSubtitle: "Normalized radar of current calculation",
     lra1: "Health", lra2: "Exposure", lra3: "Night", lra4: "Habits", lra5: "PPE",
     bmTag: "FLEET BENCHMARK · BIMCO / ICS",
@@ -2222,7 +2222,7 @@ const I18N = {
     bmNightMore: "night watches",
     bmNightLess: "night watches",
     bmNote: "Benchmarks derived from aggregated BIMCO/ICS Seafarer Workforce reports. Not a personal quota.",
-    circKicker: "SAFTE / FAST BIODYNAMICS · IMO MSC/CIRC.1598",
+    circKicker: "IMO MSC/Circ.1598",
     circTitle: "Circadian Alertness & Sleepiness (KSS)",
     circDebtLabel: "Sleep debt",
     circNadirLabel: "Vulnerability nadir",
@@ -2257,7 +2257,7 @@ const I18N = {
     factorBreakdownLabels: { health: "Age & Health", occupation: "Occupational Exposure", lifestyle: "Lifestyle Factors" },
     factorShare: "share",
     recsTitle: "Actionable Safety Controls",
-    groundedKicker: "MAIB GROUNDED RETRIEVAL · OFFICIAL DATASET",
+    groundedKicker: "MAIB Sample",
     groundedTitle: "Relevant Fleet Incident Records",
     groundedBadge: "Source-Grounded",
     groundedFactsTitle: "Investigation sample facts:",
@@ -2281,7 +2281,7 @@ const I18N = {
     whatIfBtn: "Simulate",
     whatIfSimPrefix: "Simulation",
     whatIfEmpty: "Key controllable safety parameters are already optimized for this profile (PPE compliance, standard watch rotation).",
-    sensKicker: "FACTOR SENSITIVITY · TORNADO RANKING",
+    sensKicker: "Factor Analysis",
     sensTitle: "Sensitivity & Marginal Elasticity",
     sensSubtitle: "Marginal elasticity: ranking factors by their influence on the total safety index.",
     sensLeadFactor: "Leading factor",
@@ -2344,7 +2344,7 @@ const I18N = {
     drillReadinessSpan: "Readiness level",
     drillReadinessSmall: "per Muster List standard",
     drillReadinessLabels: { optimal: "Optimal", degraded: "Degraded", critical: "Critical" },
-    qrKicker: "ZERO-DATA OFFLINE HANDOVER · PURE 2D MATRIX",
+    qrKicker: "Offline Watch Handover",
     qrTitle: "Offline Watch Handover (QR)",
     qrBadge: "No Network Needed",
     qrLead: "Scan on screen for instant watch safety parameter transfer to the Relieving Officer without Internet or satellite link.",
@@ -2355,15 +2355,15 @@ const I18N = {
     fsaHeaderCell: "Severity ↓ / Frequency →",
     fsaMarker: "● YOU",
     fsaRiskIndex: "Risk Index",
-    academicKicker: "ACADEMIC RESEARCH TOOLKIT · REPRODUCIBILITY",
+    academicKicker: "Publication Export",
     academicTitle: "Export Academic Artifacts (LaTeX / BibTeX / CSV)",
-    academicLead: "Generate verified data matrices and formatted tables for scientific publications (Scopus, WoS) or graduation theses.",
-    copyLatexBtn: "📋 Copy LaTeX Table",
-    copyBibtexBtn: "📚 Copy BibTeX Citation",
-    downloadCsvBtn: "📊 Download CSV Snapshot",
-    copiedLatexNotice: "✓ Copied!",
-    copiedBibtexNotice: "✓ Copied!",
-    compareKicker: "COMPARATIVE RISK ASSESSMENT",
+    academicLead: "Tables and citations for coursework, degree dissertations, or research papers.",
+    copyLatexBtn: "Copy LaTeX Table",
+    copyBibtexBtn: "Copy BibTeX Citation",
+    downloadCsvBtn: "Download CSV Snapshot",
+    copiedLatexNotice: "Copied!",
+    copiedBibtexNotice: "Copied!",
+    compareKicker: "Profile Comparison",
     compareTitle: "Watchkeeping Profile Comparison",
     compareColA: "Current Calculation",
     compareColB: "Alternative Schedule (3-watch 4/8 + PPE)",
@@ -2386,7 +2386,7 @@ const I18N = {
     printReportSmall: "Print dialogue opens locally in your browser.",
     pDocType: "MARITIME WATCH AUDIT",
     pDocTitle: "SAFETY WATCHKEEPING FACTOR VERIFICATION CARD",
-    pDocStamp: "Zero-Data Local Audit",
+    pDocStamp: "Local Self-Audit",
     sigCol1Span: "Watch Officer / Cadet signature:",
     sigCol1Small: "I confirm the accuracy of reported hours and fitness status",
     sigCol2Span: "Safety Officer / Chief Officer:",
@@ -2395,7 +2395,7 @@ const I18N = {
     casesEyebrow: "Investigation Lessons · MAIB Lessons Learned",
     casesTitle: "Analysis of Real Maritime Casualties",
     casesDesc: "Official investigations by the Marine Accident Investigation Branch (MAIB) demonstrate: acute exhaustion, work hour violations (MLC 2006), and human factors trigger catastrophic casualties. Load real incident profiles to review factor breakdown.",
-    caseLoadBtn: "⚡ Load into Calculator",
+    caseLoadBtn: "Load into Calculator",
     caseLink: "Investigation Report ↗",
     statsEyebrow: "Incident Context",
     statsTitle: "Dataset Breakdown",
@@ -2460,7 +2460,7 @@ const I18N = {
     importErrorAlert: "Could not import profile. Please verify JSON format.",
     importedFileLabel: "Imported File Profile",
     ciPrefix: "95% CI:",
-    sparseWarning: "⚠️ Small sample size (n < 30): elevated statistical uncertainty",
+    sparseWarning: "Small sample size (n < 30): elevated statistical uncertainty",
     drillSoundPlay: "Alarm Signal (BAM)",
     drillSoundStop: "Stop Alarm"
   },
@@ -2493,15 +2493,15 @@ const I18N = {
     navCases: "Аварии MAIB",
     navStats: "Статистика",
     navMethod: "Методика",
-    bridgeCockpit: "⚓ Ночь",
-    bridgeRed: "🔴 Red",
-    bridgeDay: "☀️ День",
+    bridgeCockpit: "Ночь",
+    bridgeRed: "Красн",
+    bridgeDay: "День",
     statusPill: "Исследовательский прототип",
     calcBtn: "Рассчитать риск",
-    radarTab: "🎯 Анализ и радар",
-    whatifTab: "⚡ What-If Симуляция",
-    checklistTab: "📋 Чек-лист вахты",
-    methodTab: "🔬 Методика и FSA",
+    radarTab: "Анализ и радар",
+    whatifTab: "What-If",
+    checklistTab: "Чек-лист",
+    methodTab: "Методика",
     sectionEyebrow: "Индивидуальная оценка",
     formHeading: "Профиль моряка",
     sectionSubtitle: "Заполнение занимает около двух минут. Поля не сохраняются после закрытия страницы.",
@@ -2547,7 +2547,7 @@ const I18N = {
     meterLow: "Низкий",
     meterMid: "Средний",
     meterHigh: "Экстремальный · учебная шкала",
-    liveRadarTitle: "Профиль факторов (LIVE)",
+    liveRadarTitle: "Профиль факторов",
     liveRadarSubtitle: "Нормированный радар текущего расчета",
     lra1: "Здоровье", lra2: "Экспозиция", lra3: "Ночные", lra4: "Привычки", lra5: "СИЗ",
     bmTag: "ОТРАСЛЕВОЙ ОРИЕНТИР · BIMCO / ICS",
@@ -2561,7 +2561,7 @@ const I18N = {
     bmNightMore: "ночных",
     bmNightLess: "ночных",
     bmNote: "Ориентиры основаны на обобщенных отчетах BIMCO/ICS Seafarer Workforce. Не являются персональной нормой.",
-    circKicker: "SAFTE / FAST BIODYNAMICS · IMO MSC/CIRC.1598",
+    circKicker: "IMO MSC/Circ.1598",
     circTitle: "Циркадная бдительность и сонливость (KSS)",
     circDebtLabel: "Дефицит сна",
     circNadirLabel: "Пик уязвимости",
@@ -2596,7 +2596,7 @@ const I18N = {
     factorBreakdownLabels: { health: "Возраст и здоровье", occupation: "Профессиональная экспозиция", lifestyle: "Образ жизни" },
     factorShare: "вклада",
     recsTitle: "Что следует контролировать",
-    groundedKicker: "MAIB GROUNDED RETRIEVAL · ОФИЦИАЛЬНАЯ ВЫБОРКА",
+    groundedKicker: "Выборка MAIB",
     groundedTitle: "Релевантные инциденты во флоте",
     groundedBadge: "С привязкой к источнику",
     groundedFactsTitle: "Факты выборки расследований:",
@@ -2620,7 +2620,7 @@ const I18N = {
     whatIfBtn: "Смоделировать",
     whatIfSimPrefix: "Моделирование",
     whatIfEmpty: "Для текущего профиля оптимизированы ключевые управляемые параметры (используются СИЗ, нормальный график отдыха).",
-    sensKicker: "ФАКТОРНЫЙ АНАЛИЗ · TORNADO RANKING",
+    sensKicker: "Факторный анализ",
     sensTitle: "Чувствительность и маржинальное влияние",
     sensSubtitle: "Маржинальная эластичность: ранжирование факторов по силе влияния на изменение общего показателя безопасности.",
     sensLeadFactor: "Ведущий фактор",
@@ -2683,7 +2683,7 @@ const I18N = {
     drillReadinessSpan: "Уровень готовности",
     drillReadinessSmall: "по расписанию Muster List",
     drillReadinessLabels: { optimal: "Оптимальный", degraded: "Сниженный", critical: "Критический" },
-    qrKicker: "ZERO-DATA OFFLINE HANDOVER · PURE 2D MATRIX",
+    qrKicker: "Офлайн-передача вахты",
     qrTitle: "Офлайн-передача состояния вахты (QR)",
     qrBadge: "Без сети",
     qrLead: "Сканируйте с экрана для мгновенной передачи параметров безопасности сменяющему помощнику (Relieving Officer) без Интернета или спутникового канала.",
@@ -2694,15 +2694,15 @@ const I18N = {
     fsaHeaderCell: "Последствия ↓ / Частота →",
     fsaMarker: "● ВЫ",
     fsaRiskIndex: "Индекс риска",
-    academicKicker: "ACADEMIC RESEARCH TOOLKIT · REPRODUCIBILITY",
+    academicKicker: "Экспорт для публикации",
     academicTitle: "Экспорт научных артефактов (LaTeX / BibTeX / CSV)",
-    academicLead: "Генерируйте верифицированные матрицы данных и готовые таблицы для научных публикаций (Scopus, WoS) или дипломных работ.",
-    copyLatexBtn: "📋 Копировать LaTeX таблицу",
-    copyBibtexBtn: "📚 Копировать BibTeX цитирование",
-    downloadCsvBtn: "📊 Скачать CSV срез",
-    copiedLatexNotice: "✓ Скопировано!",
-    copiedBibtexNotice: "✓ Скопировано!",
-    compareKicker: "COMPARATIVE RISK ASSESSMENT",
+    academicLead: "Таблицы и цитирования для курсовых, дипломных или научных работ.",
+    copyLatexBtn: "Копировать LaTeX таблицу",
+    copyBibtexBtn: "Копировать BibTeX цитирование",
+    downloadCsvBtn: "Скачать CSV срез",
+    copiedLatexNotice: "Скопировано!",
+    copiedBibtexNotice: "Скопировано!",
+    compareKicker: "Сравнение профилей",
     compareTitle: "Сравнение вахтенных профилей",
     compareColA: "Текущий расчет",
     compareColB: "Альтернативный график (3-вахтенный 4/8 + СИЗ)",
@@ -2725,7 +2725,7 @@ const I18N = {
     printReportSmall: "Диалог печати открывается локально в браузере.",
     pDocType: "МОРСКОЙ САМОАУДИТ ВАХТЫ",
     pDocTitle: "КАРТОЧКА ПРОВЕРКИ ФАКТОРОВ РИСКА (SAFETY WATCHKEEPING)",
-    pDocStamp: "Zero-Data Local Audit",
+    pDocStamp: "Локальный самоаудит",
     sigCol1Span: "Подпись вахтенного помощника / курсанта:",
     sigCol1Small: "Подтверждаю корректность внесенных часов и самочувствия",
     sigCol2Span: "Офицер по безопасности (Safety Officer / Ch.Off):",
@@ -2734,7 +2734,7 @@ const I18N = {
     casesEyebrow: "Уроки расследований · MAIB Lessons Learned",
     casesTitle: "Разбор реальных морских аварий",
     casesDesc: "Официальные расследования Marine Accident Investigation Branch (MAIB) доказывают: переутомление, нарушения режима труда (MLC 2006) и человеческий фактор приводят к катастрофам. Загрузите профиль инцидента в калькулятор, чтобы увидеть факторный анализ риска.",
-    caseLoadBtn: "⚡ Загрузить в калькулятор",
+    caseLoadBtn: "Загрузить в калькулятор",
     caseLink: "Отчет расследования ↗",
     statsEyebrow: "Контекст инцидентов",
     statsTitle: "Что происходит в выборке",
@@ -2799,7 +2799,7 @@ const I18N = {
     importErrorAlert: "Не удалось импортировать профиль. Проверьте формат JSON-файла.",
     importedFileLabel: "Импортированный файл",
     ciPrefix: "95% ДИ:",
-    sparseWarning: "⚠️ Малая выборка (n < 30): повышенная статистическая неопределенность",
+    sparseWarning: "Малая выборка (n < 30): повышенная статистическая неопределенность",
     drillSoundPlay: "Звуковой сигнал (BAM)",
     drillSoundStop: "Остановить сигнал"
   }
@@ -2807,34 +2807,34 @@ const I18N = {
 
 const caseStudiesByLang = {
   "vasco-de-gama": {
-    uk: { badge: "Посадка на мілину", ship: "Ультра-великий контейнеровоз (399 м) · Протока Торн-Шанел", summary: "Під час нічного заходу в Саутгемптон судно сіло на мілину. Команда містка втратила контроль курсу через накопичену перевтому вахтового помічника: понад 70% нічних годин і високий темп роботи призвели до тунельного зору.", factors: ["⏰ 2 750 год/рік", "🌙 70% нічних вахт", "⚠️ Порушення MLC 2006"] },
-    en: { badge: "Grounding", ship: "Ultra-Large Container Vessel (399m) · Thorn Channel", summary: "Grounding during nocturnal approach to Southampton. Bridge team lost track of vessel track due to cumulative fatigue of lead navigating officer: >70% night hours and intense pace led to tunnel vision.", factors: ["⏰ 2,750 hrs/yr", "🌙 70% night watches", "⚠️ MLC 2006 violation"] },
-    ru: { badge: "Посадка на мель", ship: "Ультра-большой контейнеровоз (399 м) · Пролив Торн-Шанел", summary: "Во время ночного захода в Саутгемптон судно село на мель. Команда мостика потеряла контроль курса из-за накопившейся усталости вахтенного помощника: более 70% ночных часов и высокий темп работы привели к туннельному зрению.", factors: ["⏰ 2 750 ч/год", "🌙 70% ночных вахт", "⚠️ Нарушение MLC 2006"] }
+    uk: { badge: "Посадка на мілину", ship: "Ультра-великий контейнеровоз (399 м) · Протока Торн-Шанел", summary: "Під час нічного заходу в Саутгемптон судно сіло на мілину. Команда містка втратила контроль курсу через накопичену перевтому вахтового помічника: понад 70% нічних годин і високий темп роботи призвели до тунельного зору.", factors: ["2 750 год/рік", "70% нічних вахт", "Порушення MLC 2006"] },
+    en: { badge: "Grounding", ship: "Ultra-Large Container Vessel (399m) · Thorn Channel", summary: "Grounding during nocturnal approach to Southampton. Bridge team lost track of vessel track due to cumulative fatigue of lead navigating officer: >70% night hours and intense pace led to tunnel vision.", factors: ["2,750 hrs/yr", "70% night watches", "MLC 2006 violation"] },
+    ru: { badge: "Посадка на мель", ship: "Ультра-большой контейнеровоз (399 м) · Пролив Торн-Шанел", summary: "Во время ночного захода в Саутгемптон судно село на мель. Команда мостика потеряла контроль курса из-за накопившейся усталости вахтенного помощника: более 70% ночных часов и высокий темп работы привели к туннельному зрению.", factors: ["2 750 ч/год", "70% ночных вахт", "Нарушение MLC 2006"] }
   },
   "zarga": {
-    uk: { badge: "Важке травмування", ship: "Газовоз LNG (288 м) · Термінал South Hook", summary: "Розрив надміцного швартовного кінця (SBT) під натягом із зоною віддачі (Snap-back). Матрос отримав важку ЧМТ і травми кінцівок. Причини: втома палубної команди, відсутність захисту та робота в небезпечній зоні.", factors: ["⚓ Палубна команда", "🛑 Порушення ЗІЗ", "⚠️ Snap-back zone"] },
-    en: { badge: "Serious Injury", ship: "LNG Carrier (288m) · South Hook Terminal", summary: "Failure of high-modulus mooring line under tension with severe snap-back. Officer suffered traumatic head and limb injuries. Causes: deck crew fatigue, lack of protection, and lingering in snap-back zone.", factors: ["⚓ Deck Crew", "🛑 PPE non-compliance", "⚠️ Snap-back zone"] },
-    ru: { badge: "Тяжелая травма", ship: "Газовоз LNG (288 м) · Терминал South Hook", summary: "Разрыв высокопрочного швартовного конца (SBT) под натяжением с зоной отдачи (Snap-back). Моряк получил тяжелую ЧМТ и травмы конечностей. Причины: усталость палубной команды, отсутствие защиты и работа в опасной зоне.", factors: ["⚓ Палубная команда", "🛑 Нарушение СИЗ", "⚠️ Snap-back zone"] }
+    uk: { badge: "Важке травмування", ship: "Газовоз LNG (288 м) · Термінал South Hook", summary: "Розрив надміцного швартовного кінця (SBT) під натягом із зоною віддачі (Snap-back). Матрос отримав важку ЧМТ і травми кінцівок. Причини: втома палубної команди, відсутність захисту та робота в небезпечній зоні.", factors: ["Палубна команда", "Порушення ЗІЗ", "Snap-back zone"] },
+    en: { badge: "Serious Injury", ship: "LNG Carrier (288m) · South Hook Terminal", summary: "Failure of high-modulus mooring line under tension with severe snap-back. Officer suffered traumatic head and limb injuries. Causes: deck crew fatigue, lack of protection, and lingering in snap-back zone.", factors: ["Deck Crew", "PPE non-compliance", "Snap-back zone"] },
+    ru: { badge: "Тяжелая травма", ship: "Газовоз LNG (288 м) · Терминал South Hook", summary: "Разрыв высокопрочного швартовного конца (SBT) под натяжением с зоной отдачи (Snap-back). Моряк получил тяжелую ЧМТ и травмы конечностей. Причины: усталость палубной команды, отсутствие защиты и работа в опасной зоне.", factors: ["Палубная команда", "Нарушение СИЗ", "Snap-back zone"] }
   },
   "scot-carrier": {
-    uk: { badge: "Зіткнення з загибеллю", ship: "Суховантаж (90 м) · Балтійське море біля Борнгольма", summary: "Нічний таран данської самохідної баржі на швидкості 12 вузлів. Баржа перекинулася, двоє моряків загинули. Вахтовий помічник Scot Carrier був на містку сам, заснув на ходовій вахті внаслідок безсоння та алкоголю.", factors: ["🍺 Алкоголь на вахті", "🌙 80% нічних годин", "🔴 Засинання за ECDIS"] },
-    en: { badge: "Fatal Collision", ship: "General Cargo (90m) · Baltic Sea off Bornholm", summary: "Night collision with Danish hopper barge at 12 knots. Barge capsized with loss of two lives. Sole watchkeeper on Scot Carrier fell asleep on navigation watch due to acute sleep deprivation and alcohol.", factors: ["🍺 Alcohol on watch", "🌙 80% night hours", "🔴 Asleep at ECDIS"] },
-    ru: { badge: "Столкновение с гибелью", ship: "Сухогруз (90 м) · Балтийское море возле Борнхольма", summary: "Ночной таран датской самоходной баржи на скорости 12 узлов. Баржа опрокинулась, двое моряков погибли. Вахтенный помощник Scot Carrier нес вахту один, уснул на ходовой вахте из-за бессонницы и алкоголя.", factors: ["🍺 Алкоголь на вахте", "🌙 80% ночных часов", "🔴 Засыпание за ECDIS"] }
+    uk: { badge: "Зіткнення з загибеллю", ship: "Суховантаж (90 м) · Балтійське море біля Борнгольма", summary: "Нічний таран данської самохідної баржі на швидкості 12 вузлів. Баржа перекинулася, двоє моряків загинули. Вахтовий помічник Scot Carrier був на містку сам, заснув на ходовій вахті внаслідок безсоння та алкоголю.", factors: ["Алкоголь на вахті", "80% нічних годин", "Засинання за ECDIS"] },
+    en: { badge: "Fatal Collision", ship: "General Cargo (90m) · Baltic Sea off Bornholm", summary: "Night collision with Danish hopper barge at 12 knots. Barge capsized with loss of two lives. Sole watchkeeper on Scot Carrier fell asleep on navigation watch due to acute sleep deprivation and alcohol.", factors: ["Alcohol on watch", "80% night hours", "Asleep at ECDIS"] },
+    ru: { badge: "Столкновение с гибелью", ship: "Сухогруз (90 м) · Балтийское море возле Борнхольма", summary: "Ночной таран датской самоходной баржи на скорости 12 узлов. Баржа опрокинулась, двое моряков погибли. Вахтенный помощник Scot Carrier нес вахту один, уснул на ходовой вахте из-за бессонницы и алкоголя.", factors: ["Алкоголь на вахте", "80% ночных часов", "Засыпание за ECDIS"] }
   },
   "el-faro": {
-    uk: { badge: "Загибель судна", ship: "Контейнеровоз Ro-Ro (241 м) · Атлантичний океан / Багами", summary: "Загибель 33 членів екіпажу в урагані 4 категорії. Комплекс факторів: тиск комерційного розкладу, зміщення вантажу через послаблені талрепи (lashing), втрата остійності, авторитаризм капітана та втома від наднормових вахт.", factors: ["📦 Контейнеровоз", "⏰ 2 950 год/рік", "🌪️ Втрата остійності"] },
-    en: { badge: "Total Loss / Sinking", ship: "Ro-Ro Cargo Vessel (241m) · Atlantic Ocean / Bahamas", summary: "Loss of 33 crew members in Category 4 hurricane. Compounding factors: commercial schedule pressure, cargo shift from parted lashings, loss of stability, steep bridge hierarchy, and fatigue.", factors: ["📦 Container Ro-Ro", "⏰ 2,950 hrs/yr", "🌪️ Loss of stability"] },
-    ru: { badge: "Гибель судна", ship: "Контейнеровоз Ro-Ro (241 м) · Атлантический океан / Багамы", summary: "Гибель 33 членов экипажа в урагане 4 категории. Комплекс факторов: коммерческое давление расписания, смещение груза из-за ослабленных талрепов, потеря остойчивости, авторитаризм капитана и сверхурочная усталость.", factors: ["📦 Контейнеровоз", "⏰ 2 950 ч/год", "🌪️ Потеря остойчивости"] }
+    uk: { badge: "Загибель судна", ship: "Контейнеровоз Ro-Ro (241 м) · Атлантичний океан / Багами", summary: "Загибель 33 членів екіпажу в урагані 4 категорії. Комплекс факторів: тиск комерційного розкладу, зміщення вантажу через послаблені талрепи (lashing), втрата остійності, авторитаризм капітана та втома від наднормових вахт.", factors: ["Контейнеровоз", "2 950 год/рік", "Втрата остійності"] },
+    en: { badge: "Total Loss / Sinking", ship: "Ro-Ro Cargo Vessel (241m) · Atlantic Ocean / Bahamas", summary: "Loss of 33 crew members in Category 4 hurricane. Compounding factors: commercial schedule pressure, cargo shift from parted lashings, loss of stability, steep bridge hierarchy, and fatigue.", factors: ["Container Ro-Ro", "2,950 hrs/yr", "Loss of stability"] },
+    ru: { badge: "Гибель судна", ship: "Контейнеровоз Ro-Ro (241 м) · Атлантический океан / Багамы", summary: "Гибель 33 членов экипажа в урагане 4 категории. Комплекс факторов: коммерческое давление расписания, смещение груза из-за ослабленных талрепов, потеря остойчивости, авторитаризм капитана и сверхурочная усталость.", factors: ["Контейнеровоз", "2 950 ч/год", "Потеря остойчивости"] }
   },
   "exxon-valdez": {
-    uk: { badge: "Екологічна катастрофа", ship: "Супертанкер VLCC (301 м) · Протока Принца Вільгельма", summary: "Посадка на риф Блай та вилив 41 млн літрів сирої нафти. Розслідування NTSB виявило хронічну перевтому третього помічника на ходовій вахті через безперервний вахтовий графік 6/6 та понад 18 годин без сну, що призвело до повної втрати просторової орієнтації.", factors: ["🛢️ Танкер VLCC", "🌙 85% нічних вахт", "⏰ 3 200 год/рік"] },
-    en: { badge: "Major Oil Spill", ship: "VLCC Supertanker (301m) · Prince William Sound", summary: "Grounding on Bligh Reef releasing 41M liters of crude oil. NTSB identified severe fatigue of 3rd mate on bridge watch after continuous 6on/6off schedule and >18h wakefulness, resulting in spatial disorientation.", factors: ["🛢️ VLCC Tanker", "🌙 85% night watches", "⏰ 3,200 hrs/yr"] },
-    ru: { badge: "Экологическая катастрофа", ship: "Супертанкер VLCC (301 м) · Пролив Принца Вильгельма", summary: "Посадка на риф Блай и вылив 41 млн литров сырой нефти. Расследование NTSB выявило хроническую переутомленность третьего помощника на вахте из-за непрерывного графика 6/6 и более 18 часов без сна, приведшего к потере пространственной ориентации.", factors: ["🛢️ Танкер VLCC", "🌙 85% ночных вахт", "⏰ 3 200 ч/год"] }
+    uk: { badge: "Екологічна катастрофа", ship: "Супертанкер VLCC (301 м) · Протока Принца Вільгельма", summary: "Посадка на риф Блай та вилив 41 млн літрів сирої нафти. Розслідування NTSB виявило хронічну перевтому третього помічника на ходовій вахті через безперервний вахтовий графік 6/6 та понад 18 годин без сну, що призвело до повної втрати просторової орієнтації.", factors: ["Танкер VLCC", "85% нічних вахт", "3 200 год/рік"] },
+    en: { badge: "Major Oil Spill", ship: "VLCC Supertanker (301m) · Prince William Sound", summary: "Grounding on Bligh Reef releasing 41M liters of crude oil. NTSB identified severe fatigue of 3rd mate on bridge watch after continuous 6on/6off schedule and >18h wakefulness, resulting in spatial disorientation.", factors: ["VLCC Tanker", "85% night watches", "3,200 hrs/yr"] },
+    ru: { badge: "Экологическая катастрофа", ship: "Супертанкер VLCC (301 м) · Пролив Принца Вильгельма", summary: "Посадка на риф Блай и вылив 41 млн литров сырой нефти. Расследование NTSB выявило хроническую переутомленность третьего помощника на вахте из-за непрерывного графика 6/6 и более 18 часов без сна, приведшего к потере пространственной ориентации.", factors: ["Танкер VLCC", "85% ночных вахт", "3 200 ч/год"] }
   },
   "bourbon-dolphin": {
-    uk: { badge: "Перекидання судна", ship: "Якорезавізний буксир AHTS (75 м) · Північне море / Шетланд", summary: "Втрата динамічної остійності та перекидання під час заведення якоря бурової установки. Загинуло 8 членів екіпажу. Фактори: надмірне натягнення якірних тросів, робота палубної команди на слизькій палубі без відпочинку та екстремальна кумулятивна втома.", factors: ["⚓ Буксир / AHTS", "🛑 Відсутність ЗІЗ", "⚠️ Динамічна остійність"] },
-    en: { badge: "Vessel Capsizing", ship: "Anchor Handling Tug AHTS (75m) · North Sea / Shetland", summary: "Loss of dynamic stability and capsizing while running an offshore rig anchor. 8 crew fatalities. Contributing factors: heavy chain tension, deck work on slippery rolling deck without rest, and extreme fatigue.", factors: ["⚓ Tug / AHTS", "🛑 Lack of PPE", "⚠️ Dynamic stability"] },
-    ru: { badge: "Опрокидывание судна", ship: "Якорезавозный буксир AHTS (75 м) · Северное море / Шетланд", summary: "Потеря динамической остойчивости и опрокидывание во время заводки якоря буровой установки. Погибло 8 членов экипажа. Факторы: чрезмерное натяжение тросов, работа палубной команды на скользкой палубе без отдыха и накопленная усталость.", factors: ["⚓ Буксир / AHTS", "🛑 Отсутствие СИЗ", "⚠️ Динамическая остойчивость"] }
+    uk: { badge: "Перекидання судна", ship: "Якорезавізний буксир AHTS (75 м) · Північне море / Шетланд", summary: "Втрата динамічної остійності та перекидання під час заведення якоря бурової установки. Загинуло 8 членів екіпажу. Фактори: надмірне натягнення якірних тросів, робота палубної команди на слизькій палубі без відпочинку та екстремальна кумулятивна втома.", factors: ["Буксир / AHTS", "Відсутність ЗІЗ", "Динамічна остійність"] },
+    en: { badge: "Vessel Capsizing", ship: "Anchor Handling Tug AHTS (75m) · North Sea / Shetland", summary: "Loss of dynamic stability and capsizing while running an offshore rig anchor. 8 crew fatalities. Contributing factors: heavy chain tension, deck work on slippery rolling deck without rest, and extreme fatigue.", factors: ["Tug / AHTS", "Lack of PPE", "Dynamic stability"] },
+    ru: { badge: "Опрокидывание судна", ship: "Якорезавозный буксир AHTS (75 м) · Северное море / Шетланд", summary: "Потеря динамической остойчивости и опрокидывание во время заводки якоря буровой установки. Погибло 8 членов экипажа. Факторы: чрезмерное натяжение тросов, работа палубной команды на скользкой палубе без отдыха и накопленная усталость.", factors: ["Буксир / AHTS", "Отсутствие СИЗ", "Динамическая остойчивость"] }
   }
 };
 
@@ -3109,17 +3109,17 @@ function setLanguage(lang) {
   const drillSoundBtn = $("#drill-sound-btn");
   if (drillSoundBtn) {
     if (drillSoundBtn.classList.contains("sounding")) {
-      drillSoundBtn.innerHTML = `<span>⏹</span> ${escapeHtml(t.drillSoundStop)}`;
+      drillSoundBtn.textContent = t.drillSoundStop;
     } else {
-      drillSoundBtn.innerHTML = `<span>🔊</span> ${escapeHtml(t.drillSoundPlay)}`;
+      drillSoundBtn.textContent = t.drillSoundPlay;
     }
   }
 
   // Profile File Actions
   const expBtn = $("#export-profile-btn");
-  if (expBtn) expBtn.innerHTML = `<span>📥</span> ${escapeHtml(t.exportProfileBtn)}`;
+  if (expBtn) expBtn.textContent = t.exportProfileBtn;
   const impLabel = document.querySelector('label[for="import-profile-input"]');
-  if (impLabel) impLabel.innerHTML = `<span>📤</span> ${escapeHtml(t.importProfileBtn)}<input id="import-profile-input" type="file" accept=".json" class="sr-only" />`;
+  if (impLabel) impLabel.innerHTML = `${escapeHtml(t.importProfileBtn)}<input id="import-profile-input" type="file" accept=".json" class="sr-only" />`;
   $("#import-profile-input")?.addEventListener("change", (e) => {
     const f = e.target.files?.[0];
     if (!f) return;
@@ -3141,7 +3141,7 @@ function setLanguage(lang) {
   if (privNote) privNote.innerHTML = `<strong>${escapeHtml(t.privacyNote.split(":")[0])}:</strong> ${escapeHtml(t.privacyNote.split(": ")[1] || t.privacyNote)}`;
 
   const formFooterP = document.querySelector(".form-footer p");
-  if (formFooterP) formFooterP.innerHTML = `<span aria-hidden="true">ⓘ</span> ${escapeHtml(t.formFooterNote)}`;
+  if (formFooterP) formFooterP.textContent = t.formFooterNote;
   const submitBtn = document.querySelector(".form-footer button[type='submit']");
   if (submitBtn) submitBtn.innerHTML = `${escapeHtml(t.calcBtn)} <span>→</span>`;
 
@@ -3159,13 +3159,13 @@ function setLanguage(lang) {
 
   // Result Tabs
   const tabRadar = $("#tab-btn-radar");
-  if (tabRadar) tabRadar.innerHTML = `<span class="tab-icon">🎯</span> ${t.radarTab.replace("🎯 ", "")}`;
+  if (tabRadar) tabRadar.textContent = t.radarTab;
   const tabWhatif = $("#tab-btn-whatif");
-  if (tabWhatif) tabWhatif.innerHTML = `<span class="tab-icon">⚡</span> ${t.whatifTab.replace("⚡ ", "")}`;
+  if (tabWhatif) tabWhatif.textContent = t.whatifTab;
   const tabChecklist = $("#tab-btn-checklist");
-  if (tabChecklist) tabChecklist.innerHTML = `<span class="tab-icon">📋</span> ${t.checklistTab.replace("📋 ", "")}`;
+  if (tabChecklist) tabChecklist.textContent = t.checklistTab;
   const tabMethod = $("#tab-btn-method");
-  if (tabMethod) tabMethod.innerHTML = `<span class="tab-icon">🔬</span> ${t.methodTab.replace("🔬 ", "")}`;
+  if (tabMethod) tabMethod.textContent = t.methodTab;
 
   // Live Radar Box
   const liveRHeadH3 = document.querySelector(".live-radar-header h3");
