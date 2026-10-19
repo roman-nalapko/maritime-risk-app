@@ -17,7 +17,10 @@ import {
   getBridgeAlertPattern,
   evaluateWatchTeamRisk,
   createDefaultWatchSchedule,
-  validateRestHoursSchedule
+  validateRestHoursSchedule,
+  KP965_GISIS_RECORD,
+  calculatePortBasinRisk,
+  generatePythonAssignmentScript
 } from "./model.js";
 
 const $ = (selector) => document.querySelector(selector);
@@ -1784,6 +1787,748 @@ $("#download-csv-btn")?.addEventListener("click", () => {
   URL.revokeObjectURL(url);
 });
 
+// ── GISIS IMO Accident Digitization & ECFA Diagram Module ──
+let currentEcfaFilter = "all";
+let currentSelectedEcfaNode = "AE1";
+let currentPortBasinRisk = null;
+
+const ECFA_NODE_METADATA = {
+  E1: {
+    category: { uk: "Хронологічна подія", en: "Chronological Event", ru: "Хронологическое событие" },
+    title: { uk: "E1: 02:25 — Відшвартування від танкера", en: "E1: 02:25 — Disembarkation from Tanker", ru: "E1: 02:25 — Отшвартовка от танкера" },
+    desc: {
+      uk: "Завершення висадки лоцмана на якірній стоянці та початок переходу катера KP-965 до бази.",
+      en: "Completion of pilot transfer at anchorage and start of transit of pilot craft KP-965 back to base.",
+      ru: "Завершение высадки лоцмана на якорной стоянке и начало перехода катера KP-965 на базу."
+    },
+    ref: "IMO Res. A.960 (Pilot Boarding / Craft Operations)",
+    mitigation: {
+      uk: "Дотримання регламенту нічних лоцманських операцій та перевірка розкладу переходу",
+      en: "Adhere to nocturnal pilot transfer SOPs and confirm transit plan",
+      ru: "Соблюдение регламента ночных лоцманских операций и проверка плана перехода"
+    }
+  },
+  E2: {
+    category: { uk: "Хронологічна подія", en: "Chronological Event", ru: "Хронологическое событие" },
+    title: { uk: "E2: 02:30 — Вхід у Басейн I порту Копер", en: "E2: 02:30 — Entry into Basin I", ru: "E2: 02:30 — Вход в Бассейн I" },
+    desc: {
+      uk: "Перетин лінії молу та вхід у стиснену внутрішню акваторію Басейну I.",
+      en: "Passing breakwater entrance into the restricted internal waters of Basin I.",
+      ru: "Пересечение линии мола и вход в стесненную внутреннюю акваторию Бассейна I."
+    },
+    ref: "Port of Koper Navigation Regulations (Art. 12)",
+    mitigation: {
+      uk: "Обов'язковий перехід на режим маневрування у стиснених водах (Basin mode)",
+      en: "Mandatory transition to restricted basin maneuvering mode",
+      ru: "Обязательный переход в режим маневрирования в стесненных водах"
+    }
+  },
+  E3: {
+    category: { uk: "Хронологічна подія", en: "Chronological Event", ru: "Хронологическое событие" },
+    title: { uk: "E3: 02:32 — Набір швидкості до 22.0 вузлів", en: "E3: 02:32 — Acceleration to 22.0 kt", ru: "E3: 02:32 — Набор скорости до 22.0 узлов" },
+    desc: {
+      uk: "Рульовий перевів рукоятки управління двигунами на повний хід у нічний час всередині басейну.",
+      en: "Coxswain advanced throttles to maximum cruising speed inside restricted port basin at night.",
+      ru: "Рулевой перевел рукоятки управления двигателями на полный ход в ночное время внутри бассейна."
+    },
+    ref: "COLREG Rule 6 (Safe Speed) & Port Speed Regulations",
+    mitigation: {
+      uk: "Встановлення апаратного/програмного обмеження швидкості до 10 вузлів у басейні",
+      en: "Enforce hardware or software governor limiting basin speed to <= 10 knots",
+      ru: "Установка аппаратного или программного ограничения скорости до 10 узлов в бассейне"
+    }
+  },
+  E4: {
+    category: { uk: "Хронологічна подія", en: "Chronological Event", ru: "Хронологическое событие" },
+    title: { uk: "E4: 02:35 — Рух на фоні берегових вогнів", en: "E4: 02:35 — Navigation against shore glare", ru: "E4: 02:35 — Движение на фоне береговых огней" },
+    desc: {
+      uk: "Катер слідував уздовж контейнерного терміналу з інтенсивним прожекторним освітленням берега.",
+      en: "Vessel transited along container terminal berths with intense high-mast floodlight glare.",
+      ru: "Катер следовал вдоль контейнерного терминала с интенсивным прожекторным освещением берега."
+    },
+    ref: "IMO MSC.192(79) & Night Vision Ergonomics",
+    mitigation: {
+      uk: "Використання тепловізорів FLIR та антиблікового тонування вітрового скла",
+      en: "Equip craft with FLIR thermal imaging and anti-reflective windscreen shielding",
+      ru: "Использование тепловизоров FLIR и антибликового покрытия ветрового стекла"
+    }
+  },
+  E5: {
+    category: { uk: "Хронологічна подія", en: "Chronological Event", ru: "Хронологическое событие" },
+    title: { uk: "E5: 02:38 — Наближення до швартовного буя 2/I", en: "E5: 02:38 — Closing on Buoy 2/I", ru: "E5: 02:38 — Сближение со швартовным буем 2/I" },
+    desc: {
+      uk: "Дистанція до неосвітленого буя стрімко скорочувалася без візуального розпізнавання рульовим.",
+      en: "Distance to unlit buoy closed rapidly at 11.3 m/s without visual detection by coxswain.",
+      ru: "Дистанция до неосвещенного буя стремительно сокращалась без визуального распознавания рулевым."
+    },
+    ref: "COLREG Rule 5 (Look-out) & IALA Buoyage Guidelines",
+    mitigation: {
+      uk: "Оснащення буїв світлодіодними синхронними проблисковими вогнями та призматичною стрічкою",
+      en: "Retrofit mooring buoys with synchronized solar LED flashers and prism tape",
+      ru: "Оснащение буев светодиодными синхронными огнями и призматической лентой"
+    }
+  },
+  E6: {
+    category: { uk: "Хронологічна подія", en: "Chronological Event", ru: "Хронологическое событие" },
+    title: { uk: "E6: 02:39 — Радар без контролю, матрос не спостерігає", en: "E6: 02:39 — Radar unmonitored / Single watch", ru: "E6: 02:39 — Радар без контроля, матрос не ведет наблюдение" },
+    desc: {
+      uk: "Рульовий не звертався до екрана радара, матрос перебував у глибині кабіни без завдань спостереження.",
+      en: "Coxswain neglected radar display; deckhand sat aft in cabin without lookout responsibilities.",
+      ru: "Рулевой не смотрел на экран радара, матрос находился в глубине кабины без обязанностей наблюдения."
+    },
+    ref: "STCW Section A-VIII/2 (Lookout) & BRM Standards",
+    mitigation: {
+      uk: "Обов'язкове призначення матроса другим впередсмотрящим (Bridge Team Synergy)",
+      en: "Mandate deckhand as dedicated second lookout with radar repeater access",
+      ru: "Обязательное назначение матроса вторым впередсмотрящим"
+    }
+  },
+  E7: {
+    category: { uk: "Хронологічна подія", en: "Chronological Event", ru: "Хронологическое событие" },
+    title: { uk: "E7: 02:40 — Прямий удар об буй на швидкості 22 вузли", en: "E7: 02:40 — Direct allision at 22 kt", ru: "E7: 02:40 — Прямой удар о буй на скорости 22 узла" },
+    desc: {
+      uk: "Лобове зіткнення катера зі швартовним буєм 2/I без попереднього гальмування чи відвороту керма.",
+      en: "High-energy direct frontal impact with mooring buoy 2/I without evasive action.",
+      ru: "Лобовое столкновение катера со швартовным буем 2/I без торможения или отворота руля."
+    },
+    ref: "MSC-MEPC.3/Circ.4/Rev.1 Table 4 (Code 6: Contact)",
+    mitigation: {
+      uk: "Автоматична система звукового/візуального попередження про небезпечне зближення (CPA Alarm)",
+      en: "Install proximity obstacle warning system (CPA/radar guard zone alarm)",
+      ru: "Автоматическая система звукового предупреждения об опасном сближении"
+    }
+  },
+  E8: {
+    category: { uk: "Хронологічна подія", en: "Chronological Event", ru: "Хронологическое событие" },
+    title: { uk: "E8: 02:42 — Аварійна зупинка, пробоїна, травмування", en: "E8: 02:42 — Emergency stop & injuries", ru: "E8: 02:42 — Аварийная остановка, пробоина, травмы" },
+    desc: {
+      uk: "Спрацювання аварійних вимикачів, розгерметизація носового відсіку, тяжка торакальна травма рульового.",
+      en: "Engines killed, bow fiberglass breached, coxswain suffered severe thoracic trauma (>72h hospital).",
+      ru: "Остановка двигателей, пробоина носового отсека, тяжелая травма рулевого (>72 ч нетрудоспособности)."
+    },
+    ref: "MSC-MEPC.3/Circ.4/Rev.1 Table 5 (Code 2: Marine casualty)",
+    mitigation: {
+      uk: "Встановлення ременів безпеки на сидіннях екіпажу та посиленого носового кранцевого захисту",
+      en: "Mandate helm seat harness belts and heavy-duty energy-absorbing bow fender",
+      ru: "Установка ремней безопасности на креслах экипажа и усиленного носового привального бруса"
+    }
+  },
+  AE1: {
+    category: { uk: "Аварійна точка (Accident Event)", en: "Accident Event", ru: "Аварийная точка" },
+    title: { uk: "AE1: Перевищення безпечної швидкості (COLREG 6)", en: "AE1: Excessive Speed in Basin (COLREG 6)", ru: "AE1: Превышение безопасной скорости (COLREG 6)" },
+    desc: {
+      uk: "Рух на швидкості 22 вузли у внутрішньому басейні в темряві позбавив екіпаж часу на оцінку ситуації та реакцію.",
+      en: "22-knot speed in confined basin in darkness critically compressed available perception-reaction time.",
+      ru: "Скорость 22 узла во внутреннем бассейне в темноте лишила экипаж времени на реакцию."
+    },
+    ref: "COLREG Rule 6 (Safe Speed in confined waters)",
+    mitigation: {
+      uk: "Чіткі граничні ліміти швидкості в СУБ (SMS): максимум 10 вузлів у басейнах порту",
+      en: "Enforceable SMS speed cap: maximum 10 knots within all port basins",
+      ru: "Четкие лимиты скорости в СУБ: не более 10 узлов в бассейнах порта"
+    }
+  },
+  AE2: {
+    category: { uk: "Аварійна точка (Accident Event)", en: "Accident Event", ru: "Аварийная точка" },
+    title: { uk: "AE2: Втрата належного спостереження (COLREG 5)", en: "AE2: Failure of Look-out (COLREG 5)", ru: "AE2: Потеря надлежащего наблюдения (COLREG 5)" },
+    desc: {
+      uk: "Порушення обов'язку безперервного всебічного візуального та слухового спостереження всіма наявними засобами.",
+      en: "Failure to maintain continuous all-round look-out by sight and hearing by all available means.",
+      ru: "Нарушение обязанности непрерывного кругового наблюдения всеми доступными средствами."
+    },
+    ref: "COLREG Rule 5 & STCW Chapter VIII",
+    mitigation: {
+      uk: "Подвійне спостереження: заборона одиночної вахти на швидкохідних катерах уночі",
+      en: "Dual lookout mandate: prohibit solo nocturnal high-speed pilot boat transit",
+      ru: "Двойное наблюдение: запрет одиночной вахты на быстроходных катерах ночью"
+    }
+  },
+  AE3: {
+    category: { uk: "Аварійна точка (Accident Event)", en: "Accident Event", ru: "Аварийная точка" },
+    title: { uk: "AE3: Нехтування радіолокаційним контролем", en: "AE3: Radar Monitoring Omission", ru: "AE3: Пренебрежение радиолокационным контролем" },
+    desc: {
+      uk: "Навігаційний радар не використовувався для виявлення навігаційних небезпек за умов погіршеного зорового сприйняття.",
+      en: "Navigational radar was neglected for early obstacle detection in high glare night environment.",
+      ru: "Навигационный радар не использовался для обнаружения опасностей в условиях засветки."
+    },
+    ref: "COLREG Rule 5/7 & IMO MSC.192(79)",
+    mitigation: {
+      uk: "Протокол налаштування шкали 0.5–0.75 милі та періодичне тренування на радіолокаційному тренажері",
+      en: "Standardize 0.5-0.75 nm radar scale protocol and conduct simulator radar drills",
+      ru: "Стандартизация шкалы 0.5-0.75 мили и регулярные тренировки на радиолокационном тренажере"
+    }
+  },
+  AE4: {
+    category: { uk: "Аварійна точка (Accident Event)", en: "Accident Event", ru: "Аварийная точка" },
+    title: { uk: "AE4: Розрив синергії ходової вахти (BRM failure)", en: "AE4: Watch Team Synergy Failure", ru: "AE4: Разрыв синергии ходовой вахты (BRM)" },
+    desc: {
+      uk: "Повна відсутність координації та перехресного контролю між рульовим та матросом.",
+      en: "Total absence of task allocation and cross-checking redundancy between coxswain and deckhand.",
+      ru: "Полное отсутствие координации и взаимной страховки между рулевым и матросом."
+    },
+    ref: "STCW Section A-VIII/2 Part 4-1 (Bridge Resource Management)",
+    mitigation: {
+      uk: "Впровадження командного тренінгу BRM для екіпажів портофлоту",
+      en: "Implement Bridge Resource Management training for pilot craft crews",
+      ru: "Внедрение командного тренинга BRM для экипажей портового флота"
+    }
+  },
+  CF1: {
+    category: { uk: "Фактор сприяння (Human)", en: "Contributing Factor (Human)", ru: "Способствующий фактор (Человеческий)" },
+    title: { uk: "CF1: Циркадна втома (02:40 LT)", en: "CF1: Circadian Nadir Fatigue", ru: "CF1: Циркадная усталость (02:40 LT)" },
+    desc: {
+      uk: "Інцидент стався у пік фізіологічної сонливості (circadian nadir) після серії нічних чергувань.",
+      en: "Occurred during biological trough of alertness (02:00-05:00) with chronic sleep debt.",
+      ru: "Инцидент произошел на спаде бдительности (02:40) на фоне накопившегося недосыпа."
+    },
+    ref: "IMO MSC/Circ.1598 (Fatigue Guidelines)",
+    mitigation: {
+      uk: "Обмеження послідовних нічних вахт до максимум 2 діб підряд",
+      en: "Limit consecutive night duties to maximum 2 nights per rotation",
+      ru: "Ограничение ночных смен подряд до максимума в 2 ночи"
+    }
+  },
+  CF2: {
+    category: { uk: "Фактор сприяння (Environmental)", en: "Contributing Factor (Environmental)", ru: "Способствующий фактор (Среда)" },
+    title: { uk: "CF2: Берегове оптичне засвічення", en: "CF2: Shore Lighting Glare", ru: "CF2: Береговая оптическая засветка" },
+    desc: {
+      uk: "Потужні прожектори причалів створили високий фоновий шум, знецінивши оптичний контраст темного буя.",
+      en: "High-mast container terminal lighting degraded water-surface contrast against dark buoy silhouette.",
+      ru: "Прожекторы причалов создали сильную световую помеху, скрыв силуэт неосвещенного буя."
+    },
+    ref: "MSC-MEPC.3/Circ.4/Rev.1 Table 9 (Visibility / Glare)",
+    mitigation: {
+      uk: "Спрямування берегових прожекторів суворо на вантажну зону без засвічення фарватеру",
+      en: "Shield and aim terminal floodlights downward to eliminate fairway blinding",
+      ru: "Экранирование береговых прожекторов вниз без засветки судового хода"
+    }
+  },
+  CF3: {
+    category: { uk: "Фактор сприяння (Technical)", en: "Contributing Factor (Technical)", ru: "Способствующий фактор (Техника)" },
+    title: { uk: "CF3: Сліпий сектор через диферент", en: "CF3: Bow Blind Sector at 22 kt", ru: "CF3: Слепой сектор из-за дифферента" },
+    desc: {
+      uk: "На швидкості 22 вузли ніс катера задерся догори, заблокувавши огляд поверхні води на дистанції до 80 метрів.",
+      en: "Stern trim during planing at 22 kt created forward blind sector obscuring surface for 80m.",
+      ru: "Дифферент на корму на скорости 22 узла создал слепую зону перед носом до 80 метров."
+    },
+    ref: "IMO Res. MSC.252(83) (Bridge Ergonomics)",
+    mitigation: {
+      uk: "Регулювання інтерцепторів/транцевих плит та підвищення посадки рульового",
+      en: "Install auto-trim tabs / interceptors and optimize helm seating elevation",
+      ru: "Установка автоматических транцевых плит и регулировка высоты кресла рулевого"
+    }
+  },
+  CF4: {
+    category: { uk: "Фактор сприяння (Infrastructure)", en: "Contributing Factor (Infrastructure)", ru: "Способствующий фактор (Инфраструктура)" },
+    title: { uk: "CF4: Неосвітлений буй без відбивача", en: "CF4: Unlit Buoy / No Reflector", ru: "CF4: Неосвещенный буй без отражателя" },
+    desc: {
+      uk: "Швартовний буй 2/I не мав активного світлового вогню та пасивного радіолокаційного кутового відбивача.",
+      en: "Mooring buoy 2/I lacked active light signal and passive radar corner reflector.",
+      ru: "Швартовный буй 2/I не имел светового сигнала и радиолокационного отражателя."
+    },
+    ref: "IALA Guideline G1062 & AtoN Standards",
+    mitigation: {
+      uk: "Оснащення всіх внутрішніх буїв світловідбивачами 3M Diamond Grade та автономними маячками",
+      en: "Equip all basin buoys with Diamond Grade tape and autonomous solar lanterns",
+      ru: "Оснащение всех буев световозвращающей пленкой и автономными фонарями"
+    }
+  },
+  CF5: {
+    category: { uk: "Фактор сприяння (Human)", en: "Contributing Factor (Human)", ru: "Способствующий фактор (Человеческий)" },
+    title: { uk: "CF5: Рутинна самовпевненість", en: "CF5: Route Complacency", ru: "CF5: Рутинная самоуверенность" },
+    desc: {
+      uk: "Сотні успішних проходів цим маршрутом сформували хибне відчуття повної безпеки (Нормалізація ризику).",
+      en: "Repeated successful transits generated complacency and erosion of vigilance.",
+      ru: "Сотни успешных переходов по знакомому маршруту привели к притуплению бдительности."
+    },
+    ref: "MSC-MEPC.3/Circ.4/Rev.1 Table 20 (Code 4: Inattention)",
+    mitigation: {
+      uk: "Впровадження практики коротких брифінгів перед переходом (Pre-transit briefing)",
+      en: "Mandate brief pre-transit hazard checklists before departing berth or ship",
+      ru: "Внедрение кратких предпоходовых инструктажей и чек-листов"
+    }
+  },
+  CF6: {
+    category: { uk: "Фактор сприяння (Organizational)", en: "Contributing Factor (Organizational)", ru: "Способствующий фактор (Организация)" },
+    title: { uk: "CF6: Пасивна роль матроса", en: "CF6: Inactive Deckhand Role", ru: "CF6: Пассивная роль матроса" },
+    desc: {
+      uk: "Матрос сприймався як виконавець суто швартовних операцій і не мав обов'язку вести спостереження.",
+      en: "Deckhand was viewed solely as mooring hand with no operational lookout duty during transit.",
+      ru: "Матрос воспринимался исключительно как швартовщик и не привлекался к наблюдению."
+    },
+    ref: "STCW Table A-II/4 (Lookout certification)",
+    mitigation: {
+      uk: "Внесення функцій спостерігача до посадової інструкції матроса катера",
+      en: "Revise job description to formally mandate active watchkeeping duties",
+      ru: "Внесение обязанностей наблюдателя в должностную инструкцию матроса"
+    }
+  },
+  CF7: {
+    category: { uk: "Фактор сприяння (Technical)", en: "Contributing Factor (Technical)", ru: "Способствующий фактор (Техника)" },
+    title: { uk: "CF7: Некоректне налаштування радара", en: "CF7: Suboptimal Radar Tuning", ru: "CF7: Некорректная настройка радара" },
+    desc: {
+      uk: "Шкала 1.5 милі була завеликою для басейну, а придушення хвиль відфільтрувало низький відбиток буя.",
+      en: "Range scale 1.5 nm too broad for basin; heavy anti-clutter suppression filtered weak buoy echo.",
+      ru: "Шкала 1.5 мили слишком велика для бассейна; подавление волн стерло слабый эхо-сигнал буя."
+    },
+    ref: "IMO Res. MSC.192(79) Radar Standards",
+    mitigation: {
+      uk: "Автоматичний пресет 'Port Basin' з шкалою 0.5 милі та оптимізованим посиленням",
+      en: "Create 'Port Basin' radar preset locked to 0.5 nm range with calibrated gain",
+      ru: "Создание пресета 'Port Basin' с масштабом 0.5 мили и калиброванным усилением"
+    }
+  },
+  SD1: {
+    category: { uk: "Системний дефіцит", en: "Safety Deficiency", ru: "Системный дефицит" },
+    title: { uk: "SD1: Відсутність швидкісного ліміту в СУБ", en: "SD1: Missing SMS Speed Regulation", ru: "SD1: Отсутствие лимита скорости в СУБ" },
+    desc: {
+      uk: "Система управління безпекою лоцманської служби не містила конкретних обмежень швидкості катерів.",
+      en: "SMS manual lacked quantitative speed thresholds for internal port waters.",
+      ru: "Система управления безопасностью лоцманской службы не содержала лимитов скорости."
+    },
+    ref: "ISM Code Section 7 & Port Bylaws",
+    mitigation: {
+      uk: "Затвердити директиву СУБ: максимум 10 вузлів у басейні I для всіх службових катерів",
+      en: "Formalize SMS operational directive enforcing 10 kt maximum in Basin I",
+      ru: "Утвердить директиву СУБ: максимум 10 узлов в бассейне I для служебных катеров"
+    }
+  },
+  SD2: {
+    category: { uk: "Системний дефіцит", en: "Safety Deficiency", ru: "Системный дефицит" },
+    title: { uk: "SD2: Відсутність СОП щодо спостереження", en: "SD2: Lack of Watchkeeping SOP", ru: "SD2: Отсутствие СОП по наблюдению" },
+    desc: {
+      uk: "Не було стандартної операційної процедури щодо розподілу ролей на містку катера у нічний час.",
+      en: "Absence of formalized standard operating procedure for bridge team cooperation.",
+      ru: "Отсутствие стандартной операционной процедуры распределения ролей на катере ночью."
+    },
+    ref: "STCW A-VIII/2 & ISM Code Section 6",
+    mitigation: {
+      uk: "Розробка СОП 'Нічні переходи катерів' з чек-листом взаємодії екіпажу",
+      en: "Issue SOP 'Night Pilot Craft Transits' with bridge interaction checklist",
+      ru: "Разработка СОП 'Ночные переходы катеров' с чек-листом взаимодействия"
+    }
+  },
+  SD3: {
+    category: { uk: "Системний дефіцит", en: "Safety Deficiency", ru: "Системный дефицит" },
+    title: { uk: "SD3: Відсутність нічних симуляторних тренінгів", en: "SD3: Lack of Simulation Training", ru: "SD3: Отсутствие тренажерной подготовки" },
+    desc: {
+      uk: "Екіпажі катерів не проходили регулярні тренінги з навігації в умовах оптичного засвічення порту.",
+      en: "Boat crews received no periodic simulator training for high-glare nocturnal navigation.",
+      ru: "Экипажи катеров не проходили тренировок по ночной навигации в условиях засветки."
+    },
+    ref: "STCW Section B-I/12 (Simulator Guidance)",
+    mitigation: {
+      uk: "Щорічні тренажерні курси з маневрування катерів у стиснених водах порту",
+      en: "Annual full-mission simulator drills on confined basin night pilotage",
+      ru: "Ежегодные курсы на тренажере по маневрированию катеров в стесненных водах"
+    }
+  },
+  SD4: {
+    category: { uk: "Системний дефіцит", en: "Safety Deficiency", ru: "Системный дефицит" },
+    title: { uk: "SD4: Відсутність контролю швидкості з боку VTS", en: "SD4: Absence of VTS Speed Enforcement", ru: "SD4: Отсутствие контроля скорости VTS" },
+    desc: {
+      uk: "Система VTS порту контролювала лише великі морські судна, ігноруючи швидкість службових плавзасобів.",
+      en: "VTS radar tracked only commercial merchant ships, overlooking auxiliary service craft.",
+      ru: "Служба VTS контролировала только крупные суда, игнорируя служебные катера."
+    },
+    ref: "IMO Res. A.1158(32) (VTS Guidelines)",
+    mitigation: {
+      uk: "Налаштування в системі VTS порту автоматичного алерту перевищення швидкості службовими суднами",
+      en: "Configure automated VTS speed violation alerts for pilot and auxiliary craft",
+      ru: "Настройка в системе VTS автоматического алерта о превышении скорости катерами"
+    }
+  },
+  SD5: {
+    category: { uk: "Системний дефіцит", en: "Safety Deficiency", ru: "Системный дефицит" },
+    title: { uk: "SD5: Застарілі стандарти маркування буїв", en: "SD5: Outdated Buoy Markings", ru: "SD5: Устаревшие стандарты маркировки" },
+    desc: {
+      uk: "Портові правила не вимагали оснащення швартовних буїв пасивними або активними засобами розпізнавання.",
+      en: "Port bylaws did not mandate retroreflective wrapping or AIS AtoN transponders on buoys.",
+      ru: "Правила порта не требовали оснащения буев пассивными или активными средствами опознавания."
+    },
+    ref: "IALA Guideline G1062",
+    mitigation: {
+      uk: "Модернізація портової навігаційної інфраструктури згідно зі стандартами IALA",
+      en: "Upgrade all port mooring aids to modern IALA conspicuity standards",
+      ru: "Модернизация портовой инфраструктуры согласно стандартам IALA"
+    }
+  },
+  SD6: {
+    category: { uk: "Системний дефіцит", en: "Safety Deficiency", ru: "Системный дефицит" },
+    title: { uk: "SD6: Ергономічний прорахунок кабіни", en: "SD6: Cabin Ergonomic Deficiency", ru: "SD6: Эргономический просчет кабины" },
+    desc: {
+      uk: "Монітор радара було змонтовано збоку від пульта, що вимагало повороту голови на 60° від курсу.",
+      en: "Radar display mounted offset by 60 degrees from helm center, discouraging continuous cross-check.",
+      ru: "Монитор радара был смонтирован сбоку от руля, требуя отворота взгляда на 60 градусов."
+    },
+    ref: "IEC 62288 / OpenBridge Guidelines",
+    mitigation: {
+      uk: "Перепланування містка: монтаж комбінованого дисплея (ECDIS/Radar) прямо перед рульовим",
+      en: "Refit helm console to align primary radar/chart display in direct forward line of sight",
+      ru: "Перепланировка пульта: установка монитора радара прямо по линии взгляда рулевого"
+    }
+  },
+  SI1: {
+    category: { uk: "Проблема безпеки (Safety Issue)", en: "Safety Issue", ru: "Проблема безопасности" },
+    title: { uk: "SI1: Нормалізація відхилень (Normalization of Deviance)", en: "SI1: Normalization of Deviance", ru: "SI1: Нормализация отклонений" },
+    desc: {
+      uk: "Систематичне перевищення швидкості стало неформальною нормою і толерувалося керівництвом.",
+      en: "Speeding inside basins became institutionalized habit due to absence of enforcement.",
+      ru: "Систематическое превышение скорости стало неформальной привычкой и не пресекалось."
+    },
+    ref: "Safety Culture & Human Reliability Theory",
+    mitigation: {
+      uk: "Аудит культури безпеки та нульова толерантність до порушення швидкісних режимів",
+      en: "Institute safety culture audit and zero-tolerance policy for navigational violations",
+      ru: "Аудит культуры безопасности и нулевая толерантность к превышению скорости"
+    }
+  },
+  SI2: {
+    category: { uk: "Проблема безпеки (Safety Issue)", en: "Safety Issue", ru: "Проблема безопасности" },
+    title: { uk: "SI2: Вразливість одиночного оператора (Single Operator)", en: "SI2: Single-Operator Vulnerability", ru: "SI2: Уязвимость одиночного оператора" },
+    desc: {
+      uk: "Критична залежність безпеки швидкісного судна від уваги лише однієї людини без перевірки дій.",
+      en: "Total vulnerability of high-speed craft to single point of human failure.",
+      ru: "Полная зависимость безопасности быстроходного судна от одного человека без страховки."
+    },
+    ref: "IMO High-Speed Craft Code (HSC Code 2000)",
+    mitigation: {
+      uk: "Принцип двох операторів (Two-person bridge operation) на швидкостях понад 15 вузлів",
+      en: "Adopt mandatory two-person operating principle for speeds above 15 knots",
+      ru: "Принцип двух операторов на мостике при скорости свыше 15 узлов"
+    }
+  },
+  SI3: {
+    category: { uk: "Проблема безпеки (Safety Issue)", en: "Safety Issue", ru: "Проблема безопасности" },
+    title: { uk: "SI3: Відставання оптико-електронного оснащення", en: "SI3: Lack of Modern Night Sensor Tech", ru: "SI3: Отставание оптико-электронного оснащения" },
+    desc: {
+      uk: "Катер не мав тепловізійних приладів, які нівелюють берегове освітлення та виявляють холодні пластикові буї.",
+      en: "Lack of thermal imaging sensor technology capable of piercing harbor light pollution.",
+      ru: "Катер не имел тепловизоров, способных нивелировать засветку и видеть холодные буи."
+    },
+    ref: "SOLAS V/19 & Fast Craft Equipment Standards",
+    mitigation: {
+      uk: "Оснащення службових катерів камерами FLIR з автодетекцією перешкод",
+      en: "Equip service fleet with FLIR marine cameras with automated obstacle detection",
+      ru: "Оснащение катеров тепловизорами FLIR с автодетекцией препятствий"
+    }
+  },
+  SI4: {
+    category: { uk: "Проблема безпеки (Safety Issue)", en: "Safety Issue", ru: "Проблема безопасности" },
+    title: { uk: "SI4: Прогалини в нагляді за службовим флотом", en: "SI4: Service Fleet Oversight Gaps", ru: "SI4: Пробелы в надзоре за служебным флотом" },
+    desc: {
+      uk: "Службові катери тривалий час функціонували у 'сірій зоні' портового нагляду та перевірок безпеки.",
+      en: "Auxiliary and pilot craft historically operated with minimal port authority oversight.",
+      ru: "Служебные катера длительное время оставались вне строгого контроля администрации порта."
+    },
+    ref: "Port State Control & Harbor Master Authority",
+    mitigation: {
+      uk: "Регулярні інспекції катерів портофлоту за чек-листами безпеки капітана порту",
+      en: "Institute regular Harbor Master safety audits of all auxiliary service vessels",
+      ru: "Регулярные проверки катеров портофлота инспекцией капитана порта"
+    }
+  },
+  SI5: {
+    category: { uk: "Проблема безпеки (Safety Issue)", en: "Safety Issue", ru: "Проблема безопасности" },
+    title: { uk: "SI5: Кумулятивна втома у позмінних графіках", en: "SI5: Shift Fatigue Under Pilotage Rosters", ru: "SI5: Накопленная усталость в сменных графиках" },
+    desc: {
+      uk: "Цілодобове чергування в режимі постійної готовності призводить до фрагментованого сну та хронічної втоми.",
+      en: "24/7 on-call readiness generates fragmented sleep patterns and cumulative fatigue.",
+      ru: "Круглосуточное дежурство в режиме ожидания приводит к фрагментации сна и усталости."
+    },
+    ref: "MLC 2006 Standard A2.3 & IMO MSC/Circ.1598",
+    mitigation: {
+      uk: "Впровадження науково обґрунтованого біодинамічного планування графіків чергувань",
+      en: "Adopt scientifically validated fatigue risk management software for crew rosters",
+      ru: "Внедрение биодинамического планирования графиков дежурств с контролем усталости"
+    }
+  }
+};
+
+function selectEcfaNode(nodeId) {
+  currentSelectedEcfaNode = nodeId;
+  const meta = ECFA_NODE_METADATA[nodeId];
+  if (!meta) return;
+
+  const catEl = $("#ecfa-selected-node-category");
+  const titleEl = $("#ecfa-selected-node-title");
+  const descEl = $("#ecfa-selected-node-desc");
+  const refEl = $("#ecfa-selected-node-ref");
+  const mitEl = $("#ecfa-selected-node-mitigation");
+
+  if (catEl) catEl.textContent = meta.category[currentLang] || meta.category.uk;
+  if (titleEl) titleEl.textContent = meta.title[currentLang] || meta.title.uk;
+  if (descEl) descEl.textContent = meta.desc[currentLang] || meta.desc.uk;
+  if (refEl) refEl.textContent = meta.ref;
+  if (mitEl) mitEl.textContent = meta.mitigation[currentLang] || meta.mitigation.uk;
+
+  // Update selected class in SVG without full redraw if possible
+  const wrap = $("#ecfa-diagram-wrap");
+  if (wrap) {
+    wrap.querySelectorAll(".ecfa-node").forEach((el) => {
+      const isCur = el.dataset.nodeId === nodeId;
+      el.classList.toggle("selected", isCur);
+      const rect = el.querySelector("rect");
+      if (rect) rect.setAttribute("stroke-width", isCur ? "2.5" : "1.2");
+    });
+  }
+}
+
+function renderEcfaDiagram(activeFilter = "all") {
+  const wrap = $("#ecfa-diagram-wrap");
+  if (!wrap) return;
+
+  const events = KP965_GISIS_RECORD.ecfaDiagram.events;
+  const accidentEvents = KP965_GISIS_RECORD.ecfaDiagram.accidentEvents;
+  const factors = KP965_GISIS_RECORD.ecfaDiagram.contributingFactors;
+  const deficiencies = KP965_GISIS_RECORD.ecfaDiagram.safetyDeficiencies;
+  const issues = KP965_GISIS_RECORD.ecfaDiagram.safetyIssues;
+
+  const eventBoxes = events.map((e, idx) => ({
+    id: e.id,
+    type: "events",
+    x: 12 + idx * 123,
+    y: 35,
+    w: 115,
+    h: 56,
+    stroke: "#f59e0b",
+    tagColor: "#f59e0b",
+    time: e.time,
+    label: currentLang === "en" ? e.labelEn : e.labelUk
+  }));
+
+  const accidentBoxes = accidentEvents.map((ae, idx) => ({
+    id: ae.id,
+    type: "accident",
+    x: 35 + idx * 240,
+    y: 155,
+    w: 220,
+    h: 58,
+    stroke: "#f43f5e",
+    tagColor: "#f43f5e",
+    label: currentLang === "en" ? ae.labelEn : ae.labelUk
+  }));
+
+  const factorBoxes = factors.map((cf, idx) => ({
+    id: cf.id,
+    type: "factors",
+    x: 12 + idx * 140,
+    y: 280,
+    w: 132,
+    h: 58,
+    stroke: "#06b6d4",
+    tagColor: "#06b6d4",
+    category: cf.category,
+    label: currentLang === "en" ? cf.labelEn : cf.labelUk
+  }));
+
+  const deficiencyBoxes = deficiencies.map((sd, idx) => ({
+    id: sd.id,
+    type: "deficiencies",
+    x: 18 + idx * 163,
+    y: 410,
+    w: 152,
+    h: 58,
+    stroke: "#a855f7",
+    tagColor: "#a855f7",
+    label: currentLang === "en" ? sd.labelEn : sd.labelUk
+  }));
+
+  const issueBoxes = issues.map((si, idx) => ({
+    id: si.id,
+    type: "issues",
+    x: 25 + idx * 194,
+    y: 540,
+    w: 182,
+    h: 58,
+    stroke: "#38bdf8",
+    tagColor: "#38bdf8",
+    label: currentLang === "en" ? si.labelEn : si.labelUk
+  }));
+
+  const allBoxes = [...eventBoxes, ...accidentBoxes, ...factorBoxes, ...deficiencyBoxes, ...issueBoxes];
+  const boxMap = Object.fromEntries(allBoxes.map((b) => [b.id, b]));
+
+  const connectors = [
+    { from: "E1", to: "E2" }, { from: "E2", to: "E3" }, { from: "E3", to: "E4" },
+    { from: "E4", to: "E5" }, { from: "E5", to: "E6" }, { from: "E6", to: "E7" }, { from: "E7", to: "E8" },
+    { from: "E3", to: "AE1" }, { from: "E5", to: "AE2" }, { from: "E6", to: "AE3" }, { from: "E6", to: "AE4" },
+    { from: "AE1", to: "CF3" }, { from: "AE1", to: "CF5" },
+    { from: "AE2", to: "CF1" }, { from: "AE2", to: "CF2" }, { from: "AE2", to: "CF4" },
+    { from: "AE3", to: "CF7" }, { from: "AE4", to: "CF6" },
+    { from: "CF3", to: "SD1" }, { from: "CF3", to: "SD6" },
+    { from: "CF6", to: "SD2" }, { from: "CF7", to: "SD3" },
+    { from: "CF1", to: "SD4" }, { from: "CF4", to: "SD5" },
+    { from: "SD1", to: "SI1" }, { from: "SD2", to: "SI2" }, { from: "SD3", to: "SI3" },
+    { from: "SD4", to: "SI4" }, { from: "SD5", to: "SI4" }, { from: "SD6", to: "SI3" },
+    { from: "SD1", to: "SI5" }
+  ];
+
+  let svg = `<svg class="ecfa-diagram-svg" viewBox="0 0 1000 640" role="img" aria-label="ECFA Diagram KP-965">
+    <defs>
+      <marker id="ecfa-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+        <polygon points="0 0, 6 3, 0 6" fill="#475569" />
+      </marker>
+    </defs>
+    <text x="15" y="22" fill="#94a3b8" font-size="10" font-weight="700" letter-spacing="0.05em">ХРОНОЛОГІЯ ПОДІЙ (CHRONOLOGICAL EVENTS · E1..E8)</text>
+    <text x="15" y="142" fill="#94a3b8" font-size="10" font-weight="700" letter-spacing="0.05em">АВАРІЙНІ ТОЧКИ ЗРИВУ БЕЗПЕКИ (ACCIDENT EVENTS · AE1..AE4)</text>
+    <text x="15" y="267" fill="#94a3b8" font-size="10" font-weight="700" letter-spacing="0.05em">СПРИЯЮЧІ ФАКТОРИ (CONTRIBUTING FACTORS · CF1..CF7)</text>
+    <text x="15" y="397" fill="#94a3b8" font-size="10" font-weight="700" letter-spacing="0.05em">СИСТЕМНІ ДЕФІЦИТИ (SAFETY DEFICIENCIES · SD1..SD6)</text>
+    <text x="15" y="527" fill="#94a3b8" font-size="10" font-weight="700" letter-spacing="0.05em">СИСТЕМНІ ПРОБЛЕМИ БЕЗПЕКИ (SAFETY ISSUES · SI1..SI5)</text>
+
+    <g class="ecfa-connectors" aria-hidden="true">`;
+
+  for (const c of connectors) {
+    const src = boxMap[c.from];
+    const dst = boxMap[c.to];
+    if (!src || !dst) continue;
+    const x1 = src.x + src.w / 2;
+    const y1 = src.y + src.h;
+    const x2 = dst.x + dst.w / 2;
+    const y2 = dst.y;
+    if (src.y === dst.y) {
+      svg += `<path d="M ${src.x + src.w} ${src.y + src.h / 2} L ${dst.x} ${dst.y + dst.h / 2}" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3,3" marker-end="url(#ecfa-arrow)" />`;
+    } else {
+      const midY = (y1 + y2) / 2;
+      svg += `<path d="M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}" stroke="#475569" stroke-width="1.2" fill="none" marker-end="url(#ecfa-arrow)" />`;
+    }
+  }
+
+  svg += `</g>`;
+
+  for (const b of allBoxes) {
+    const isSelected = b.id === currentSelectedEcfaNode;
+    const isDimmed = activeFilter !== "all" && b.type !== activeFilter;
+    const opacity = isDimmed ? "0.25" : "1.0";
+    const selectedClass = isSelected ? "selected" : "";
+
+    svg += `<g class="ecfa-node ${selectedClass}" data-node-id="${b.id}" data-node-type="${b.type}" opacity="${opacity}" tabindex="0" role="button" aria-label="${b.id}: ${escapeHtml(b.label)}">
+      <rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="6" fill="#0b1726" stroke="${b.stroke}" stroke-width="${isSelected ? '2.5' : '1.2'}" />
+      <text x="${b.x + 8}" y="${b.y + 16}" fill="${b.tagColor}" font-size="10" font-weight="700">${b.id}${b.time ? ' · ' + b.time : ''}</text>
+      <text x="${b.x + 8}" y="${b.y + 32}" fill="#f1f5f9" font-size="9" font-weight="600">${escapeHtml(b.label.slice(0, 26))}</text>
+      <text x="${b.x + 8}" y="${b.y + 45}" fill="#94a3b8" font-size="8.5">${escapeHtml(b.label.slice(26, 52))}${b.label.length > 52 ? '...' : ''}</text>
+    </g>`;
+  }
+
+  svg += `</svg>`;
+  wrap.innerHTML = svg;
+
+  wrap.querySelectorAll(".ecfa-node").forEach((nodeEl) => {
+    nodeEl.addEventListener("click", () => {
+      selectEcfaNode(nodeEl.dataset.nodeId);
+    });
+    nodeEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        selectEcfaNode(nodeEl.dataset.nodeId);
+      }
+    });
+  });
+}
+
+function renderPortBasinRisk() {
+  const factors = {
+    excessSpeed: $("#factor-speed")?.checked ?? true,
+    singleLookout: $("#factor-lookout")?.checked ?? true,
+    circadianFatigue: $("#factor-fatigue")?.checked ?? true,
+    glareVisualImpairment: $("#factor-glare")?.checked ?? true,
+    radarNotUsed: $("#factor-radar")?.checked ?? true,
+    routineComplacency: $("#factor-complacency")?.checked ?? true,
+    unlitObstacle: $("#factor-obstacle")?.checked ?? true
+  };
+  const severityCode = Number($("#gisis-severity-select")?.value ?? 3);
+
+  currentPortBasinRisk = calculatePortBasinRisk(factors, { severityCode });
+
+  const probDisp = $("#gisis-prob-display");
+  if (probDisp) probDisp.textContent = `${currentPortBasinRisk.probabilityScore.toFixed(1)} / 5.0`;
+
+  const sevDisp = $("#gisis-sev-display");
+  if (sevDisp) sevDisp.textContent = `${currentPortBasinRisk.severityCode} / 5`;
+
+  const riskDisp = $("#gisis-risk-display");
+  if (riskDisp) riskDisp.textContent = currentPortBasinRisk.riskIndex.toFixed(1);
+
+  const badge = $("#gisis-risk-badge");
+  if (badge) {
+    badge.className = `gisis-risk-${currentPortBasinRisk.riskCategory}`;
+    badge.textContent = currentLang === "en" ? currentPortBasinRisk.riskCategoryLabelEn : currentPortBasinRisk.riskCategoryLabelUk;
+  }
+
+  const list = $("#gisis-mitigation-list");
+  if (list) {
+    list.innerHTML = currentPortBasinRisk.mitigationRules.map((r) => {
+      const act = currentLang === "en" ? r.actionEn : r.actionUk;
+      const prioClass = r.priority === "CRITICAL" ? "crit" : (r.priority === "HIGH" ? "high" : "");
+      return `<li class="gisis-mitigation-item ${prioClass}">
+        <strong>[${escapeHtml(r.standard)}] ${escapeHtml(act)}</strong>
+        <small>${escapeHtml(r.ruleId)} · ${escapeHtml(r.priority)}</small>
+      </li>`;
+    }).join("");
+  }
+}
+
+function initGisisEcfaModule() {
+  const factorIds = [
+    "factor-speed", "factor-lookout", "factor-fatigue", "factor-glare",
+    "factor-radar", "factor-complacency", "factor-obstacle"
+  ];
+  factorIds.forEach((id) => {
+    $(`#${id}`)?.addEventListener("change", renderPortBasinRisk);
+  });
+  $("#gisis-severity-select")?.addEventListener("change", renderPortBasinRisk);
+
+  document.querySelectorAll(".ecfa-filter-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".ecfa-filter-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentEcfaFilter = btn.dataset.ecfaFilter;
+      renderEcfaDiagram(currentEcfaFilter);
+    });
+  });
+
+  $("#download-gisis-json-btn")?.addEventListener("click", () => {
+    const jsonStr = JSON.stringify(KP965_GISIS_RECORD, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "KP-965-gisis-record.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  $("#copy-python-script-btn")?.addEventListener("click", () => {
+    const pyScript = generatePythonAssignmentScript(KP965_GISIS_RECORD, currentPortBasinRisk);
+    navigator.clipboard?.writeText(pyScript).catch(() => {});
+    const btn = $("#copy-python-script-btn");
+    if (btn) {
+      const orig = btn.textContent;
+      btn.textContent = I18N[currentLang].copiedPythonNotice || "Скопійовано!";
+      setTimeout(() => { btn.textContent = orig; }, 2000);
+    }
+  });
+
+  $("#toggle-gisis-json-preview-btn")?.addEventListener("click", () => {
+    const previewBox = $("#gisis-code-preview");
+    if (!previewBox) return;
+    const isHidden = previewBox.hasAttribute("hidden");
+    if (isHidden) {
+      previewBox.removeAttribute("hidden");
+      const pre = $("#gisis-json-preview code");
+      if (pre) pre.textContent = JSON.stringify(KP965_GISIS_RECORD, null, 2);
+    } else {
+      previewBox.setAttribute("hidden", "");
+    }
+  });
+
+  renderPortBasinRisk();
+  renderEcfaDiagram(currentEcfaFilter);
+  selectEcfaNode("AE1");
+}
+
 // Master Tri-Lingual Dictionary (UA / EN IMO SMCP / RU)
 const I18N = {
   uk: {
@@ -2123,7 +2868,24 @@ const I18N = {
     ciPrefix: "95% ДІ:",
     sparseWarning: "Малий обсяг вибірки (n < 30): підвищена статистична невизначеність",
     drillSoundPlay: "Сигнал тривоги (BAM)",
-    drillSoundStop: "Зупинити сигнал"
+    drillSoundStop: "Зупинити сигнал",
+    gisisEyebrow: "IMO Res. A.1075(28) & MSC-MEPC.3/Circ.4/Rev.1",
+    gisisMainTitle: "Оцифрування аварій GISIS IMO та аналіз ECFA",
+    gisisMainLead: "Практичне дослідження аварії лоцманського катера KP-965 (Копер, 14.04.2026): цифрові класифікатори Додатка 5, причинно-наслідкова схема ECFA, розрахунок матриці ризику портових басейнів (R = P × S) та автоматична генерація превентивних правил безпеки.",
+    gisisCalcKicker: "IMO FSA METHODOLOGY · R = P × S",
+    gisisCalcTitle: "Автоматизована оцінка ризику акваторій",
+    gisisCalcIntro: "Розрахунок індексу навігаційного ризику за добутком частотної ймовірності виникнення інциденту (P, шкала 1–5) та важкості наслідків (S за Table 5, шкала 1–5).",
+    gisisMitigationTitle: "Автоматично згенеровані превентивні заходи безпеки:",
+    ecfaKicker: "IMO RES. A.1075(28) · КАСКАДНИЙ ПРИЧИННИЙ АНАЛІЗ",
+    ecfaTitle: "Інтерактивна векторна діаграма ECFA",
+    ecfaIntro: "Структурно-логічна схема Event and Causal Factors Analysis аварії катера KP-965. Оберіть фільтр або клацніть вузол для перегляду аналітичної картки та превентивного заходу.",
+    gisisExportKicker: "ОЦИФРОВАНЕ ДОСЬЄ АВАРІЇ · MSC-MEPC.3/CIRC.4/REV.1",
+    gisisExportTitle: "Експорт для практичної роботи (JSON та Python)",
+    gisisExportIntro: "Завантажте валідоване цифрове досьє інциденту за формою GISIS або скопіюйте готовий автономний скрипт Python (NumPy / Matplotlib) для побудови матриці ризиків і звіту в Jupyter Notebook чи PyCharm.",
+    downloadGisisJsonBtn: "Завантажити KP-965-gisis-record.json",
+    copyPythonScriptBtn: "Копіювати Python-скрипт (Jupyter / PyCharm)",
+    toggleGisisJsonPreviewBtn: "Переглянути JSON Додатка 5",
+    copiedPythonNotice: "Скрипт скопійовано!"
   },
   en: {
     locale: "en-GB",
@@ -2462,7 +3224,24 @@ const I18N = {
     ciPrefix: "95% CI:",
     sparseWarning: "Small sample size (n < 30): elevated statistical uncertainty",
     drillSoundPlay: "Alarm Signal (BAM)",
-    drillSoundStop: "Stop Alarm"
+    drillSoundStop: "Stop Alarm",
+    gisisEyebrow: "IMO Res. A.1075(28) & MSC-MEPC.3/Circ.4/Rev.1",
+    gisisMainTitle: "GISIS IMO Casualty Digitization & ECFA Analysis",
+    gisisMainLead: "Practical investigation case study of pilot craft KP-965 allision (Port of Koper, 14.04.2026): Appendix 5 taxonomies, ECFA causal graph, port basin risk calculation (R = P × S), and automated safety mitigations.",
+    gisisCalcKicker: "IMO FSA METHODOLOGY · R = P × S",
+    gisisCalcTitle: "Automated Port Basin Risk Assessment",
+    gisisCalcIntro: "Navigation risk index derived from frequency likelihood score (P, 1–5 scale) and consequence severity (S under Table 5, 1–5 scale).",
+    gisisMitigationTitle: "Automated Preventive Safety Mitigations:",
+    ecfaKicker: "IMO RES. A.1075(28) · CASUALTY CAUSAL FACTOR ANALYSIS",
+    ecfaTitle: "Interactive Vector ECFA Diagram",
+    ecfaIntro: "Structural Event and Causal Factors Analysis diagram for pilot craft KP-965. Select a filter or click any node to inspect details and preventative actions.",
+    gisisExportKicker: "DIGITIZED CASUALTY DOSSIER · MSC-MEPC.3/CIRC.4/REV.1",
+    gisisExportTitle: "Coursework Export Toolkit (JSON & Python)",
+    gisisExportIntro: "Download validated GISIS incident JSON file or copy standalone Python script (NumPy/Matplotlib) to compute risk matrix and generate charts in Jupyter or PyCharm.",
+    downloadGisisJsonBtn: "Download KP-965-gisis-record.json",
+    copyPythonScriptBtn: "Copy Python Script (Jupyter / PyCharm)",
+    toggleGisisJsonPreviewBtn: "View Appendix 5 JSON",
+    copiedPythonNotice: "Python script copied!"
   },
   ru: {
     locale: "ru-RU",
@@ -2801,7 +3580,24 @@ const I18N = {
     ciPrefix: "95% ДИ:",
     sparseWarning: "Малая выборка (n < 30): повышенная статистическая неопределенность",
     drillSoundPlay: "Звуковой сигнал (BAM)",
-    drillSoundStop: "Остановить сигнал"
+    drillSoundStop: "Остановить сигнал",
+    gisisEyebrow: "IMO Res. A.1075(28) & MSC-MEPC.3/Circ.4/Rev.1",
+    gisisMainTitle: "Оцифровка аварий GISIS IMO и анализ ECFA",
+    gisisMainLead: "Практическое исследование аварии лоцманского катера KP-965 (Копер, 14.04.2026): цифровые классификаторы Приложения 5, причинно-следственная схема ECFA, расчет матрицы риска портовых бассейнов (R = P × S) и автоматическая генерация превентивных правил безопасности.",
+    gisisCalcKicker: "IMO FSA METHODOLOGY · R = P × S",
+    gisisCalcTitle: "Автоматизированная оценка риска акваторий",
+    gisisCalcIntro: "Расчет индекса навигационного риска по произведению частотной вероятности инцидента (P, шкала 1–5) и тяжести последствий (S по Table 5, шкала 1–5).",
+    gisisMitigationTitle: "Автоматически сгенерированные превентивные меры безопасности:",
+    ecfaKicker: "IMO RES. A.1075(28) · КАСКАДНЫЙ ПРИЧИННЫЙ АНАЛИЗ",
+    ecfaTitle: "Интерактивная векторная диаграмма ECFA",
+    ecfaIntro: "Структурно-логическая схема Event and Causal Factors Analysis аварии катера KP-965. Выберите фильтр или нажмите на узел для просмотра аналитической карточки и превентивной меры.",
+    gisisExportKicker: "ОЦИФРОВАННОЕ ДОСЬЕ АВАРИИ · MSC-MEPC.3/CIRC.4/REV.1",
+    gisisExportTitle: "Экспорт для практической работы (JSON и Python)",
+    gisisExportIntro: "Скачайте валидированное цифровое досье инцидента по форме GISIS или скопируйте готовый автономный скрипт Python (NumPy / Matplotlib) для построения матрицы рисков и отчета в Jupyter Notebook или PyCharm.",
+    downloadGisisJsonBtn: "Скачать KP-965-gisis-record.json",
+    copyPythonScriptBtn: "Копировать Python-скрипт (Jupyter / PyCharm)",
+    toggleGisisJsonPreviewBtn: "Просмотреть JSON Приложения 5",
+    copiedPythonNotice: "Скрипт скопирован!"
   }
 };
 
@@ -2923,8 +3719,9 @@ function setLanguage(lang) {
   const navLinks = document.querySelectorAll("header nav a");
   if (navLinks[0]) navLinks[0].textContent = t.navAssess;
   if (navLinks[1]) navLinks[1].textContent = t.navCases;
-  if (navLinks[2]) navLinks[2].textContent = t.navStats;
-  if (navLinks[3]) navLinks[3].textContent = t.navMethod;
+  if (navLinks[2]) navLinks[2].textContent = "GISIS & ECFA";
+  if (navLinks[3]) navLinks[3].textContent = t.navStats;
+  if (navLinks[4]) navLinks[4].textContent = t.navMethod;
 
   const bMode1 = document.querySelector('[data-bridge-mode="cockpit"]');
   if (bMode1) bMode1.textContent = t.bridgeCockpit;
@@ -3384,6 +4181,28 @@ function setLanguage(lang) {
     const link = card.querySelector(".case-link"); if (link) link.textContent = t.caseLink;
   });
 
+  // GISIS & ECFA Section
+  const gEye = $("#gisis-eyebrow"); if (gEye) gEye.textContent = t.gisisEyebrow;
+  const gTitle = $("#gisis-main-title"); if (gTitle) gTitle.textContent = t.gisisMainTitle;
+  const gLead = $("#gisis-main-lead"); if (gLead) gLead.textContent = t.gisisMainLead;
+  const gCalcKicker = $("#gisis-calc-kicker"); if (gCalcKicker) gCalcKicker.textContent = t.gisisCalcKicker;
+  const gCalcTitle = $("#gisis-calc-title"); if (gCalcTitle) gCalcTitle.textContent = t.gisisCalcTitle;
+  const gCalcIntro = $("#gisis-calc-intro"); if (gCalcIntro) gCalcIntro.textContent = t.gisisCalcIntro;
+  const gMitTitle = $("#gisis-mitigation-title"); if (gMitTitle) gMitTitle.textContent = t.gisisMitigationTitle;
+  const ecfaKickerEl = $("#ecfa-kicker"); if (ecfaKickerEl) ecfaKickerEl.textContent = t.ecfaKicker;
+  const ecfaTitleEl = $("#ecfa-title"); if (ecfaTitleEl) ecfaTitleEl.textContent = t.ecfaTitle;
+  const ecfaIntroEl = $("#ecfa-intro"); if (ecfaIntroEl) ecfaIntroEl.textContent = t.ecfaIntro;
+  const gExpKicker = $("#gisis-export-kicker"); if (gExpKicker) gExpKicker.textContent = t.gisisExportKicker;
+  const gExpTitle = $("#gisis-export-title"); if (gExpTitle) gExpTitle.textContent = t.gisisExportTitle;
+  const gExpIntro = $("#gisis-export-intro"); if (gExpIntro) gExpIntro.textContent = t.gisisExportIntro;
+  const dlGisisBtn = $("#download-gisis-json-btn"); if (dlGisisBtn) dlGisisBtn.textContent = t.downloadGisisJsonBtn;
+  const cpPyBtn = $("#copy-python-script-btn"); if (cpPyBtn) cpPyBtn.textContent = t.copyPythonScriptBtn;
+  const tgJsonBtn = $("#toggle-gisis-json-preview-btn"); if (tgJsonBtn) tgJsonBtn.textContent = t.toggleGisisJsonPreviewBtn;
+
+  renderPortBasinRisk();
+  renderEcfaDiagram(currentEcfaFilter);
+  if (currentSelectedEcfaNode) selectEcfaNode(currentSelectedEcfaNode);
+
   // Statistics Section
   const statsEye = document.querySelector(".statistics .section-heading .eyebrow"); if (statsEye) statsEye.textContent = t.statsEyebrow;
   const statsH2 = document.querySelector(".statistics .section-heading h2"); if (statsH2) statsH2.textContent = t.statsTitle;
@@ -3450,8 +4269,9 @@ function setLanguage(lang) {
   const fNavs = document.querySelectorAll(".footer-nav a");
   if (fNavs[0]) fNavs[0].textContent = t.navAssess;
   if (fNavs[1]) fNavs[1].textContent = t.navCases;
-  if (fNavs[2]) fNavs[2].textContent = t.navStats;
-  if (fNavs[3]) fNavs[3].textContent = t.navMethod;
+  if (fNavs[2]) fNavs[2].textContent = "GISIS & ECFA";
+  if (fNavs[3]) fNavs[3].textContent = t.navStats;
+  if (fNavs[4]) fNavs[4].textContent = t.navMethod;
   const bTop = document.querySelector(".back-to-top"); if (bTop) bTop.textContent = t.backToTop;
   const fAuth = document.querySelector(".footer-academic-badge p"); if (fAuth) fAuth.textContent = t.footerAuthor;
   const fDiscSumm = document.querySelector(".footer-disclosure summary"); if (fDiscSumm) fDiscSumm.textContent = t.footerDisclosureSummary;
@@ -3632,6 +4452,7 @@ async function loadIncidents() {
 const initialInput = currentInput();
 renderRisk(calculateRisk(initialInput), initialInput, "Користувацький профіль", true);
 loadIncidents();
+initGisisEcfaModule();
 
 if ("serviceWorker" in navigator && (location.protocol === "https:" || ["localhost", "127.0.0.1"].includes(location.hostname))) {
   window.addEventListener("load", () => {

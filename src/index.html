@@ -37,6 +37,7 @@
         <nav class="site-nav" aria-label="Основна навігація">
           <a href="#assessment">Оцінювання</a>
           <a href="#cases">Аварії MAIB</a>
+          <a href="#gisis-ecfa">GISIS &amp; ECFA</a>
           <a href="#statistics">Статистика</a>
           <a href="#methodology">Методика</a>
         </nav>
@@ -1008,6 +1009,230 @@
         </div>
       </section>
 
+      <!-- GISIS IMO & ECFA INVESTIGATION SECTION -->
+      <section class="gisis-ecfa-section" id="gisis-ecfa">
+        <div class="shell">
+          <div class="section-heading light">
+            <div>
+              <p class="eyebrow" id="gisis-eyebrow">IMO Res. A.1075(28) &amp; MSC-MEPC.3/Circ.4/Rev.1</p>
+              <h2 id="gisis-main-title">Оцифрування аварій GISIS IMO та аналіз ECFA</h2>
+            </div>
+            <p id="gisis-main-lead">
+              Практичне дослідження аварії лоцманського катера KP-965 (Копер, 14.04.2026): цифрові класифікатори Додатка 5, причинно-наслідкова схема ECFA, розрахунок матриці ризику портових басейнів (R = P × S) та автоматична генерація превентивних правил безпеки.
+            </p>
+          </div>
+
+          <div class="gisis-case-strip" aria-label="Параметри оцифрованого кейсу">
+            <div class="gisis-case-pill">
+              <span>Судно:</span> <strong>KP-965 (GRP, L = 14.2 м)</strong>
+            </div>
+            <div class="gisis-case-pill">
+              <span>Подія:</span> <strong>Навал на буй 2/I (v = 22.0 вузлів)</strong>
+            </div>
+            <div class="gisis-case-pill">
+              <span>Акваторія:</span> <strong>Басейн I порту Копер (Словенія)</strong>
+            </div>
+            <div class="gisis-case-pill">
+              <span>Міжнародний реєстр:</span> <strong>EMCIP 2026/002821 · GISIS C1001092</strong>
+            </div>
+          </div>
+
+          <div class="gisis-grid">
+            <!-- PORT BASIN RISK CARD (R = P x S) -->
+            <div class="port-basin-risk-card" id="port-basin-risk-card">
+              <div class="gisis-card-header">
+                <div>
+                  <span class="gisis-kicker" id="gisis-calc-kicker">IMO FSA METHODOLOGY · R = P × S</span>
+                  <h3 id="gisis-calc-title">Автоматизована оцінка ризику акваторій</h3>
+                </div>
+                <span class="gisis-card-badge">Акваторії та басейни</span>
+              </div>
+              <p class="gisis-card-intro" id="gisis-calc-intro">
+                Розрахунок індексу навігаційного ризику за добутком частотної ймовірності виникнення інциденту (P, шкала 1–5) та важкості наслідків (S за Table 5, шкала 1–5).
+              </p>
+
+              <div class="gisis-factors-form" role="group" aria-labelledby="gisis-factors-legend">
+                <span class="gisis-factors-legend" id="gisis-factors-legend">Виявлені фактори сприяння (Contributing Factors):</span>
+                <div class="gisis-checkbox-grid">
+                  <label class="gisis-checkbox-item">
+                    <input type="checkbox" id="factor-speed" checked />
+                    <span class="gisis-checkbox-label">
+                      <strong>Перевищення швидкості (v &gt; 15 вузлів, KP-965 = 22 вузли)</strong>
+                      <small>COLREG Rule 6 / Небезпечна швидкість у стисненому басейні [+2.0]</small>
+                    </span>
+                  </label>
+                  <label class="gisis-checkbox-item">
+                    <input type="checkbox" id="factor-lookout" checked />
+                    <span class="gisis-checkbox-label">
+                      <strong>Одиночне спостереження рульовим без матроса (Solo watch)</strong>
+                      <small>COLREG Rule 5 / Матрос сидів у каюті без огляду горизонту [+1.5]</small>
+                    </span>
+                  </label>
+                  <label class="gisis-checkbox-item">
+                    <input type="checkbox" id="factor-fatigue" checked />
+                    <span class="gisis-checkbox-label">
+                      <strong>Циркадний надир (02:40 LT) та накопичена перевтома</strong>
+                      <small>IMO MSC/Circ.1598 / Засинання та сповільнення реакції [+1.0]</small>
+                    </span>
+                  </label>
+                  <label class="gisis-checkbox-item">
+                    <input type="checkbox" id="factor-glare" checked />
+                    <span class="gisis-checkbox-label">
+                      <strong>Берегове оптичне засвічення та сліпий сектор через диферент</strong>
+                      <small>Знецінення контрасту плавучого буя на фоні освітлення терміналу [+1.0]</small>
+                    </span>
+                  </label>
+                  <label class="gisis-checkbox-item">
+                    <input type="checkbox" id="factor-radar" checked />
+                    <span class="gisis-checkbox-label">
+                      <strong>Нехтування радаром або надмірне придушення Sea Clutter</strong>
+                      <small>Table 19 Error Type 1 / Радар на шкалі 1.5 милі без контролю дистанції [+1.5]</small>
+                    </span>
+                  </label>
+                  <label class="gisis-checkbox-item">
+                    <input type="checkbox" id="factor-complacency" checked />
+                    <span class="gisis-checkbox-label">
+                      <strong>Рутинна самовпевненість на знайомому маршруті (Habituation)</strong>
+                      <small>Table 20 Factor 4 / Нормалізація небезпечного швидкісного транзиту [+0.5]</small>
+                    </span>
+                  </label>
+                  <label class="gisis-checkbox-item">
+                    <input type="checkbox" id="factor-obstacle" checked />
+                    <span class="gisis-checkbox-label">
+                      <strong>Неосвітлена навігаційна перешкода (Швартовний буй 2/I)</strong>
+                      <small>Відсутність активного вогню та пасивного радіолокаційного відбивача [+1.0]</small>
+                    </span>
+                  </label>
+                </div>
+
+                <div class="gisis-severity-row">
+                  <label for="gisis-severity-select">
+                    <strong>Ступінь важкості наслідків (Severity S, Table 5):</strong>
+                    <select id="gisis-severity-select">
+                      <option value="1">1: Незначний інцидент (Minor incident / без зупинки)</option>
+                      <option value="2">2: Серйозний інцидент (Minor damage / без травм)</option>
+                      <option value="3" selected>3: Морська аварія — тяжке травмування / пробоїна (KP-965)</option>
+                      <option value="4">4: Дуже серйозна аварія з конструктивною загибеллю</option>
+                      <option value="5">5: Катастрофа / людські жертви або повне затоплення</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+
+              <div class="gisis-score-summary">
+                <div class="gisis-stat-cell">
+                  <span>Ймовірність (P)</span>
+                  <strong id="gisis-prob-display">5.0 / 5.0</strong>
+                  <small>Частота загрози</small>
+                </div>
+                <div class="gisis-stat-cell">
+                  <span>Тяжкість (S)</span>
+                  <strong id="gisis-sev-display">3 / 5</strong>
+                  <small>Table 5 Severity</small>
+                </div>
+                <div class="gisis-stat-cell">
+                  <span>Індекс ризику (R)</span>
+                  <strong id="gisis-risk-display">15.0</strong>
+                  <small>R = P × S</small>
+                </div>
+                <div class="gisis-stat-cell">
+                  <span>Категорія безпеки</span>
+                  <strong id="gisis-risk-badge" class="gisis-risk-critical">Критичний (Неприйнятний)</strong>
+                  <small>ALARP критерій</small>
+                </div>
+              </div>
+
+              <div class="gisis-mitigation-box" id="gisis-mitigation-box">
+                <div class="gisis-mitigation-head">
+                  <span class="mitigation-icon" aria-hidden="true">🛡️</span>
+                  <h4 id="gisis-mitigation-title">Автоматично згенеровані превентивні заходи безпеки:</h4>
+                </div>
+                <ul class="gisis-mitigation-list" id="gisis-mitigation-list">
+                  <!-- dynamically filled by app.js -->
+                </ul>
+              </div>
+            </div>
+
+            <!-- INTERACTIVE ECFA DIAGRAM (IMO Res. A.1075(28)) -->
+            <div class="ecfa-diagram-card" id="ecfa-diagram-card">
+              <div class="gisis-card-header">
+                <div>
+                  <span class="gisis-kicker" id="ecfa-kicker">IMO RES. A.1075(28) · КАСКАДНИЙ ПРИЧИННИЙ АНАЛІЗ</span>
+                  <h3 id="ecfa-title">Інтерактивна векторна діаграма ECFA</h3>
+                </div>
+                <span class="ecfa-format-badge">Векторний SVG</span>
+              </div>
+              <p class="gisis-card-intro" id="ecfa-intro">
+                Структурно-логічна схема Event and Causal Factors Analysis аварії катера KP-965. Оберіть фільтр або клацніть вузол для перегляду аналітичної картки та превентивного заходу.
+              </p>
+
+              <div class="ecfa-filter-bar" role="toolbar" aria-label="Фільтрація вузлів діаграми ECFA">
+                <button type="button" class="ecfa-filter-btn active" data-ecfa-filter="all">Всі рівні</button>
+                <button type="button" class="ecfa-filter-btn" data-ecfa-filter="events">Події (E)</button>
+                <button type="button" class="ecfa-filter-btn" data-ecfa-filter="accident">Аварійні точки (AE)</button>
+                <button type="button" class="ecfa-filter-btn" data-ecfa-filter="factors">Фактори (CF)</button>
+                <button type="button" class="ecfa-filter-btn" data-ecfa-filter="deficiencies">Дефіцити (SD)</button>
+                <button type="button" class="ecfa-filter-btn" data-ecfa-filter="issues">Проблеми (SI)</button>
+              </div>
+
+              <div class="ecfa-diagram-wrap" id="ecfa-diagram-wrap" role="region" aria-label="Векторна діаграма ECFA">
+                <!-- SVG injected dynamically or statically initialized by app.js -->
+              </div>
+
+              <div class="ecfa-node-details" id="ecfa-node-details" aria-live="polite">
+                <div class="ecfa-node-details-header">
+                  <span class="ecfa-node-tag" id="ecfa-selected-node-category">Аварійна подія (AE1)</span>
+                  <h4 id="ecfa-selected-node-title">Перевищення безпечної швидкості (COLREG Rule 6)</h4>
+                </div>
+                <p class="ecfa-node-desc" id="ecfa-selected-node-desc">
+                  Рух зі швидкістю 22.0 вузлів у нічний час всередині Басейну I порту Копер унеможливив вчасне виявлення швартовного буя 2/I та маневр ухилення.
+                </p>
+                <div class="ecfa-node-meta-grid">
+                  <div>
+                    <span>Нормативне посилання:</span>
+                    <strong id="ecfa-selected-node-ref">COLREG Rule 6 &amp; Портові правила Копера</strong>
+                  </div>
+                  <div>
+                    <span>Превентивна дія:</span>
+                    <strong id="ecfa-selected-node-mitigation">Впровадження програмного ліміту швидкості ≤ 10 вузлів у басейні</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GISIS DIGITAL RECORD & PYTHON SCRIPT EXPORT -->
+          <div class="gisis-export-card" id="gisis-export-card">
+            <div class="gisis-card-header">
+              <div>
+                <span class="gisis-kicker" id="gisis-export-kicker">ОЦИФРОВАНЕ ДОСЬЄ АВАРІЇ · MSC-MEPC.3/CIRC.4/REV.1</span>
+                <h3 id="gisis-export-title">Експорт для практичної роботи (JSON та Python)</h3>
+              </div>
+              <span class="gisis-card-badge">Open Data / Reproducibility</span>
+            </div>
+            <p class="gisis-card-intro" id="gisis-export-intro">
+              Завантажте валідоване цифрове досьє інциденту за формою GISIS або скопіюйте готовий автономний скрипт Python (NumPy / Matplotlib) для побудови матриці ризиків і звіту в Jupyter Notebook чи PyCharm.
+            </p>
+
+            <div class="gisis-export-actions">
+              <button type="button" class="button button-primary" id="download-gisis-json-btn">
+                Завантажити KP-965-gisis-record.json
+              </button>
+              <button type="button" class="button button-secondary" id="copy-python-script-btn">
+                Копіювати Python-скрипт (Jupyter / PyCharm)
+              </button>
+              <button type="button" class="button button-ghost" id="toggle-gisis-json-preview-btn">
+                Переглянути JSON Додатка 5
+              </button>
+            </div>
+
+            <div class="gisis-code-preview" id="gisis-code-preview" hidden>
+              <pre id="gisis-json-preview"><code>{ /* Завантаження структури... */ }</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- STATISTICS SECTION -->
       <section class="statistics" id="statistics">
         <div class="shell">
@@ -1091,6 +1316,7 @@
           <nav class="footer-nav" aria-label="Нижня навігація">
             <a href="#assessment">Оцінювання</a>
             <a href="#cases">Аварії MAIB</a>
+            <a href="#gisis-ecfa">GISIS &amp; ECFA</a>
             <a href="#statistics">Статистика</a>
             <a href="#methodology">Методика</a>
           </nav>

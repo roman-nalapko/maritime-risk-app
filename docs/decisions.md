@@ -200,5 +200,15 @@
 
 **Consequence:** The validation algorithm is 100% pure client-side in-memory JavaScript with zero external runtime dependencies and zero data retention. Hour slots use standard accessible `<button>` elements with keyboard focus and tooltips, preserving the strict accessibility mandate of exactly 5 `role="switch"` controls in the questionnaire. All calculations are covered by automated unit and DOM contract tests in `scripts/feature-checks.mjs`.
 
+## ADR-025: Digitization of IMO GISIS Casualty Data (MSC-MEPC.3/Circ.4/Rev.1), ECFA Causal Analysis (IMO Res. A.1075(28)), and Port Basin Risk Modeling (R = P x S)
+
+**Decision:** Digitize the pilot boat KP-965 allision incident (Port of Koper Basin I, 14.04.2026) according to IMO MSC-MEPC.3/Circ.4/Rev.1 (Appendix 5 Field Value Option Tables: 3, 4, 5, 6, 7, 9, 10, 16, 19, 20, 22, 23). Implement an interactive 5-tier SVG ECFA (Event and Causal Factors Analysis) diagram adhering to IMO Res. A.1075(28). Develop an automated port basin navigation risk model ($R = P \times S$) with deterministic mitigation generation and student export capabilities (JSON & Python).
+
+**Why:** Coursework requirements formulated by instructor Nataliia Tiron-Vorobiova require students to analyze IMO marine safety investigation reports (GISIS MCIR), decode casualty events using official IMO circular classifiers, construct ECFA structural diagrams, and design algorithms for automated risk evaluation and mitigation rule generation in inland waterways and port basins.
+
+**Consequence:** All computations and SVG generation are 100% pure client-side in-memory JavaScript with zero external runtime dependencies and zero data retention. Checkboxes and buttons use standard accessible semantics without infringing on the strict 5 `role="switch"` questionnaire rule. Students can download `KP-965-gisis-record.json` and copy an autonomous Python script for their practical work. Verified with unit and DOM contract tests in `scripts/feature-checks.mjs` (Tests 25–28).
+
+
+
 
 

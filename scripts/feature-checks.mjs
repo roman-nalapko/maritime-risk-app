@@ -21,7 +21,10 @@ import {
   getBridgeAlertPattern,
   evaluateWatchTeamRisk,
   createDefaultWatchSchedule,
-  validateRestHoursSchedule
+  validateRestHoursSchedule,
+  KP965_GISIS_RECORD,
+  calculatePortBasinRisk,
+  generatePythonAssignmentScript
 } from "../src/model.js";
 
 console.log("Running platform feature checks...");
@@ -410,6 +413,107 @@ assert.ok(cssContent.includes("--select-chevron:"), "styles.css must declare --s
 assert.ok(cssContent.includes("appearance: none;"), "styles.css must disable native select appearance");
 assert.ok(cssContent.includes("background-image: var(--select-chevron);"), "styles.css must use custom chevron icon for select");
 assert.ok(cssContent.includes("padding: 0 38px 0 14px;"), "styles.css must set safe right padding for select chevron");
+
+// 25. Test GISIS IMO Standardized Digitized Record for Pilot Boat KP-965 (MSC-MEPC.3/Circ.4/Rev.1)
+assert.equal(KP965_GISIS_RECORD.casualtyId, "KP965-KOPER-2026", "KP-965 casualty ID must match");
+assert.equal(KP965_GISIS_RECORD.vessel.name, "KP-965", "Vessel name must be KP-965");
+assert.equal(KP965_GISIS_RECORD.vessel.voyageSpeedKnots, 22.0, "KP-965 incident speed was 22.0 knots");
+assert.equal(KP965_GISIS_RECORD.location.code, 3, "Table 3 Location must be Code 3 (Port)");
+assert.equal(KP965_GISIS_RECORD.casualtyEvent.code, 6, "Table 4 Casualty Event must be Code 6 (Contact)");
+assert.equal(KP965_GISIS_RECORD.severity.code, 2, "Table 5 Severity must be Code 2 (Marine casualty)");
+assert.equal(KP965_GISIS_RECORD.environmentalFactors.seaState.code, 1, "Table 6 Sea State must be Code 1 (Calm rippled)");
+assert.equal(KP965_GISIS_RECORD.environmentalFactors.windForce.code, 2, "Table 7 Wind Force must be Code 2 (Light breeze)");
+assert.equal(KP965_GISIS_RECORD.environmentalFactors.visibility.code, 4, "Table 9 Visibility must be Code 4 (Good)");
+assert.equal(KP965_GISIS_RECORD.environmentalFactors.lightCondition.code, 2, "Table 10 Light must be Code 2 (Darkness)");
+assert.equal(KP965_GISIS_RECORD.accidentEvent.code, 1, "Table 16 Accident Event must be Code 1 (Human action)");
+assert.ok(KP965_GISIS_RECORD.errorTypes.some((e) => e.code === 1), "Must include Table 19 observation error");
+assert.ok(KP965_GISIS_RECORD.temporaryPersonFactors.some((f) => f.code === 2), "Must include Table 20 fatigue");
+assert.ok(KP965_GISIS_RECORD.operationalFactors.some((f) => f.code === "22.6"), "Must include Table 22 speed awareness factor");
+assert.ok(KP965_GISIS_RECORD.managementFactors.some((f) => f.code === "23.19"), "Must include Table 23 SMS procedures factor");
+
+// ECFA Diagram structure check (IMO Res. A.1075(28))
+const ecfa = KP965_GISIS_RECORD.ecfaDiagram;
+assert.equal(ecfa.events.length, 8, "ECFA must include 8 chronological events (E1..E8)");
+assert.equal(ecfa.accidentEvents.length, 4, "ECFA must include 4 accident events (AE1..AE4)");
+assert.equal(ecfa.contributingFactors.length, 7, "ECFA must include 7 contributing factors (CF1..CF7)");
+assert.equal(ecfa.safetyDeficiencies.length, 6, "ECFA must include 6 safety deficiencies (SD1..SD6)");
+assert.equal(ecfa.safetyIssues.length, 5, "ECFA must include 5 systemic safety issues (SI1..SI5)");
+
+// 26. Test Port Basin Risk Assessment Model (R = P x S)
+const kp965Scenario = calculatePortBasinRisk({
+  excessSpeed: true,
+  singleLookout: true,
+  circadianFatigue: true,
+  glareVisualImpairment: true,
+  radarNotUsed: true,
+  routineComplacency: true,
+  unlitObstacle: true
+}, { severityCode: 3 });
+
+assert.equal(kp965Scenario.probabilityScore, 5.0, "KP-965 compound factors clamp to maximum P = 5.0");
+assert.equal(kp965Scenario.severityCode, 3, "Table 5 severity code for marine casualty is 3");
+assert.equal(kp965Scenario.riskIndex, 15.0, "KP-965 risk score R = 5.0 x 3 = 15.0");
+assert.equal(kp965Scenario.riskCategory, "critical", "R >= 10 must fall in Critical (Unacceptable) risk zone");
+assert.ok(kp965Scenario.mitigationRules.some((r) => r.ruleId === "RULE-BASIN-SPEED-01"), "Must generate speed limit rule <= 10 kt");
+assert.ok(kp965Scenario.mitigationRules.some((r) => r.ruleId === "RULE-DUAL-LOOKOUT-02"), "Must generate dual lookout mandate rule");
+
+const safeScenario = calculatePortBasinRisk({
+  excessSpeed: false,
+  singleLookout: false,
+  circadianFatigue: false,
+  glareVisualImpairment: false,
+  radarNotUsed: false,
+  routineComplacency: false,
+  unlitObstacle: false
+}, { severityCode: 1 });
+assert.equal(safeScenario.probabilityScore, 1.0, "Zero hazard factors yield base P = 1.0");
+assert.equal(safeScenario.riskIndex, 1.0, "Safe scenario risk score R = 1.0 x 1 = 1.0");
+assert.equal(safeScenario.riskCategory, "acceptable", "R < 6 must be Acceptable");
+
+const elevatedScenario = calculatePortBasinRisk({
+  excessSpeed: false,
+  singleLookout: true,
+  circadianFatigue: false,
+  glareVisualImpairment: false,
+  radarNotUsed: false,
+  routineComplacency: false,
+  unlitObstacle: false
+}, { severityCode: 3 });
+assert.equal(elevatedScenario.probabilityScore, 2.5, "Single lookout yields P = 1.0 + 1.5 = 2.5");
+assert.equal(elevatedScenario.riskIndex, 7.5, "R = 2.5 x 3 = 7.5");
+assert.equal(elevatedScenario.riskCategory, "elevated", "6 <= R < 10 must be Elevated (ALARP)");
+
+// 27. Test Standalone Python Assignment Script Generator
+const pyScript = generatePythonAssignmentScript(KP965_GISIS_RECORD, kp965Scenario);
+assert.ok(pyScript.includes("import matplotlib.pyplot as plt"), "Python script must import matplotlib");
+assert.ok(pyScript.includes("KP-965"), "Python script must cite KP-965 case study");
+assert.ok(pyScript.includes("calculate_port_basin_risk"), "Python script must implement risk function");
+assert.ok(pyScript.includes("R = P x S"), "Python script must implement FSA risk formula");
+
+// 28. Test UI & DOM Contract for GISIS IMO & ECFA Module
+assert.ok(htmlContent.includes('id="gisis-ecfa"'), "index.html must have gisis-ecfa section");
+assert.ok(htmlContent.includes('id="port-basin-risk-card"'), "index.html must have port-basin-risk-card");
+assert.ok(htmlContent.includes('id="factor-speed"'), "index.html must have factor-speed checkbox");
+assert.ok(htmlContent.includes('id="factor-lookout"'), "index.html must have factor-lookout checkbox");
+assert.ok(htmlContent.includes('id="gisis-severity-select"'), "index.html must have gisis-severity-select");
+assert.ok(htmlContent.includes('id="gisis-risk-display"'), "index.html must have gisis-risk-display");
+assert.ok(htmlContent.includes('id="gisis-mitigation-list"'), "index.html must have gisis-mitigation-list");
+assert.ok(htmlContent.includes('id="ecfa-diagram-card"'), "index.html must have ecfa-diagram-card");
+assert.ok(htmlContent.includes('id="ecfa-diagram-wrap"'), "index.html must have ecfa-diagram-wrap");
+assert.ok(htmlContent.includes('id="ecfa-node-details"'), "index.html must have ecfa-node-details");
+assert.ok(htmlContent.includes('id="gisis-export-card"'), "index.html must have gisis-export-card");
+assert.ok(htmlContent.includes('id="download-gisis-json-btn"'), "index.html must have download-gisis-json-btn");
+assert.ok(htmlContent.includes('id="copy-python-script-btn"'), "index.html must have copy-python-script-btn");
+
+assert.ok(cssContent.includes(".gisis-ecfa-section"), "styles.css must style gisis-ecfa-section");
+assert.ok(cssContent.includes(".port-basin-risk-card"), "styles.css must style port-basin-risk-card");
+assert.ok(cssContent.includes(".ecfa-diagram-svg"), "styles.css must style ecfa-diagram-svg");
+assert.ok(cssContent.includes(".ecfa-node"), "styles.css must style ecfa-node");
+assert.ok(cssContent.includes(".gisis-risk-critical"), "styles.css must style gisis-risk-critical");
+
+assert.ok(appContent.includes("renderPortBasinRisk"), "app.js must implement renderPortBasinRisk");
+assert.ok(appContent.includes("renderEcfaDiagram"), "app.js must implement renderEcfaDiagram");
+assert.ok(appContent.includes("initGisisEcfaModule"), "app.js must implement initGisisEcfaModule");
 
 console.log("All platform feature checks passed.");
 
