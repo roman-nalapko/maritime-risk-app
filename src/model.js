@@ -1521,7 +1521,7 @@ export const KP965_GISIS_RECORD = Object.freeze({
     code: 6,
     tableName: "Table 4: Casualty Event",
     description: "Contact / Allision with fixed or floating object (Mooring Buoy 2/I)",
-    classification: "Marine casualty (Serious structural damage & crew injury >72h)"
+    classification: "Marine casualty (MSC-MEPC.3/Circ.4/Rev.1 Table 5)"
   },
   severity: {
     code: 2,
@@ -1529,89 +1529,161 @@ export const KP965_GISIS_RECORD = Object.freeze({
     description: "Marine casualty (MSC-MEPC.3/Circ.4/Rev.1 Table 5)",
     consequences: {
       fatalities: 0,
-      injuries: 1,
-      injuryDetails: "Coxswain sustained severe thoracic trauma / incapacitation > 72 hours",
-      vesselDamage: "Severe bow rupture, water ingress, displaced steering controls",
-      environmentImpact: "None (no fuel breach)",
-      infrastructureDamage: "Buoy 2/I mooring bridle displaced"
+      injuries: 0,
+      injuryDetails: "No crew or pilot injuries reported; no medical evacuation required",
+      vesselDamage: "Damage to port bow (hull / GRP laminate), one bent propulsion shaft and both propellers deformed",
+      environmentImpact: "None (no fuel breach, no pollution)",
+      infrastructureDamage: "Contact with mooring buoy 2/I in Basin I"
     }
   },
   environmentalFactors: {
-    seaState: { code: 1, tableName: "Table 6: Sea State", description: "Calm rippled (0.0 - 0.1 m)" },
-    windForce: { code: 2, tableName: "Table 7: Wind Force", description: "Light breeze (3.7 m/s, 7 knots)" },
+    seaState: { code: 1, tableName: "Table 6: Sea State", description: "Calm / Smooth (0.0 - 0.1 m)" },
+    windForce: { code: 2, tableName: "Table 7: Wind Force", description: "Light breeze (3.7 m/s, ENE)" },
     windDirection: "ENE (070°)",
-    visibility: { code: 4, tableName: "Table 9: Visibility", description: "Good (>10 nm / 21 km), high shore background glare" },
+    visibility: { code: 4, tableName: "Table 9: Visibility", description: "Good (21 km), high shore background glare" },
     lightCondition: { code: 2, tableName: "Table 10: Light Condition", description: "Darkness / Night" },
     glareShoreLights: true
   },
   accidentEvent: {
     code: 1,
     tableName: "Table 16: Accident Event",
-    description: "Human erroneous action"
+    description: "Human erroneous action / Equipment failure"
   },
   errorTypes: [
     { code: 1, table: 19, name: "Observation error", description: "Buoy 2/I not sighted visually or detected on radar prior to impact" },
     { code: 3, table: 19, name: "Planning error", description: "Maintained 22 kt transit speed in restricted port basin during darkness" },
-    { code: 4, table: 19, name: "Action execution error", description: "No evasive course alteration or engine throttle reduction" }
+    { code: 4, table: 19, name: "Action execution error", description: "Late speed reduction and avoidance maneuver initiation" }
   ],
   temporaryPersonFactors: [
-    { code: 2, table: 20, name: "Fatigue", description: "Incident occurred at 02:40 (circadian nadir) following consecutive night shifts" },
-    { code: 4, table: 20, name: "Inattention / Mind wandering", description: "High familiarity with route generated false sense of safety" },
-    { code: 7, table: 20, name: "Stress / Schedule urgency", description: "Desire to quickly return to pilot station before next transit" }
+    { code: 2, table: 20, name: "Fatigue", description: "Incident occurred at 02:16 LT (circadian nadir) during night watch" },
+    { code: 4, table: 20, name: "Inattention / Mind wandering", description: "Temporary loss of active route monitoring" },
+    { code: 7, table: 20, name: "Stress / Schedule urgency", description: "High transit pace between consecutive pilotage assignments" }
   ],
   operationalFactors: [
-    { code: "22.6", table: 22, name: "Inadequate safety awareness", description: "Unsafe speed of 22 kt in port basin (COLREG Rule 6 violation)" },
-    { code: "22.9", table: 22, name: "Lack of coordination / BRM", description: "Deckhand seated in cabin, not tasked with lookout duty" },
-    { code: "22.14", table: 22, name: "Inadequate procedures", description: "Absence of clear SOP for night pilot transfers in internal basins" },
-    { code: "22.20", table: 22, name: "Inappropriate sightline / trim", description: "Bow rise at 22 kt created forward blind sector obscuring water surface" },
-    { code: "22.32", table: 22, name: "Information / Display design", description: "Radar range set too high (1.5 nm) with high sea/rain clutter filter" },
-    { code: "22.53", table: 22, name: "Restricted fairway", description: "Mooring buoys deployed inside operational maneuvering basin" }
+    { code: "22.6", table: 22, name: "Inadequate safety awareness", description: "High speed during internal transit in confined port waters (~22 kt)" },
+    { code: "22.9", table: 22, name: "Lack of coordination / BRM", description: "Ineffective shared lookout and cross-checking of hazards" },
+    { code: "22.14", table: 22, name: "Inadequate procedures", description: "Task allocation and lookout responsibilities not clearly formalised" },
+    { code: "22.20", table: 22, name: "Inappropriate sightline / trim", description: "Limited forward visibility due to seating position of additional trained person" },
+    { code: "22.32", table: 22, name: "Information / Display design", description: "Radar/plotter did not display mooring buoy 2/I in actual operational use" },
+    { code: "22.53", table: 22, name: "Restricted fairway", description: "Mooring buoy 2/I positioned within internal transit maneuvering zone" }
   ],
   managementFactors: [
-    { code: "23.15", table: 23, name: "Unclear roles & responsibilities", description: "Pilot service lacked mandatory dual-lookout protocol" },
-    { code: "23.19", table: 23, name: "Inadequate SMS procedures", description: "No enforceable speed ceiling in port basin rules" },
-    { code: "23.40", table: 23, name: "Inadequate training", description: "Lack of recurrent radar navigation & night watch simulations" }
+    { code: "23.15", table: 23, name: "Unclear roles & responsibilities", description: "Lack of documented formal allocation of lookout and communication duties" },
+    { code: "23.19", table: 23, name: "Inadequate SMS procedures", description: "Safe-speed criteria for internal transit not clearly defined or supervised" },
+    { code: "23.40", table: 23, name: "Inadequate training", description: "Initial and recurrent training and practical assessment lacked documented traceability" }
   ],
   ecfaDiagram: {
     events: [
-      { id: "E1", time: "02:25", labelUk: "Відшвартування від танкера після висадки лоцмана", labelEn: "Disembarkation from tanker at anchorage" },
-      { id: "E2", time: "02:30", labelUk: "Вхід у внутрішню акваторію Басейну I порту Копер", labelEn: "Entry into Basin I fairway of Port of Koper" },
-      { id: "E3", time: "02:32", labelUk: "Набір повної транзитної швидкості (22.0 вузли)", labelEn: "Acceleration to full transit speed (22.0 kt)" },
-      { id: "E4", time: "02:35", labelUk: "Рух на фоні яскравих берегових вогнів контейнерного терміналу", labelEn: "Navigation against bright container terminal shore lights" },
-      { id: "E5", time: "02:38", labelUk: "Наближення до швартовного буя 2/I без візуального виявлення", labelEn: "Approach to mooring buoy 2/I without visual sighting" },
-      { id: "E6", time: "02:39", labelUk: "Радар не використовується для контролю; матрос не спостерігає", labelEn: "Radar unmonitored; no dedicated lookout deployed" },
-      { id: "E7", time: "02:40", labelUk: "Пряме лобове зіткнення зі швартовним буєм 2/I на швидкості 22 вузли", labelEn: "Direct allision with buoy 2/I at 22 knots" },
-      { id: "E8", time: "02:42", labelUk: "Аварійна зупинка двигунів, пошкодження корпусу, травмування рульового", labelEn: "Emergency engine shutdown, structural bow rupture, coxswain trauma" }
+      { id: "E1", time: "02:13:43", labelUk: "Висадка лоцмана з т/х ANJI SOUNDNESS на катер KP-965", labelEn: "Pilot transferred from M/V ANJI SOUNDNESS to pilot boat KP-965" },
+      { id: "E2", time: "02:13:43 – 02:16:30", labelUk: "Рух катера з Басейну III до Басейну I на швидкості ~21–22 вузли", labelEn: "Pilot boat proceeded from Basin III towards Basin I at approximately 21–22 kt" },
+      { id: "E3", time: "~02:15", labelUk: "Матрос помітив швартовний буй попереду за курсом і подав усне попередження", labelEn: "Additional person trained to operate the vessel noticed mooring buoy ahead and gave verbal warning" },
+      { id: "E4", time: "~02:15 – 02:16", labelUk: "Судноводій помітив небезпеку, із запізненням зменшив хід та почав маневр ухилення", labelEn: "Operator noticed hazard, speed reduction was initiated late, and avoidance attempt followed" },
+      { id: "E5", time: "~02:16:48", labelUk: "Навал лівою вилицею носової частини катера на швартовний буй 2/I", labelEn: "Pilot boat allided with mooring buoy 2/I with the port bow" },
+      { id: "E6", time: "02:16:48 – 02:18:59", labelUk: "Катер продовжив рух у Басейн I; критичних пошкоджень або надходження води не виявлено", labelEn: "Pilot boat continued towards Basin I; no immediate disabling damage or water ingress identified" },
+      { id: "E7", time: "02:18:59", labelUk: "Прибуття до т/х MSC CAITLIN II (причал 7A) та посадка лоцмана на борт", labelEn: "Arrived at M/V MSC CAITLIN II (Berth 7A) and transferred pilot to the vessel" },
+      { id: "E8", time: "Після швартування", labelUk: "Виявлено пошкодження ламінату носової частини; пізніший огляд виявив погнутий вал та гвинти", labelEn: "After berthing, damage to port bow was identified; later inspection found one bent shaft and deformed propellers" }
     ],
     accidentEvents: [
-      { id: "AE1", labelUk: "Перевищення безпечної швидкості в портовому басейні (COLREG Rule 6)", labelEn: "Excessive speed in restricted port basin (COLREG Rule 6)", eventRef: "E3" },
-      { id: "AE2", labelUk: "Втрата належного візуального спостереження (COLREG Rule 5)", labelEn: "Failure to maintain proper look-out (COLREG Rule 5)", eventRef: "E5" },
-      { id: "AE3", labelUk: "Нехтування радіолокаційним спостереженням у темряві", labelEn: "Omission of electronic radar verification in darkness", eventRef: "E6" },
-      { id: "AE4", labelUk: "Розрив синергії ходової вахти (BRM) та відсутність дублювання", labelEn: "Single-person bridge resource breakdown (no BRM cross-check)", eventRef: "E6" }
+      { id: "AE1", labelUk: "Швартовний буй 2/I розпізнано занадто пізно", labelEn: "Mooring buoy 2/I was recognised too late", eventRef: "E4" },
+      { id: "AE2", labelUk: "Спільне спостереження та взаємний контроль небезпек були неефективними", labelEn: "Shared lookout and cross-checking of hazards were ineffective", eventRef: "E3" },
+      { id: "AE3", labelUk: "Зниження швидкості та маневр ухилення розпочато із запізненням", labelEn: "Speed reduction and avoidance manoeuvre were initiated too late", eventRef: "E4" },
+      { id: "AE4", labelUk: "Носова частина лівого борту катера вдарила швартовний буй 2/I", labelEn: "Pilot boat's port bow struck mooring buoy 2/I", eventRef: "E5" }
     ],
+    casualtyEvent: {
+      id: "CE1",
+      labelUk: "Лоцманський катер KP-965 здійснив навал на швартовний буй 2/I у Басейні I",
+      labelEn: "Pilot boat KP-965 allided with mooring buoy 2/I in Basin I",
+      resultUk: "Пошкодження носового ламінату (GRP), погнутий гребний вал, обидва гвинти деформовані; без жертв, без травм, без забруднення.",
+      resultEn: "Damage to port bow (hull / GRP laminate), one bent propulsion shaft and both propellers deformed; no injuries, no pollution, no water ingress."
+    },
     contributingFactors: [
-      { id: "CF1", category: "Human", labelUk: "Циркадний спад (02:40) та кумулятивна втома від нічних чергувань", labelEn: "Circadian nadir fatigue (02:40) & accumulated sleep debt", ref: "AE2" },
-      { id: "CF2", category: "Environmental", labelUk: "Оптичне засвічення від терміналу: знецінення контрасту буя на воді", labelEn: "Shore lighting glare degraded buoy contrast against dark water", ref: "AE2" },
-      { id: "CF3", category: "Technical", labelUk: "Диферент на корму на 22 вузлах утворив сліпий сектор перед носом", labelEn: "Trim by stern at 22 kt obscured forward horizon (blind sector)", ref: "AE1" },
-      { id: "CF4", category: "Infrastructure", labelUk: "Швартовний буй 2/I не мав вогню та активного радіолокаційного відбивача", labelEn: "Buoy 2/I unlit and lacked active radar reflector", ref: "AE2" },
-      { id: "CF5", category: "Human", labelUk: "Рутинна самовпевненість на багаторазово пройденому маршруті", labelEn: "Routine complacency: high repetition route habituation", ref: "AE1" },
-      { id: "CF6", category: "Organizational", labelUk: "Матрос сидів у глибині кабіни без обов'язків впередсмотрящого", labelEn: "Deckhand seated in cabin without lookout role", ref: "AE4" },
-      { id: "CF7", category: "Technical", labelUk: "Шкала радара 1.5 милі та надмірне придушення відбитків хвиль", labelEn: "Radar tuned to 1.5 nm with excessive anti-clutter suppression", ref: "AE3" }
+      { id: "CF1", category: "Operational", labelUk: "Висока швидкість під час внутрішнього переходу у стиснених водах порту", labelEn: "High speed during internal transit in confined port waters", ref: "AE1" },
+      { id: "CF2", category: "Human", labelUk: "Тимчасова втрата активного контролю маршруту та пізнє виявлення небезпеки судноводієм", labelEn: "Temporary loss of active route monitoring and late hazard detection by the operator", ref: "AE1" },
+      { id: "CF3", category: "Workplace", labelUk: "Обмежений огляд вперед та знижена ефективність підтримки через розташування крісла матроса", labelEn: "Limited forward visibility and reduced support effectiveness due to seating arrangement of the additional trained person", ref: "AE2" },
+      { id: "CF4", category: "Human", labelUk: "Спільне спостереження / BRM під час переходу неефективне; лоцман діяв як пасажир", labelEn: "Shared lookout / BRM during pilot transfer was not effective; the pilot acted mainly as a passenger", ref: "AE2" },
+      { id: "CF5", category: "Technical", labelUk: "Радар/плотер не спрацював як бар'єр безпеки; буй не відображався на екрані плотера в день події", labelEn: "Radar/plotter did not function as an effective safety barrier in actual use; mooring buoy was not visible on plotter display", ref: "AE3" },
+      { id: "CF6", category: "Organizational", labelUk: "Навчання та періодична перевірка існували, але не були належно задокументовані чи перевірені", labelEn: "Training, approval and recurrent verification existed in practice but were not sufficiently documented, objectively verified or traceable", ref: "AE2" },
+      { id: "CF7", category: "Organizational", labelUk: "Розподіл завдань, обов'язки спостереження та комунікація на борту не були формалізовані", labelEn: "Task allocation, lookout responsibilities and communication on board were not clearly formalised", ref: "AE2" },
+      { id: "CF8", category: "Human", labelUk: "Ймовірне зниження пильності / відволікання судноводія сприяло погіршенню ситуаційної обізнаності", labelEn: "Possible reduced alertness / distraction of the operator contributed to degraded situational awareness", ref: "AE1" },
+      { id: "CF9", category: "Management", labelUk: "Операційний контроль та оцінка ризиків швидкісних переходів поблизу швартовних буїв були недостатніми", labelEn: "Operational controls and risk assessment for internal high-speed transits near mooring buoys were insufficient", ref: "AE1" },
+      { id: "CF10", category: "Organizational", labelUk: "Відсутність чіткої процедури дій після інциденту: негайного сповіщення, фіксації доказів та техоцінки", labelEn: "No clear formal pre-occurrence procedure governed immediate reporting, evidence preservation, and technical assessment", ref: "AE4" }
     ],
     safetyDeficiencies: [
-      { id: "SD1", labelUk: "Відсутність у СУБ (SMS) швидкісного ліміту для катерів у басейні", labelEn: "No formal port basin speed limit in Pilot Service SMS", ref: "CF3" },
-      { id: "SD2", labelUk: "Відсутність СОП щодо обов'язкового дублюючого спостереження вночі", labelEn: "Lack of SOP for dual-lookout during night transit", ref: "CF6" },
-      { id: "SD3", labelUk: "Відсутність регулярних тренінгів з радіолокаційної проводки в акваторії", labelEn: "Absence of periodic radar & night watchkeeping simulation", ref: "CF7" },
-      { id: "SD4", labelUk: "Служба VTS порту не вела автоматизований контроль швидкості катерів", labelEn: "VTS port telemetry did not monitor small craft speed", ref: "CF1" },
-      { id: "SD5", labelUk: "Буї не обладнані високоінтенсивною світловідбивною плівкою або AIS AtoN", labelEn: "Absence of retroreflective tape / AIS AtoN on port buoys", ref: "CF4" },
-      { id: "SD6", labelUk: "Невдале розташування дисплея радара поза лінією прямого огляду", labelEn: "Cabin layout placed radar display away from primary sightline", ref: "CF3" }
+      { id: "SD1", labelUk: "Операційні вимоги щодо контролю швидкості та безпечного транзиту катерів усередині порту є недостатніми", labelEn: "Operational requirements for speed management and safe transit of pilot boats in internal port areas are insufficient or not formally controlled", ref: "CF1" },
+      { id: "SD2", labelUk: "Відсутня надійна документована система початкового, періодичного та практичного навчання судноводіїв і матросів", labelEn: "No reliable documented system exists for initial, recurrent and practical verification training for pilot boat operators and the additional trained person", ref: "CF6" },
+      { id: "SD3", labelUk: "Відсутній офіційний документований розподіл обов'язків спостереження, підтримки та зв'язку під час швидкісних переходів", labelEn: "No formal documented allocation of lookout, support and communication duties exists for pilot transfer and internal high-speed transits", ref: "CF7" },
+      { id: "SD4", labelUk: "Використання радара/плотера, виявлення небезпек та перехресна перевірка курсу не стандартизовані й не перевіряються", labelEn: "Radar/plotter use, hazard awareness and route cross-checking are not adequately standardised or verified", ref: "CF5" },
+      { id: "SD5", labelUk: "Електронний дисплей у день аварії не показав буй 2/I як бар'єр безпеки, а історичні дані дисплея не збереглися", labelEn: "The electronic navigation display on the day of occurrence did not provide mooring buoy 2/I as an effective barrier, and no historical display data were retained", ref: "CF5" },
+      { id: "SD6", labelUk: "Відсутня формальна процедура негайного сповіщення VTS/URSP, фіксації доказів та техогляду перед продовженням руху", labelEn: "No formal procedure existed for immediate VTS/URSP reporting, preservation of navigation evidence, and structured technical assessment before continued operation", ref: "CF10" },
+      { id: "SD7", labelUk: "Ідентифікація небезпек та оцінка ризиків внутрішніх швидкісних переходів біля фіксованої інфраструктури були недостатніми", labelEn: "Hazard identification and risk assessment for internal high-speed transits near fixed mooring infrastructure were insufficient", ref: "CF9" }
     ],
     safetyIssues: [
-      { id: "SI1", labelUk: "Нормалізація відхилень (Normalization of Deviance): нічний транзит на повній швидкості", labelEn: "Normalization of deviance regarding night transit speed" },
-      { id: "SI2", labelUk: "Ізольоване керування (Single-operator dependency) на швидкісних плавзасобах", labelEn: "Single-operator dependency during high-speed port operations" },
-      { id: "SI3", labelUk: "Недостатність оптико-електронних приладів нічного бачення (FLIR) на катерах", labelEn: "Lack of optical/thermal augmentation (FLIR/Night Vision) on fast craft" },
-      { id: "SI4", labelUk: "Прогалини в портових правилах щодо нагляду за службовим флотом", labelEn: "Regulatory gap in port authority oversight of auxiliary service craft" },
-      { id: "SI5", labelUk: "Кумулятивна перевтома екіпажів у позмінних графіках лоцманських служб", labelEn: "Cumulative shift fatigue under nocturnal maritime pilot rosters" }
+      { id: "SI1", labelUk: "Управління навігаційними ризиками під час швидкісних операцій катерів у стиснених водах порту є неадекватним", labelEn: "Navigation risk management during high-speed pilot boat operations in confined port waters is not adequate" },
+      { id: "SI2", labelUk: "Управління ресурсами містка (BRM) та спільний моніторинг загроз під час висадки/посадки лоцманів не забезпечені", labelEn: "Bridge resource management and shared hazard monitoring during pilot transfer operations are not effectively ensured" },
+      { id: "SI3", labelUk: "Використання навігаційних дисплеїв та перехресна перевірка небезпек маршруту не гарантовані", labelEn: "Operational use of navigational displays and cross-checking of route hazards are not effectively assured" },
+      { id: "SI4", labelUk: "Підготовка, атестація та періодичне підтвердження кваліфікації екіпажів катерів недостатньо задокументовані", labelEn: "Training, approval and recurrent verification of competence for pilot boat crews are not sufficiently documented and controlled" },
+      { id: "SI5", labelUk: "Звітність після інциденту, збереження доказів та рішення про продовження операцій не регламентовані офіційно", labelEn: "Post-occurrence reporting, evidence preservation and continuation-of-operation decision-making are not governed by a sufficiently formal procedure" }
+    ],
+    synthesis: {
+      keyFindingUk: "Навал стався внаслідок поєднання високої швидкості (~22 вузли), запізнілого виявлення небезпеки, неефективного спільного спостереження, зниженого моніторингу траєкторії, обмеженого огляду через розміщення крісла матроса, невикористання навігаційного дисплея як ефективного бар'єра та організаційних прогалин у підготовці, розподілі обов'язків і післяаварійних процедурах.",
+      keyFindingEn: "The allision occurred due to a combination of high speed, late hazard recognition, ineffective shared lookout, reduced route monitoring, limited support from the additional trained person's seating position, ineffective use of navigation displays as a safety barrier, and organizational weaknesses in training traceability, task allocation and post-occurrence procedures.",
+      directCauseUk: "Носова частина лівого борту катера вдарила швартовний буй 2/I через надто пізнє виявлення перешкоди під час руху на високій швидкості у стисненій акваторії, коли пізнє скидання газу та маневр ухилення вже не змогли запобігти зіткненню.",
+      directCauseEn: "The pilot boat's port bow struck mooring buoy 2/I because the hazard was detected too late while the vessel was travelling at high speed in confined port waters, and the late speed reduction / avoidance manoeuvre was insufficient to prevent the allision.",
+      contributingSystemicFactorsUk: "Недостатній операційний контроль швидкісних транзитів; неефективне спільне спостереження та BRM; неформалізоване використання радара/плотера; відсутність документованої системи тренінгів; слабкі процедури звітування після контакту.",
+      contributingSystemicFactorsEn: "Inadequate operational control of high-speed internal transits; Ineffective shared lookout and bridge resource management; Insufficiently formalised use of radar/plotter; Training system not sufficiently documented; Weak post-contact reporting procedures.",
+      preventivePotentialUk: "За умови зниження швидкості внутрішнього переходу, ефективного дублюючого спостереження, кращої перевірки небезпек курсу, чіткого розподілу обов'язків та задокументованої системи тренінгів аварії можна було б запобігти.",
+      preventivePotentialEn: "With lower internal-transit speed, effective shared lookout, better route/hazard cross-checking, clearly allocated duties, and a documented training and reporting system, the allision could likely have been prevented."
+    },
+    safetyRecommendations: [
+      {
+        id: "SI-MAIIS-SR003-2026",
+        titleUk: "Підготовка та оцінка компетентності",
+        titleEn: "Training and competence assessment",
+        addressee: "KOPP d.o.o.",
+        summaryUk: "Створити відстежувану систему початкового та періодичного навчання судноводіїв катерів та другого підготовленого члена екіпажу з чіткими критеріями оцінки."
+      },
+      {
+        id: "SI-MAIIS-SR004-2026",
+        titleUk: "Безпечна швидкість та судноплавство в порту",
+        titleEn: "Safe speed and navigation within the port",
+        addressee: "KOPP d.o.o.",
+        summaryUk: "Визначити та впровадити операційні критерії безпечної швидкості катерів під час переходів між басейнами порту, особливо вночі та біля швартовної інфраструктури."
+      },
+      {
+        id: "SI-MAIIS-SR005-2026",
+        titleUk: "Розподіл обов'язків та спостереження",
+        titleEn: "Allocation of duties and lookout",
+        addressee: "KOPP d.o.o.",
+        summaryUk: "Чітко визначити обов'язки судноводія та матроса щодо спостереження, моніторингу курсу, навігаційних дисплеїв та своєчасного попередження про небезпеки."
+      },
+      {
+        id: "SI-MAIIS-SR006-2026",
+        titleUk: "Використання навігаційного обладнання",
+        titleEn: "Use of navigation equipment",
+        addressee: "KOPP d.o.o.",
+        summaryUk: "Стандартизувати використання радара, плотера та інших навігаційних засобів, включаючи належний масштаб та перехресну перевірку цілей."
+      },
+      {
+        id: "SI-MAIIS-SR007-2026",
+        titleUk: "Дії після інциденту або контакту",
+        titleEn: "Action following an accident or contact",
+        addressee: "KOPP d.o.o.",
+        summaryUk: "Встановити формальну процедуру дій у разі контакту: негайне сповіщення VTS/URSP, збереження даних та технічне обстеження корпусу перед продовженням руху."
+      },
+      {
+        id: "SI-MAIIS-SR008-2026",
+        titleUk: "Нормативна база для навчання персоналу",
+        titleEn: "Regulatory framework for training",
+        addressee: "MZIE / Slovenian Maritime Administration (URSP)",
+        summaryUk: "Внести зміни до правил морської лоцманської проводки щодо обов'язковості початкового, періодичного та практичного тренінгу для обох членів екіпажу катера."
+      },
+      {
+        id: "SI-MAIIS-SR009-2026",
+        titleUk: "Визначення та реєстрація мінімального складу екіпажу",
+        titleEn: "Determination and recording of minimum pilot boat manning",
+        addressee: "Slovenian Maritime Administration / Bureau Veritas",
+        summaryUk: "Узгодити та скоригувати чисельність екіпажу для катерів (KP-165, KP-859, KP-965) з урахуванням обов'язкової присутності другої підготовленої особи."
+      }
     ]
   }
 });
@@ -1632,12 +1704,13 @@ export function calculatePortBasinRisk(factors = {}, options = {}) {
   let probabilityScore = 1.0;
 
   if (factors.excessSpeed) probabilityScore += 2.0;
-  if (factors.singleLookout) probabilityScore += 1.5;
-  if (factors.circadianFatigue) probabilityScore += 1.0;
+  if (factors.singleLookout) probabilityScore += 2.0;
   if (factors.glareVisualImpairment) probabilityScore += 1.0;
   if (factors.radarNotUsed) probabilityScore += 1.5;
-  if (factors.routineComplacency) probabilityScore += 0.5;
+  if (factors.circadianFatigue) probabilityScore += 1.0;
   if (factors.unlitObstacle) probabilityScore += 1.0;
+  if (factors.routineComplacency) probabilityScore += 0.5;
+  if (factors.trainingOrOrgDeficiency) probabilityScore += 1.0;
 
   probabilityScore = Math.max(1.0, Math.min(5.0, Math.round(probabilityScore * 10) / 10));
 
@@ -1659,6 +1732,14 @@ export function calculatePortBasinRisk(factors = {}, options = {}) {
     riskCategoryLabelUk = "Підвищений (ALARP)";
     riskCategoryLabelEn = "Elevated (ALARP)";
     riskColor = "amber";
+  }
+
+  // Exact automated safety warning required by academic coursework assignment
+  let criticalAlertUk = null;
+  let criticalAlertEn = null;
+  if (riskIndex >= 10.0) {
+    criticalAlertUk = `АВТОМАТИЧНЕ ЗАСТЕРЕЖЕННЯ З БЕЗПЕКИ: «Виявлено високий рівень ризику Зіткнення/Контакту (R = ${riskIndex.toFixed(1)}). Для нівелювання вимагається: 1) Встановити програмний ліміт швидкості катерів у басейні порту до 10 вузлів; 2) Обов’язкове дублювання візуального спостереження другим членом екіпажу з прямим доступом до радара» (Рекомендації розслідування MAIIS SI-MAIIS-SR004-2026 та SR005-2026).`;
+    criticalAlertEn = `AUTOMATED SAFETY WARNING: «High risk level of Collision/Contact detected (R = ${riskIndex.toFixed(1)}). Mandatory mitigation required: 1) Enforce software speed limit for pilot boats in port basins <= 10 knots; 2) Mandatory dual visual lookout by second crew member with direct radar display access» (MAIIS Investigation Recommendations SI-MAIIS-SR004-2026 & SR005-2026).`;
   }
 
   // Automated preventive mitigation rules generator
@@ -1688,8 +1769,8 @@ export function calculatePortBasinRisk(factors = {}, options = {}) {
     mitigationRules.push({
       ruleId: "RULE-RADAR-OPTICS-03",
       standard: "IMO MSC.192(79) & SOLAS V/19",
-      actionUk: "Налаштовувати шкалу суднового радара на 0.5–0.75 милі при вході в басейн; обладнати службові катери тепловізорами FLIR для подолання берегового засвічення.",
-      actionEn: "Set marine radar range to 0.5-0.75 nm in basin; equip fast craft with thermal night cameras (FLIR).",
+      actionUk: "Налаштовувати шкалу суднового радара на 0.5–0.75 милі при вході в басейн; перевіряти наявність об'єктів на плотері згідно з актуальними картами.",
+      actionEn: "Set marine radar range to 0.5-0.75 nm in basin; verify plotter buoy display suitability with official charts.",
       priority: "HIGH"
     });
   }
@@ -1714,12 +1795,12 @@ export function calculatePortBasinRisk(factors = {}, options = {}) {
     });
   }
 
-  if (factors.routineComplacency || mitigationRules.length === 0) {
+  if (factors.trainingOrOrgDeficiency || factors.routineComplacency || mitigationRules.length === 0) {
     mitigationRules.push({
       ruleId: "RULE-SOP-CHECKLIST-06",
-      standard: "ISM Code Section 7 & VTS Monitoring",
-      actionUk: "Впровадити обов'язковий електронний чек-лист виходу катера в басейн та інтегрувати VTS-моніторинг швидкісного режиму службових суден.",
-      actionEn: "Implement digital pre-departure checklist and real-time VTS speed telemetry enforcement.",
+      standard: "ISM Code Section 7 & MAIIS SR003-2026",
+      actionUk: "Впровадити документовану відстежувану систему тренінгів та обов'язковий чек-лист виходу катера в басейн.",
+      actionEn: "Implement documented traceable training system and pre-departure basin checklist.",
       priority: "MEDIUM"
     });
   }
@@ -1732,6 +1813,8 @@ export function calculatePortBasinRisk(factors = {}, options = {}) {
     riskCategoryLabelUk,
     riskCategoryLabelEn,
     riskColor,
+    criticalAlertUk,
+    criticalAlertEn,
     mitigationRules
   };
 }
@@ -1758,31 +1841,34 @@ export function generatePythonAssignmentScript(record = KP965_GISIS_RECORD, risk
   return `# -*- coding: utf-8 -*-
 """
 Maritime Navigation Risk Assessment & ECFA Investigation Model
-Case Study: Pilot Boat KP-965 Allision (Port of Koper, Basin I)
+Case Study: Pilot Boat KP-965 Allision (Port of Koper, Basin I, 14.04.2026)
 Standards: IMO MSC-MEPC.3/Circ.4/Rev.1 (Appendix 5), IMO Res. A.1075(28), IMO FSA MSC-MEPC.2/Circ.12
 Coursework: Automated Risk Assessment & Preventative Measures for Internal Waterways and Port Basins
 Author: Cadet Roman Nalapko (Danube Institute of NU "OMA", Group 511)
+Investigation Reference: MAIIS SI-2026-002821 / IMO GISIS C1001092
 """
 
 import json
-import matplotlib.pyplot as plt
-import numpy as np
 
-# 1. Standardized IMO GISIS Digitized Record (MSC-MEPC.3/Circ.4/Rev.1)
+# 1. Standardized IMO GISIS Digitized Record (MSC-MEPC.3/Circ.4/Rev.1 Appendix 5)
 GISIS_RECORD = {
     "casualty_id": "${record.casualtyId}",
+    "occurrence_id": "KP-965-2026-002821",
+    "date_time_local": "${record.timeLocal}",
+    "date_time_utc": "${record.timeUtc}",
     "vessel_name": "${record.vessel.name}",
     "vessel_type": "${record.vessel.type}",
     "voyage_speed_knots": ${record.vessel.voyageSpeedKnots},
-    "location_code_t3": ${record.location.code},  # Table 3: Port
+    "location_code_t3": ${record.location.code},  # Table 3: Port / Basin I
     "location_description": "${record.location.description}",
+    "coordinates": {"lat": ${record.location.coordinates.lat}, "lon": ${record.location.coordinates.lon}},
     "casualty_event_code_t4": ${record.casualtyEvent.code},  # Table 4: Contact with fixed/floating object
-    "severity_code_t5": ${record.severity.code},  # Table 5: Marine casualty (Incapacitation >72h / Serious damage)
-    "accident_event_code_t16": ${record.accidentEvent.code},  # Table 16: Human erroneous action
+    "severity_code_t5": ${record.severity.code},  # Table 5: Marine casualty (Damage to hull and propellers)
+    "accident_event_code_t16": ${record.accidentEvent.code},  # Table 16: Human erroneous action / Equipment failure
     "environmental": {
         "sea_state_t6": ${record.environmentalFactors.seaState.code},  # Calm rippled
-        "wind_force_t7": ${record.environmentalFactors.windForce.code},  # Light breeze
-        "visibility_t9": ${record.environmentalFactors.visibility.code},  # Good visibility with shore glare
+        "wind_force_t7": ${record.environmentalFactors.windForce.code},  # Light breeze (3.7 m/s ENE)
+        "visibility_t9": ${record.environmentalFactors.visibility.code},  # Good (21 km), shore light glare
         "light_condition_t10": ${record.environmentalFactors.lightCondition.code}  # Darkness / Night
     },
     "error_types_t19": [${record.errorTypes.map((e) => e.code).join(", ")}],  # 1: Observation, 3: Planning, 4: Action
@@ -1795,17 +1881,17 @@ GISIS_RECORD = {
 def calculate_port_basin_risk(factors, severity_code=3):
     """
     Computes risk score R = Probability (P) x Severity (S)
-    P is clamped to [1.0, 5.0]; S is in [1, 5].
-    Risk Classification (ALARP):
+    P is clamped to [1.0, 5.0]; S is in [1, 5] (Table 5).
+    Classification:
       - Green:  R < 6.0   (Acceptable)
       - Amber:  6 <= R < 10 (ALARP - Tolerable with mitigation)
-      - Red:    R >= 10.0 (Unacceptable / Critical)
+      - Red:    R >= 10.0 (CRITICAL - Mandatory Safety Mitigation)
     """
     p_score = 1.0
     if factors.get("excess_speed", False):
         p_score += 2.0
     if factors.get("single_lookout", False):
-        p_score += 1.5
+        p_score += 2.0
     if factors.get("circadian_fatigue", False):
         p_score += 1.0
     if factors.get("glare_visual_impairment", False):
@@ -1816,6 +1902,8 @@ def calculate_port_basin_risk(factors, severity_code=3):
         p_score += 0.5
     if factors.get("unlit_obstacle", False):
         p_score += 1.0
+    if factors.get("training_deficiency", False):
+        p_score += 1.0
 
     p_score = min(5.0, max(1.0, round(p_score, 1)))
     s_score = min(5, max(1, severity_code))
@@ -1823,39 +1911,72 @@ def calculate_port_basin_risk(factors, severity_code=3):
 
     if r_index >= 10.0:
         category = "CRITICAL (UNACCEPTABLE)"
-        color = "red"
     elif r_index >= 6.0:
         category = "ELEVATED (ALARP)"
-        color = "gold"
     else:
         category = "ACCEPTABLE (LOW)"
-        color = "green"
 
-    return {"P": p_score, "S": s_score, "R": r_index, "category": category, "color": color}
+    # Automated Mitigation Rule generation (Coursework requirement)
+    mitigations = []
+    if r_index >= 10.0 or (factors.get("excess_speed") and factors.get("single_lookout")):
+        mitigations.append(
+            "АВТОМАТИЧНЕ ЗАСТЕРЕЖЕННЯ З БЕЗПЕКИ: «Виявлено високий рівень ризику Зіткнення/Контакту (R = "
+            + str(r_index)
+            + "). Для нівелювання вимагається: 1) Встановити програмний ліміт швидкості катерів у басейні порту до 10 вузлів; "
+            + "2) Обов’язкове дублювання візуального спостереження другим членом екіпажу з прямим доступом до радара»"
+        )
 
-# 3. Evaluate Baseline Case Study (KP-965 Actual Scenario)
+    return {"P": p_score, "S": s_score, "R": r_index, "category": category, "mitigations": mitigations}
+
+# 3. Evaluate Baseline Case Study (KP-965 Actual Incident Parameters)
 kp965_factors = {
-    "excess_speed": True,             # 22.0 kt in Basin I
-    "single_lookout": True,           # Deckhand seated in cabin
-    "circadian_fatigue": True,        # 02:40 LT circadian nadir
-    "glare_visual_impairment": True,  # Shore terminal lighting glare
-    "radar_not_used": True,           # Radar unmonitored / high range
-    "routine_complacency": True,      # Normalization of speed
-    "unlit_obstacle": True            # Buoy 2/I without light/reflector
+    "excess_speed": True,             # ~22.0 kt transit in Basin I
+    "single_lookout": True,           # Ineffective shared lookout (crew seated in cabin)
+    "circadian_fatigue": True,        # 02:16 LT circadian nadir
+    "glare_visual_impairment": True,  # Shore container terminal lighting glare
+    "radar_not_used": True,           # Radar unmonitored / buoy not on plotter
+    "routine_complacency": True,      # Habitual transit routine
+    "unlit_obstacle": True,           # Buoy 2/I unlit and low contrast
+    "training_deficiency": True       # Training system not sufficiently traceable
 }
 
 eval_result = calculate_port_basin_risk(kp965_factors, severity_code=${result.severityCode})
-print("=" * 65)
-print(f"CASE STUDY: {GISIS_RECORD['vessel_name']} ({GISIS_RECORD['casualty_id']})")
-print("=" * 65)
+
+print("=" * 70)
+print(f"CASE STUDY: {GISIS_RECORD['vessel_name']} ({GISIS_RECORD['occurrence_id']})")
+print(f"LOCATION  : {GISIS_RECORD['location_description']} (Coords: {GISIS_RECORD['coordinates']})")
+print("=" * 70)
 print(f"Probability Score (P): {eval_result['P']} / 5.0")
 print(f"Severity Score    (S): {eval_result['S']} / 5.0 (MSC-MEPC.3/Circ.4/Rev.1 Table 5)")
 print(f"Risk Index        (R): {eval_result['R']} (Formula: R = P x S)")
-print(f"Safety Category      : {eval_result['category']}")
-print("=" * 65)
+print(f"Risk Category        : {eval_result['category']}")
+print("-" * 70)
+if eval_result["mitigations"]:
+    print("\\n[!] AUTOMATED PREVENTIVE MITIGATION RULES:")
+    for m in eval_result["mitigations"]:
+        print(f"  * {m}")
+print("=" * 70)
 
-# 4. Generate Matplotlib FSA Risk Matrix (5x5 Heatmap)
-def plot_risk_matrix(p_val, s_val, r_val):
+# 4. Official MAIIS Safety Recommendations (SR003 - SR009)
+MAIIS_RECOMMENDATIONS = [
+    ("SI-MAIIS-SR003-2026", "KOPP d.o.o.", "Establish traceable initial and recurrent training system for operators"),
+    ("SI-MAIIS-SR004-2026", "KOPP d.o.o.", "Implement safe speed operational criteria for internal port basin transits"),
+    ("SI-MAIIS-SR005-2026", "KOPP d.o.o.", "Formally allocate lookout, display monitoring, and hazard warning duties"),
+    ("SI-MAIIS-SR006-2026", "KOPP d.o.o.", "Standardize radar/plotter usage, range selection, and target cross-checking"),
+    ("SI-MAIIS-SR007-2026", "KOPP d.o.o.", "Formalize post-incident procedure: immediate VTS reporting and hull inspection"),
+    ("SI-MAIIS-SR008-2026", "MZIE / URSP", "Update maritime pilotage training regulation to require documented practical verification"),
+    ("SI-MAIIS-SR009-2026", "URSP / BV", "Harmonise minimum pilot boat crew manning to require dedicated second trained crew member")
+]
+
+print("\\nOFFICIAL MAIIS SAFETY RECOMMENDATIONS SUMMARY:")
+for rec_id, entity, summary in MAIIS_RECOMMENDATIONS:
+    print(f"  [{rec_id}] -> {entity}: {summary}")
+
+# 5. Visualize 5x5 IMO FSA Risk Matrix Heatmap with Matplotlib (Optional GUI)
+try:
+    import matplotlib.pyplot as plt
+    import numpy as np
+
     matrix = np.zeros((5, 5))
     for p in range(1, 6):
         for s in range(1, 6):
@@ -1865,31 +1986,28 @@ def plot_risk_matrix(p_val, s_val, r_val):
     cmap = plt.cm.get_cmap("RdYlGn_r")
     cax = ax.imshow(matrix, cmap=cmap, origin="lower", extent=[0.5, 5.5, 0.5, 5.5], vmin=1, vmax=25)
 
-    # Annotate risk scores in cells
     for p in range(1, 6):
         for s in range(1, 6):
             val = p * s
             ax.text(p, s, f"{val}", ha="center", va="center", color="black" if 6 <= val < 15 else "white", fontweight="bold")
 
-    # Plot actual incident point (KP-965)
-    ax.scatter([p_val], [s_val], s=350, c="cyan", edgecolors="black", linewidths=2.5, zorder=5, label=f"KP-965 Incident (R={r_val})")
-
+    ax.scatter([eval_result["P"]], [eval_result["S"]], s=350, c="cyan", edgecolors="black", linewidths=2.5, zorder=5, label=f"KP-965 Incident (R={eval_result['R']})")
     ax.set_xticks(range(1, 6))
     ax.set_yticks(range(1, 6))
     ax.set_xticklabels(["1: Rare", "2: Unlikely", "3: Possible", "4: Likely", "5: Frequent"], fontsize=10)
-    ax.set_yticklabels(["1: Minor", "2: Moderate", "3: Serious", "4: Major", "5: Catastrophic"], fontsize=10)
-    ax.set_xlabel("Probability / Threat Likelihood (P)", fontsize=12, fontweight="bold")
-    ax.set_ylabel("Severity of Consequences (S)", fontsize=12, fontweight="bold")
-    ax.set_title("IMO FSA Risk Matrix: Port Basin Navigation (KP-965)", fontsize=13, fontweight="bold", pad=15)
+    ax.set_yticklabels(["1: Minor (1)", "2: Moderate (2)", "3: Casualty (3)", "4: Major (4)", "5: Very Serious (5)"], fontsize=10)
+    ax.set_xlabel("Probability Likelihood (P = sum(W_i))", fontsize=11, fontweight="bold")
+    ax.set_ylabel("Severity of Consequences (S - Table 5)", fontsize=11, fontweight="bold")
+    ax.set_title("IMO FSA Risk Matrix: Port Basin Navigation (KP-965)", fontsize=12, fontweight="bold", pad=15)
     ax.legend(loc="upper left")
     plt.colorbar(cax, label="Risk Index R = P x S")
     plt.tight_layout()
     plt.show()
-
-if __name__ == "__main__":
-    plot_risk_matrix(eval_result["P"], eval_result["S"], eval_result["R"])
+except ImportError:
+    print("\\n[Note] Install matplotlib and numpy to display graphical 2D risk matrix heatmap: pip install matplotlib numpy")
 `;
 }
+
 
 
 

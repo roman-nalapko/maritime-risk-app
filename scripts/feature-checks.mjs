@@ -431,13 +431,16 @@ assert.ok(KP965_GISIS_RECORD.temporaryPersonFactors.some((f) => f.code === 2), "
 assert.ok(KP965_GISIS_RECORD.operationalFactors.some((f) => f.code === "22.6"), "Must include Table 22 speed awareness factor");
 assert.ok(KP965_GISIS_RECORD.managementFactors.some((f) => f.code === "23.19"), "Must include Table 23 SMS procedures factor");
 
-// ECFA Diagram structure check (IMO Res. A.1075(28))
+// ECFA Diagram structure check (IMO Res. A.1075(28) & MAIIS official report Figure 6)
 const ecfa = KP965_GISIS_RECORD.ecfaDiagram;
 assert.equal(ecfa.events.length, 8, "ECFA must include 8 chronological events (E1..E8)");
 assert.equal(ecfa.accidentEvents.length, 4, "ECFA must include 4 accident events (AE1..AE4)");
-assert.equal(ecfa.contributingFactors.length, 7, "ECFA must include 7 contributing factors (CF1..CF7)");
-assert.equal(ecfa.safetyDeficiencies.length, 6, "ECFA must include 6 safety deficiencies (SD1..SD6)");
+assert.ok(ecfa.casualtyEvent && ecfa.casualtyEvent.id === "CE1", "ECFA must include casualty event (CE1)");
+assert.equal(ecfa.contributingFactors.length, 10, "ECFA must include 10 contributing factors (CF1..CF10)");
+assert.equal(ecfa.safetyDeficiencies.length, 7, "ECFA must include 7 safety deficiencies (SD1..SD7)");
 assert.equal(ecfa.safetyIssues.length, 5, "ECFA must include 5 systemic safety issues (SI1..SI5)");
+assert.equal(ecfa.safetyRecommendations.length, 7, "ECFA must include 7 official MAIIS safety recommendations (SR003..SR009)");
+assert.ok(ecfa.synthesis && ecfa.synthesis.keyFindingUk, "ECFA must include synthesis key finding");
 
 // 26. Test Port Basin Risk Assessment Model (R = P x S)
 const kp965Scenario = calculatePortBasinRisk({
@@ -447,13 +450,15 @@ const kp965Scenario = calculatePortBasinRisk({
   glareVisualImpairment: true,
   radarNotUsed: true,
   routineComplacency: true,
-  unlitObstacle: true
+  unlitObstacle: true,
+  trainingOrOrgDeficiency: true
 }, { severityCode: 3 });
 
 assert.equal(kp965Scenario.probabilityScore, 5.0, "KP-965 compound factors clamp to maximum P = 5.0");
 assert.equal(kp965Scenario.severityCode, 3, "Table 5 severity code for marine casualty is 3");
 assert.equal(kp965Scenario.riskIndex, 15.0, "KP-965 risk score R = 5.0 x 3 = 15.0");
 assert.equal(kp965Scenario.riskCategory, "critical", "R >= 10 must fall in Critical (Unacceptable) risk zone");
+assert.ok(kp965Scenario.criticalAlertUk.includes("АВТОМАТИЧНЕ ЗАСТЕРЕЖЕННЯ З БЕЗПЕКИ:"), "Must generate coursework automated alert string");
 assert.ok(kp965Scenario.mitigationRules.some((r) => r.ruleId === "RULE-BASIN-SPEED-01"), "Must generate speed limit rule <= 10 kt");
 assert.ok(kp965Scenario.mitigationRules.some((r) => r.ruleId === "RULE-DUAL-LOOKOUT-02"), "Must generate dual lookout mandate rule");
 
@@ -464,11 +469,13 @@ const safeScenario = calculatePortBasinRisk({
   glareVisualImpairment: false,
   radarNotUsed: false,
   routineComplacency: false,
-  unlitObstacle: false
+  unlitObstacle: false,
+  trainingOrOrgDeficiency: false
 }, { severityCode: 1 });
 assert.equal(safeScenario.probabilityScore, 1.0, "Zero hazard factors yield base P = 1.0");
 assert.equal(safeScenario.riskIndex, 1.0, "Safe scenario risk score R = 1.0 x 1 = 1.0");
 assert.equal(safeScenario.riskCategory, "acceptable", "R < 6 must be Acceptable");
+assert.equal(safeScenario.criticalAlertUk, null, "Safe scenario must not trigger critical alert");
 
 const elevatedScenario = calculatePortBasinRisk({
   excessSpeed: false,
@@ -477,10 +484,11 @@ const elevatedScenario = calculatePortBasinRisk({
   glareVisualImpairment: false,
   radarNotUsed: false,
   routineComplacency: false,
-  unlitObstacle: false
+  unlitObstacle: false,
+  trainingOrOrgDeficiency: false
 }, { severityCode: 3 });
-assert.equal(elevatedScenario.probabilityScore, 2.5, "Single lookout yields P = 1.0 + 1.5 = 2.5");
-assert.equal(elevatedScenario.riskIndex, 7.5, "R = 2.5 x 3 = 7.5");
+assert.equal(elevatedScenario.probabilityScore, 3.0, "Single lookout yields P = 1.0 + 2.0 = 3.0");
+assert.equal(elevatedScenario.riskIndex, 9.0, "R = 3.0 x 3 = 9.0");
 assert.equal(elevatedScenario.riskCategory, "elevated", "6 <= R < 10 must be Elevated (ALARP)");
 
 // 27. Test Standalone Python Assignment Script Generator
@@ -489,27 +497,35 @@ assert.ok(pyScript.includes("import matplotlib.pyplot as plt"), "Python script m
 assert.ok(pyScript.includes("KP-965"), "Python script must cite KP-965 case study");
 assert.ok(pyScript.includes("calculate_port_basin_risk"), "Python script must implement risk function");
 assert.ok(pyScript.includes("R = P x S"), "Python script must implement FSA risk formula");
+assert.ok(pyScript.includes("SI-MAIIS-SR003-2026"), "Python script must print MAIIS recommendations");
 
 // 28. Test UI & DOM Contract for GISIS IMO & ECFA Module
 assert.ok(htmlContent.includes('id="gisis-ecfa"'), "index.html must have gisis-ecfa section");
 assert.ok(htmlContent.includes('id="port-basin-risk-card"'), "index.html must have port-basin-risk-card");
 assert.ok(htmlContent.includes('id="factor-speed"'), "index.html must have factor-speed checkbox");
 assert.ok(htmlContent.includes('id="factor-lookout"'), "index.html must have factor-lookout checkbox");
+assert.ok(htmlContent.includes('id="factor-training"'), "index.html must have factor-training checkbox");
+assert.ok(htmlContent.includes('id="gisis-critical-alert"'), "index.html must have gisis-critical-alert box");
 assert.ok(htmlContent.includes('id="gisis-severity-select"'), "index.html must have gisis-severity-select");
 assert.ok(htmlContent.includes('id="gisis-risk-display"'), "index.html must have gisis-risk-display");
 assert.ok(htmlContent.includes('id="gisis-mitigation-list"'), "index.html must have gisis-mitigation-list");
 assert.ok(htmlContent.includes('id="ecfa-diagram-card"'), "index.html must have ecfa-diagram-card");
 assert.ok(htmlContent.includes('id="ecfa-diagram-wrap"'), "index.html must have ecfa-diagram-wrap");
 assert.ok(htmlContent.includes('id="ecfa-node-details"'), "index.html must have ecfa-node-details");
+assert.ok(htmlContent.includes('id="ecfa-synthesis-box"'), "index.html must have ecfa-synthesis-box");
+assert.ok(htmlContent.includes('id="maiis-recs-list"'), "index.html must have maiis-recs-list");
 assert.ok(htmlContent.includes('id="gisis-export-card"'), "index.html must have gisis-export-card");
 assert.ok(htmlContent.includes('id="download-gisis-json-btn"'), "index.html must have download-gisis-json-btn");
 assert.ok(htmlContent.includes('id="copy-python-script-btn"'), "index.html must have copy-python-script-btn");
 
 assert.ok(cssContent.includes(".gisis-ecfa-section"), "styles.css must style gisis-ecfa-section");
 assert.ok(cssContent.includes(".port-basin-risk-card"), "styles.css must style port-basin-risk-card");
+assert.ok(cssContent.includes(".gisis-critical-alert-box"), "styles.css must style gisis-critical-alert-box");
 assert.ok(cssContent.includes(".ecfa-diagram-svg"), "styles.css must style ecfa-diagram-svg");
 assert.ok(cssContent.includes(".ecfa-node"), "styles.css must style ecfa-node");
 assert.ok(cssContent.includes(".gisis-risk-critical"), "styles.css must style gisis-risk-critical");
+assert.ok(cssContent.includes(".ecfa-synthesis-box"), "styles.css must style ecfa-synthesis-box");
+assert.ok(cssContent.includes(".maiis-recs-list"), "styles.css must style maiis-recs-list");
 
 assert.ok(appContent.includes("renderPortBasinRisk"), "app.js must implement renderPortBasinRisk");
 assert.ok(appContent.includes("renderEcfaDiagram"), "app.js must implement renderEcfaDiagram");

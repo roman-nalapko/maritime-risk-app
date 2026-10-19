@@ -1071,7 +1071,7 @@
                   <label class="gisis-checkbox-item">
                     <input type="checkbox" id="factor-fatigue" checked />
                     <span class="gisis-checkbox-label">
-                      <strong>Циркадний надир (02:40 LT) та накопичена перевтома</strong>
+                      <strong>Циркадний надир (02:16 LT) та накопичена перевтома</strong>
                       <small>IMO MSC/Circ.1598 / Засинання та сповільнення реакції [+1.0]</small>
                     </span>
                   </label>
@@ -1085,7 +1085,7 @@
                   <label class="gisis-checkbox-item">
                     <input type="checkbox" id="factor-radar" checked />
                     <span class="gisis-checkbox-label">
-                      <strong>Нехтування радаром або надмірне придушення Sea Clutter</strong>
+                      <strong>Нехтування радаром або відсутність буя на екрані плотера</strong>
                       <small>Table 19 Error Type 1 / Радар на шкалі 1.5 милі без контролю дистанції [+1.5]</small>
                     </span>
                   </label>
@@ -1103,6 +1103,13 @@
                       <small>Відсутність активного вогню та пасивного радіолокаційного відбивача [+1.0]</small>
                     </span>
                   </label>
+                  <label class="gisis-checkbox-item">
+                    <input type="checkbox" id="factor-training" checked />
+                    <span class="gisis-checkbox-label">
+                      <strong>Недоліки навчання та відсутність чек-лістів (SOP / Training)</strong>
+                      <small>Tables 22-23 / Відсутність відстежуваних тренінгів та розподілу дій [+1.0]</small>
+                    </span>
+                  </label>
                 </div>
 
                 <div class="gisis-severity-row">
@@ -1111,7 +1118,7 @@
                     <select id="gisis-severity-select">
                       <option value="1">1: Незначний інцидент (Minor incident / без зупинки)</option>
                       <option value="2">2: Серйозний інцидент (Minor damage / без травм)</option>
-                      <option value="3" selected>3: Морська аварія — тяжке травмування / пробоїна (KP-965)</option>
+                      <option value="3" selected>3: Морська аварія — пошкодження корпусу та гвинтів (KP-965)</option>
                       <option value="4">4: Дуже серйозна аварія з конструктивною загибеллю</option>
                       <option value="5">5: Катастрофа / людські жертви або повне затоплення</option>
                     </select>
@@ -1139,6 +1146,14 @@
                   <span>Категорія безпеки</span>
                   <strong id="gisis-risk-badge" class="gisis-risk-critical">Критичний (Неприйнятний)</strong>
                   <small>ALARP критерій</small>
+                </div>
+              </div>
+
+              <div class="gisis-critical-alert-box" id="gisis-critical-alert" role="alert">
+                <div class="alert-icon" aria-hidden="true">⚠️</div>
+                <div class="alert-content">
+                  <strong id="gisis-critical-alert-title">АВТОМАТИЧНЕ ЗАСТЕРЕЖЕННЯ З БЕЗПЕКИ:</strong>
+                  <p id="gisis-critical-alert-text">Виявлено високий рівень ризику Зіткнення/Контакту (R = 15.0). Для нівелювання вимагається: 1) Встановити програмний ліміт швидкості катерів у басейні порту до 10 вузлів; 2) Обов’язкове дублювання візуального спостереження другим членом екіпажу з прямим доступом до радара.</p>
                 </div>
               </div>
 
@@ -1170,6 +1185,7 @@
                 <button type="button" class="ecfa-filter-btn active" data-ecfa-filter="all">Всі рівні</button>
                 <button type="button" class="ecfa-filter-btn" data-ecfa-filter="events">Події (E)</button>
                 <button type="button" class="ecfa-filter-btn" data-ecfa-filter="accident">Аварійні точки (AE)</button>
+                <button type="button" class="ecfa-filter-btn" data-ecfa-filter="casualty">Аварія (CE)</button>
                 <button type="button" class="ecfa-filter-btn" data-ecfa-filter="factors">Фактори (CF)</button>
                 <button type="button" class="ecfa-filter-btn" data-ecfa-filter="deficiencies">Дефіцити (SD)</button>
                 <button type="button" class="ecfa-filter-btn" data-ecfa-filter="issues">Проблеми (SI)</button>
@@ -1198,8 +1214,35 @@
                   </div>
                 </div>
               </div>
+
+              <div class="ecfa-synthesis-box" id="ecfa-synthesis-box">
+                <details class="ecfa-synthesis-details" id="ecfa-synthesis-details">
+                  <summary id="ecfa-synthesis-summary">Офіційні висновки MAIIS та рекомендації з безпеки (SR003–SR009)</summary>
+                  <div class="ecfa-synthesis-content">
+                    <div class="ecfa-synthesis-card">
+                      <span class="synthesis-badge">Ключовий висновок (Key Finding)</span>
+                      <p id="maiis-key-finding">
+                        Навал стався внаслідок поєднання високої швидкості (~22 вузли), запізнілого виявлення небезпеки, неефективного спільного спостереження, зниженого моніторингу траєкторії, обмеженого огляду через розміщення крісла матроса, невикористання навігаційного дисплея як ефективного бар'єра та організаційних прогалин у підготовці, розподілі обов'язків і післяаварійних процедурах.
+                      </p>
+                    </div>
+                    <div class="ecfa-synthesis-card">
+                      <span class="synthesis-badge">Потенціал запобігання (Preventive Potential)</span>
+                      <p id="maiis-preventive-potential">
+                        За умови зниження швидкості внутрішнього переходу, ефективного дублюючого спостереження, кращої перевірки небезпек курсу, чіткого розподілу обов'язків та задокументованої системи тренінгів аварії можна було б запобігти.
+                      </p>
+                    </div>
+                    <div class="ecfa-recommendations-section">
+                      <h5 id="maiis-recommendations-title">Рекомендації з безпеки MAIIS (Safety Recommendations):</h5>
+                      <ul class="maiis-recs-list" id="maiis-recs-list">
+                        <!-- Populated by app.js -->
+                      </ul>
+                    </div>
+                  </div>
+                </details>
+              </div>
             </div>
           </div>
+
 
           <!-- GISIS DIGITAL RECORD & PYTHON SCRIPT EXPORT -->
           <div class="gisis-export-card" id="gisis-export-card">

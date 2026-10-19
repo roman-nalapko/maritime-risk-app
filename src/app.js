@@ -1855,392 +1855,467 @@ const ECFA_NODE_METADATA = {
   },
   E5: {
     category: { uk: "Хронологічна подія", en: "Chronological Event", ru: "Хронологическое событие" },
-    title: { uk: "E5: 02:38 — Наближення до швартовного буя 2/I", en: "E5: 02:38 — Closing on Buoy 2/I", ru: "E5: 02:38 — Сближение со швартовным буем 2/I" },
+    title: { uk: "E5: ~02:16:48 — Навал на буй 2/I лівою вилицею носа", en: "E5: ~02:16:48 — Allision with Buoy 2/I", ru: "E5: ~02:16:48 — Навал на буй 2/I носовой частью" },
     desc: {
-      uk: "Дистанція до неосвітленого буя стрімко скорочувалася без візуального розпізнавання рульовим.",
-      en: "Distance to unlit buoy closed rapidly at 11.3 m/s without visual detection by coxswain.",
-      ru: "Дистанция до неосвещенного буя стремительно сокращалась без визуального распознавания рулевым."
+      uk: "На швидкості близько 22 вузлів катер здійснив контакт лівою вилицею носової частини зі швартовним буєм 2/I у Басейні I.",
+      en: "At ~22 knots pilot boat allided with mooring buoy 2/I with the port bow in Basin I of Port of Koper.",
+      ru: "На скорости около 22 узлов катер совершил навал левой скулой носовой части на швартовный буй 2/I в Бассейне I."
     },
-    ref: "COLREG Rule 5 (Look-out) & IALA Buoyage Guidelines",
+    ref: "MAIIS Final Safety Report & IMO Res. A.1075(28)",
     mitigation: {
-      uk: "Оснащення буїв світлодіодними синхронними проблисковими вогнями та призматичною стрічкою",
-      en: "Retrofit mooring buoys with synchronized solar LED flashers and prism tape",
-      ru: "Оснащение буев светодиодными синхронными огнями и призматической лентой"
+      uk: "Встановлення суворого швидкісного ліміту та забезпечення дублюючого спостереження",
+      en: "Strict port basin speed ceiling and mandatory shared lookout protocol",
+      ru: "Строгий лимит скорости и обязательное дублирующее наблюдение"
     }
   },
   E6: {
     category: { uk: "Хронологічна подія", en: "Chronological Event", ru: "Хронологическое событие" },
-    title: { uk: "E6: 02:39 — Радар без контролю, матрос не спостерігає", en: "E6: 02:39 — Radar unmonitored / Single watch", ru: "E6: 02:39 — Радар без контроля, матрос не ведет наблюдение" },
+    title: { uk: "E6: 02:16:48–02:18:59 — Продовження руху в Басейн I", en: "E6: 02:16:48–02:18:59 — Continuation of Transit", ru: "E6: 02:16:48–02:18:59 — Продолжение движения в Бассейн I" },
     desc: {
-      uk: "Рульовий не звертався до екрана радара, матрос перебував у глибині кабіни без завдань спостереження.",
-      en: "Coxswain neglected radar display; deckhand sat aft in cabin without lookout responsibilities.",
-      ru: "Рулевой не смотрел на экран радара, матрос находился в глубине кабины без обязанностей наблюдения."
+      uk: "Катер продовжив рух; критичних вимикань двигунів чи надходження води всередину виявлено не було.",
+      en: "Pilot boat continued towards Basin I; no immediate disabling damage or water ingress was identified.",
+      ru: "Катер продолжил движение; критических повреждений или поступления воды обнаружено не было."
     },
-    ref: "STCW Section A-VIII/2 (Lookout) & BRM Standards",
+    ref: "MAIIS Safety Deficiency No. 5 & Chapter 2.1 Narrative",
     mitigation: {
-      uk: "Обов'язкове призначення матроса другим впередсмотрящим (Bridge Team Synergy)",
-      en: "Mandate deckhand as dedicated second lookout with radar repeater access",
-      ru: "Обязательное назначение матроса вторым впередсмотрящим"
+      uk: "Обов'язкова процедура негайної зупинки, техогляду та доповіді VTS про факт контакту",
+      en: "Mandatory emergency stop, hull inspection, and immediate VTS occurrence report",
+      ru: "Обязательная процедура немедленной остановки, осмотра и доклада VTS о контакте"
     }
   },
   E7: {
     category: { uk: "Хронологічна подія", en: "Chronological Event", ru: "Хронологическое событие" },
-    title: { uk: "E7: 02:40 — Прямий удар об буй на швидкості 22 вузли", en: "E7: 02:40 — Direct allision at 22 kt", ru: "E7: 02:40 — Прямой удар о буй на скорости 22 узла" },
+    title: { uk: "E7: 02:18:59 — Прибуття до т/х MSC CAITLIN II", en: "E7: 02:18:59 — Arrival at M/V MSC CAITLIN II", ru: "E7: 02:18:59 — Прибытие к т/х MSC CAITLIN II" },
     desc: {
-      uk: "Лобове зіткнення катера зі швартовним буєм 2/I без попереднього гальмування чи відвороту керма.",
-      en: "High-energy direct frontal impact with mooring buoy 2/I without evasive action.",
-      ru: "Лобовое столкновение катера со швартовным буем 2/I без торможения или отворота руля."
+      uk: "Катер прибув до причалу 7A та здійснив планову посадку лоцмана на борт контейнеровоза MSC CAITLIN II.",
+      en: "Arrived at Berth 7A and transferred pilot to container ship M/V MSC CAITLIN II as scheduled.",
+      ru: "Катер прибыл к причалу 7A и осуществил плановую посадку лоцмана на борт контейнеровоза."
     },
-    ref: "MSC-MEPC.3/Circ.4/Rev.1 Table 4 (Code 6: Contact)",
+    ref: "Pilotage Operational Logbook & VTS AIS Archive",
     mitigation: {
-      uk: "Автоматична система звукового/візуального попередження про небезпечне зближення (CPA Alarm)",
-      en: "Install proximity obstacle warning system (CPA/radar guard zone alarm)",
-      ru: "Автоматическая система звукового предупреждения об опасном сближении"
+      uk: "Заборона продовження операцій до проведення технічного обстеження після навалу",
+      en: "Prohibit continuation of commercial service before damage assessment after any contact",
+      ru: "Запрет продолжения операций до проведения технического осмотра после контакта"
     }
   },
   E8: {
     category: { uk: "Хронологічна подія", en: "Chronological Event", ru: "Хронологическое событие" },
-    title: { uk: "E8: 02:42 — Аварійна зупинка, пробоїна, травмування", en: "E8: 02:42 — Emergency stop & injuries", ru: "E8: 02:42 — Аварийная остановка, пробоина, травмы" },
+    title: { uk: "E8: Після швартування — Виявлення пошкоджень", en: "E8: Post-Berthing Damage Assessment", ru: "E8: После швартовки — Обнаружение повреждений" },
     desc: {
-      uk: "Спрацювання аварійних вимикачів, розгерметизація носового відсіку, тяжка торакальна травма рульового.",
-      en: "Engines killed, bow fiberglass breached, coxswain suffered severe thoracic trauma (>72h hospital).",
-      ru: "Остановка двигателей, пробоина носового отсека, тяжелая травма рулевого (>72 ч нетрудоспособности)."
+      uk: "Виявлено пошкодження носового склопластику (GRP). Пізніший технічний огляд виявив погнутий гребний вал та деформацію обох гвинтів.",
+      en: "Damage to port bow GRP laminate identified; technical survey later found one bent shaft and both propellers deformed.",
+      ru: "Обнаружено повреждение носового стеклопластика; позже осмотр выявил погнутый гребной вал и погнутые винты."
     },
-    ref: "MSC-MEPC.3/Circ.4/Rev.1 Table 5 (Code 2: Marine casualty)",
+    ref: "MAIIS Technical Survey & Bureau Veritas Damage Report",
     mitigation: {
-      uk: "Встановлення ременів безпеки на сидіннях екіпажу та посиленого носового кранцевого захисту",
-      en: "Mandate helm seat harness belts and heavy-duty energy-absorbing bow fender",
-      ru: "Установка ремней безопасности на креслах экипажа и усиленного носового привального бруса"
+      uk: "Регламентований підйом на сліп та випробування ліній валопроводу після інцидентів",
+      en: "Formal slipway inspection and shaft alignment test following high-speed impact",
+      ru: "Подъем на слип и проверка центровки валопровода после высокоскоростных ударов"
     }
   },
   AE1: {
     category: { uk: "Аварійна точка (Accident Event)", en: "Accident Event", ru: "Аварийная точка" },
-    title: { uk: "AE1: Перевищення безпечної швидкості (COLREG 6)", en: "AE1: Excessive Speed in Basin (COLREG 6)", ru: "AE1: Превышение безопасной скорости (COLREG 6)" },
+    title: { uk: "AE1: Швартовний буй 2/I розпізнано занадто пізно", en: "AE1: Mooring buoy 2/I recognised too late", ru: "AE1: Швартовный буй 2/I распознан слишком поздно" },
     desc: {
-      uk: "Рух на швидкості 22 вузли у внутрішньому басейні в темряві позбавив екіпаж часу на оцінку ситуації та реакцію.",
-      en: "22-knot speed in confined basin in darkness critically compressed available perception-reaction time.",
-      ru: "Скорость 22 узла во внутреннем бассейне в темноте лишила экипаж времени на реакцию."
+      uk: "Судноводій помітив темний силует буя 2/I лише в останні секунди перед контактом через високу швидкість та нічну засвітку.",
+      en: "Coxswain sighted dark silhouette of mooring buoy 2/I only seconds before impact due to high transit speed and shore glare.",
+      ru: "Судоводитель заметил силуэт буя 2/I лишь за секунды до удара из-за высокой скорости и засветки."
     },
-    ref: "COLREG Rule 6 (Safe Speed in confined waters)",
+    ref: "COLREG Rule 5 & 6 / MAIIS Chapter 2.1",
     mitigation: {
-      uk: "Чіткі граничні ліміти швидкості в СУБ (SMS): максимум 10 вузлів у басейнах порту",
-      en: "Enforceable SMS speed cap: maximum 10 knots within all port basins",
-      ru: "Четкие лимиты скорости в СУБ: не более 10 узлов в бассейнах порта"
+      uk: "Встановлення ліміту швидкості ≤ 10 вузлів у басейні та дублюючий радарний контроль",
+      en: "Enforce <= 10 kt speed limit in basin and mandatory radar cross-checking",
+      ru: "Установка лимита скорости <= 10 узлов в бассейне и дублирующий контроль по радару"
     }
   },
   AE2: {
     category: { uk: "Аварійна точка (Accident Event)", en: "Accident Event", ru: "Аварийная точка" },
-    title: { uk: "AE2: Втрата належного спостереження (COLREG 5)", en: "AE2: Failure of Look-out (COLREG 5)", ru: "AE2: Потеря надлежащего наблюдения (COLREG 5)" },
+    title: { uk: "AE2: Неефективне спільне спостереження та взаємоконтроль", en: "AE2: Ineffective shared lookout and cross-checking", ru: "AE2: Неэффективное совместное наблюдение и взаимоконтроль" },
     desc: {
-      uk: "Порушення обов'язку безперервного всебічного візуального та слухового спостереження всіма наявними засобами.",
-      en: "Failure to maintain continuous all-round look-out by sight and hearing by all available means.",
-      ru: "Нарушение обязанности непрерывного кругового наблюдения всеми доступными средствами."
+      uk: "Матрос сидів на нижчому кріслі з обмеженим оглядом вперед і подав попередження надто пізно; лоцман не брав участі у спостереженні.",
+      en: "Deckhand sat in lower position with restricted forward view and gave late verbal warning; pilot acted merely as passenger.",
+      ru: "Матрос сидел на низком кресле с ограниченным обзором и дал предупреждение слишком поздно; лоцман не участвовал в наблюдении."
     },
-    ref: "COLREG Rule 5 & STCW Chapter VIII",
+    ref: "STCW Section A-VIII/2 (Lookout & BRM)",
     mitigation: {
-      uk: "Подвійне спостереження: заборона одиночної вахти на швидкохідних катерах уночі",
-      en: "Dual lookout mandate: prohibit solo nocturnal high-speed pilot boat transit",
-      ru: "Двойное наблюдение: запрет одиночной вахты на быстроходных катерах ночью"
+      uk: "Офіційне закріплення ролі другого впередсмотрящого з прямим сектором огляду",
+      en: "Formalize role of dedicated second lookout with unobstructed forward sightline",
+      ru: "Официальное закрепление роли второго впередсмотрящего с прямым сектором обзора"
     }
   },
   AE3: {
     category: { uk: "Аварійна точка (Accident Event)", en: "Accident Event", ru: "Аварийная точка" },
-    title: { uk: "AE3: Нехтування радіолокаційним контролем", en: "AE3: Radar Monitoring Omission", ru: "AE3: Пренебрежение радиолокационным контролем" },
+    title: { uk: "AE3: Запізніле зменшення ходу та маневр ухилення", en: "AE3: Late speed reduction and avoidance manoeuvre", ru: "AE3: Запоздалое снижение хода и маневр уклонения" },
     desc: {
-      uk: "Навігаційний радар не використовувався для виявлення навігаційних небезпек за умов погіршеного зорового сприйняття.",
-      en: "Navigational radar was neglected for early obstacle detection in high glare night environment.",
-      ru: "Навигационный радар не использовался для обнаружения опасностей в условиях засветки."
+      uk: "Скидання обертів двигуна та перекладка керма були здійснені в останню мить, не запобігши удару.",
+      en: "Throttle pullback and helm action were initiated at the last instant, failing to prevent a high-energy allision.",
+      ru: "Сброс оборотов и перекладка руля были выполнены в последний момент и не предотвратили удар."
     },
-    ref: "COLREG Rule 5/7 & IMO MSC.192(79)",
+    ref: "COLREG Rule 8 (Action to avoid collision)",
     mitigation: {
-      uk: "Протокол налаштування шкали 0.5–0.75 милі та періодичне тренування на радіолокаційному тренажері",
-      en: "Standardize 0.5-0.75 nm radar scale protocol and conduct simulator radar drills",
-      ru: "Стандартизация шкалы 0.5-0.75 мили и регулярные тренировки на радиолокационном тренажере"
+      uk: "Завчасне зниження швидкості до мінімальної маневрової при вході у внутрішній басейн",
+      en: "Pre-emptive speed reduction to safe maneuvering speed upon basin entry",
+      ru: "Заблаговременное снижение скорости до маневренной при входе в бассейн"
     }
   },
   AE4: {
     category: { uk: "Аварійна точка (Accident Event)", en: "Accident Event", ru: "Аварийная точка" },
-    title: { uk: "AE4: Розрив синергії ходової вахти (BRM failure)", en: "AE4: Watch Team Synergy Failure", ru: "AE4: Разрыв синергии ходовой вахты (BRM)" },
+    title: { uk: "AE4: Удар лівою вилицею носа об швартовний буй 2/I", en: "AE4: Port bow struck mooring buoy 2/I", ru: "AE4: Удар левой скулой носовой части о буй 2/I" },
     desc: {
-      uk: "Повна відсутність координації та перехресного контролю між рульовим та матросом.",
-      en: "Total absence of task allocation and cross-checking redundancy between coxswain and deckhand.",
-      ru: "Полное отсутствие координации и взаимной страховки между рулевым и матросом."
+      uk: "Катер вдарив сталевий буй лівою вилицею, зазнавши пошкодження пластикового корпусу, деформації гвинтів та вала.",
+      en: "Vessel struck mooring buoy with port bow, causing GRP laminate damage, shaft bend, and propeller deformation.",
+      ru: "Катер ударил буй левой скулой, повредив пластиковый корпус, погнув вал и оба винта."
     },
-    ref: "STCW Section A-VIII/2 Part 4-1 (Bridge Resource Management)",
+    ref: "IMO Casualty Code (Res. MSC.255(84))",
     mitigation: {
-      uk: "Впровадження командного тренінгу BRM для екіпажів портофлоту",
-      en: "Implement Bridge Resource Management training for pilot craft crews",
-      ru: "Внедрение командного тренинга BRM для экипажей портового флота"
+      uk: "Оснащення буїв світловідбивачами 3M та демаркація фарватеру у векторних картах",
+      en: "Equip buoys with retroreflective banding and mark hazard zones on electronic charts",
+      ru: "Оснащение буев световозвращающей пленкой и четкая демаркация на электронных картах"
+    }
+  },
+  CE1: {
+    category: { uk: "Аварійна подія (Casualty Event)", en: "Casualty Event", ru: "Аварийное происшествие" },
+    title: { uk: "CE1: Навал катера KP-965 на буй 2/I в Басейні I", en: "CE1: Allision of pilot boat KP-965 with buoy 2/I", ru: "CE1: Навал катера KP-965 на буй 2/I в Бассейне I" },
+    desc: {
+      uk: "Морська аварія (Marine casualty): значні матеріальні збитки корпусу та валопроводу без жертв, травм чи забруднення акваторії.",
+      en: "Marine casualty: material damage to hull laminate and propulsion shaft/propellers without casualties, injuries, or pollution.",
+      ru: "Морская авария: материальный ущерб корпусу и валопроводу без жертв, травм или загрязнения акватории."
+    },
+    ref: "IMO MSC-MEPC.3/Circ.4/Rev.1 Table 5",
+    mitigation: {
+      uk: "Системне виконання всіх 7 офіційних рекомендацій розслідування MAIIS (SR003–SR009)",
+      en: "Systemic implementation of all 7 MAIIS safety recommendations (SR003–SR009)",
+      ru: "Системное выполнение всех 7 официальных рекомендаций расследования MAIIS (SR003–SR009)"
     }
   },
   CF1: {
-    category: { uk: "Фактор сприяння (Human)", en: "Contributing Factor (Human)", ru: "Способствующий фактор (Человеческий)" },
-    title: { uk: "CF1: Циркадна втома (02:40 LT)", en: "CF1: Circadian Nadir Fatigue", ru: "CF1: Циркадная усталость (02:40 LT)" },
+    category: { uk: "Фактор сприяння (Operational)", en: "Contributing Factor (Operational)", ru: "Способствующий фактор (Операционный)" },
+    title: { uk: "CF1: Висока швидкість у стиснених водах (~21–22 вузли)", en: "CF1: High transit speed in confined waters", ru: "CF1: Высокая скорость в стесненных водах" },
     desc: {
-      uk: "Інцидент стався у пік фізіологічної сонливості (circadian nadir) після серії нічних чергувань.",
-      en: "Occurred during biological trough of alertness (02:00-05:00) with chronic sleep debt.",
-      ru: "Инцидент произошел на спаде бдительности (02:40) на фоне накопившегося недосыпа."
+      uk: "Перехід на швидкості ~21–22 вузли у нічний час у внутрішньому басейні критично скоротив час реакції екіпажу.",
+      en: "High transit speed (~21-22 kt) in confined port waters critically compressed reaction and stopping distance.",
+      ru: "Переход на скорости ~21–22 узла в ночное время критически сократил время реакции экипажа."
     },
-    ref: "IMO MSC/Circ.1598 (Fatigue Guidelines)",
+    ref: "COLREG Rule 6 (Safe Speed) & MAIIS Finding 1",
     mitigation: {
-      uk: "Обмеження послідовних нічних вахт до максимум 2 діб підряд",
-      en: "Limit consecutive night duties to maximum 2 nights per rotation",
-      ru: "Ограничение ночных смен подряд до максимума в 2 ночи"
+      uk: "Встановлення чіткого операційного ліміту швидкості ≤ 10 вузлів у басейнах порту",
+      en: "Enforce operational speed limit <= 10 knots within all port basins",
+      ru: "Установка четкого лимита скорости <= 10 узлов в бассейнах порта"
     }
   },
   CF2: {
-    category: { uk: "Фактор сприяння (Environmental)", en: "Contributing Factor (Environmental)", ru: "Способствующий фактор (Среда)" },
-    title: { uk: "CF2: Берегове оптичне засвічення", en: "CF2: Shore Lighting Glare", ru: "CF2: Береговая оптическая засветка" },
+    category: { uk: "Фактор сприяння (Human)", en: "Contributing Factor (Human)", ru: "Способствующий фактор (Человеческий)" },
+    title: { uk: "CF2: Тимчасова втрата активного контролю маршруту", en: "CF2: Temporary loss of active route monitoring", ru: "CF2: Временная потеря активного контроля маршрута" },
     desc: {
-      uk: "Потужні прожектори причалів створили високий фоновий шум, знецінивши оптичний контраст темного буя.",
-      en: "High-mast container terminal lighting degraded water-surface contrast against dark buoy silhouette.",
-      ru: "Прожекторы причалов создали сильную световую помеху, скрыв силуэт неосвещенного буя."
+      uk: "Судноводій тимчасово втратив пильність за курсом, що призвело до запізнілого виявлення небезпеки.",
+      en: "Temporary loss of active route monitoring and delayed hazard recognition by the operator.",
+      ru: "Судоводитель временно потерял активный контроль маршрута, что привело к запоздалому обнаружению опасности."
     },
-    ref: "MSC-MEPC.3/Circ.4/Rev.1 Table 9 (Visibility / Glare)",
+    ref: "COLREG Rule 5 & MSC-MEPC.3/Circ.4/Rev.1 Table 20",
     mitigation: {
-      uk: "Спрямування берегових прожекторів суворо на вантажну зону без засвічення фарватеру",
-      en: "Shield and aim terminal floodlights downward to eliminate fairway blinding",
-      ru: "Экранирование береговых прожекторов вниз без засветки судового хода"
+      uk: "Впровадження практики коротких брифінгів та безперервного курсового моніторингу",
+      en: "Institute pre-transit departure brief and continuous heading monitoring",
+      ru: "Внедрение предпоходовых инструктажей и непрерывного контроля курса"
     }
   },
   CF3: {
-    category: { uk: "Фактор сприяння (Technical)", en: "Contributing Factor (Technical)", ru: "Способствующий фактор (Техника)" },
-    title: { uk: "CF3: Сліпий сектор через диферент", en: "CF3: Bow Blind Sector at 22 kt", ru: "CF3: Слепой сектор из-за дифферента" },
+    category: { uk: "Фактор сприяння (Workplace)", en: "Contributing Factor (Workplace)", ru: "Способствующий фактор (Рабочее место)" },
+    title: { uk: "CF3: Обмежений огляд через розміщення крісла матроса", en: "CF3: Limited forward visibility from deckhand seat", ru: "CF3: Ограниченный обзор из-за расположения кресла" },
     desc: {
-      uk: "На швидкості 22 вузли ніс катера задерся догори, заблокувавши огляд поверхні води на дистанції до 80 метрів.",
-      en: "Stern trim during planing at 22 kt created forward blind sector obscuring surface for 80m.",
-      ru: "Дифферент на корму на скорости 22 узла создал слепую зону перед носом до 80 метров."
+      uk: "Низьке положення другого крісла в кабіні обмежувало прямий сектор огляду поверхні води перед носом судна.",
+      en: "Lower seating arrangement of additional trained person restricted forward sightline to surface.",
+      ru: "Низкое положение второго кресла ограничивало обзор поверхности воды перед носом катера."
     },
-    ref: "IMO Res. MSC.252(83) (Bridge Ergonomics)",
+    ref: "MAIIS Investigation Report Chapter 2.4 / Bridge Ergonomics",
     mitigation: {
-      uk: "Регулювання інтерцепторів/транцевих плит та підвищення посадки рульового",
-      en: "Install auto-trim tabs / interceptors and optimize helm seating elevation",
-      ru: "Установка автоматических транцевых плит и регулировка высоты кресла рулевого"
+      uk: "Модернізація ергономіки містка: регульоване підвищене крісло другого спостерігача",
+      en: "Ergonomic helm refit: elevated adjustable observation seat for second lookout",
+      ru: "Модернизация эргономики: приподнятое кресло для второго наблюдателя"
     }
   },
   CF4: {
-    category: { uk: "Фактор сприяння (Infrastructure)", en: "Contributing Factor (Infrastructure)", ru: "Способствующий фактор (Инфраструктура)" },
-    title: { uk: "CF4: Неосвітлений буй без відбивача", en: "CF4: Unlit Buoy / No Reflector", ru: "CF4: Неосвещенный буй без отражателя" },
+    category: { uk: "Фактор сприяння (Human)", en: "Contributing Factor (Human)", ru: "Способствующий фактор (Человеческий)" },
+    title: { uk: "CF4: Неефективне спільне спостереження (BRM)", en: "CF4: Ineffective shared lookout / BRM", ru: "CF4: Неэффективное совместное наблюдение (BRM)" },
     desc: {
-      uk: "Швартовний буй 2/I не мав активного світлового вогню та пасивного радіолокаційного кутового відбивача.",
-      en: "Mooring buoy 2/I lacked active light signal and passive radar corner reflector.",
-      ru: "Швартовный буй 2/I не имел светового сигнала и радиолокационного отражателя."
+      uk: "Відсутність скоординованої взаємодії: лоцман перебував на борту лише як пасажир без обов'язків спостереження.",
+      en: "Ineffective Bridge Resource Management; pilot onboard acted as passive passenger without safety role.",
+      ru: "Неэффективный BRM: находящийся на борту лоцман вел себя как пассажир без обязанностей наблюдения."
     },
-    ref: "IALA Guideline G1062 & AtoN Standards",
+    ref: "STCW Section A-VIII/2 Part 4-1 (BRM Principles)",
     mitigation: {
-      uk: "Оснащення всіх внутрішніх буїв світловідбивачами 3M Diamond Grade та автономними маячками",
-      en: "Equip all basin buoys with Diamond Grade tape and autonomous solar lanterns",
-      ru: "Оснащение всех буев световозвращающей пленкой и автономными фонарями"
+      uk: "Стандартизація протоколу командного моніторингу навігаційних загроз під час лоцманських операцій",
+      en: "Standardize team threat-monitoring protocol during all pilot boat movements",
+      ru: "Стандартизация командного мониторинга угроз во время лоцманских операций"
     }
   },
   CF5: {
-    category: { uk: "Фактор сприяння (Human)", en: "Contributing Factor (Human)", ru: "Способствующий фактор (Человеческий)" },
-    title: { uk: "CF5: Рутинна самовпевненість", en: "CF5: Route Complacency", ru: "CF5: Рутинная самоуверенность" },
+    category: { uk: "Фактор сприяння (Technical)", en: "Contributing Factor (Technical)", ru: "Способствующий фактор (Техника)" },
+    title: { uk: "CF5: Радар/плотер не спрацював як бар'єр безпеки", en: "CF5: Radar/plotter not an effective barrier", ru: "CF5: Радар/плоттер не сработал как барьер" },
     desc: {
-      uk: "Сотні успішних проходів цим маршрутом сформували хибне відчуття повної безпеки (Нормалізація ризику).",
-      en: "Repeated successful transits generated complacency and erosion of vigilance.",
-      ru: "Сотни успешных переходов по знакомому маршруту привели к притуплению бдительности."
+      uk: "Буй 2/I був відсутній на електронному плотері катера в день події; радар не контролювався безперервно.",
+      en: "Mooring buoy 2/I was not displayed on plotter screen on occurrence day; radar was not actively monitored.",
+      ru: "Буй 2/I не отображался на плоттере катера в день аварии; радар не контролировался непрерывно."
     },
-    ref: "MSC-MEPC.3/Circ.4/Rev.1 Table 20 (Code 4: Inattention)",
+    ref: "IMO Res. MSC.192(79) & IEC 62288",
     mitigation: {
-      uk: "Впровадження практики коротких брифінгів перед переходом (Pre-transit briefing)",
-      en: "Mandate brief pre-transit hazard checklists before departing berth or ship",
-      ru: "Внедрение кратких предпоходовых инструктажей и чек-листов"
+      uk: "Щоденна звірка електронних карт та постійне радіолокаційне супроводження об'єктів у басейні",
+      en: "Daily electronic chart verification and continuous radar tracking in port basins",
+      ru: "Ежедневная сверка электронных карт и непрерывный радиолокационный контроль в бассейне"
     }
   },
   CF6: {
     category: { uk: "Фактор сприяння (Organizational)", en: "Contributing Factor (Organizational)", ru: "Способствующий фактор (Организация)" },
-    title: { uk: "CF6: Пасивна роль матроса", en: "CF6: Inactive Deckhand Role", ru: "CF6: Пассивная роль матроса" },
+    title: { uk: "CF6: Недокументована система підготовки персоналу", en: "CF6: Lack of documented training traceability", ru: "CF6: Недокументированная подготовка персонала" },
     desc: {
-      uk: "Матрос сприймався як виконавець суто швартовних операцій і не мав обов'язку вести спостереження.",
-      en: "Deckhand was viewed solely as mooring hand with no operational lookout duty during transit.",
-      ru: "Матрос воспринимался исключительно как швартовщик и не привлекался к наблюдению."
+      uk: "Навчання та періодична оцінка існували на практиці, але не мали формалізованого обліку та перевірки навичок.",
+      en: "Training and recurrent assessments lacked structured documentation, objective verification, and traceability.",
+      ru: "Подготовка и проверка навыков велись на практике, но не имели формализованного учета."
     },
-    ref: "STCW Table A-II/4 (Lookout certification)",
+    ref: "ISM Code Section 6 (Resources and Personnel)",
     mitigation: {
-      uk: "Внесення функцій спостерігача до посадової інструкції матроса катера",
-      en: "Revise job description to formally mandate active watchkeeping duties",
-      ru: "Внесение обязанностей наблюдателя в должностную инструкцию матроса"
+      uk: "Створення сертифікованої матриці компетентності та журналу практичних тренінгів екіпажу",
+      en: "Implement certified competence matrix and traceable practical training logs",
+      ru: "Создание сертифицированной матрицы компетентности и журнала тренингов экипажа"
     }
   },
   CF7: {
-    category: { uk: "Фактор сприяння (Technical)", en: "Contributing Factor (Technical)", ru: "Способствующий фактор (Техника)" },
-    title: { uk: "CF7: Некоректне налаштування радара", en: "CF7: Suboptimal Radar Tuning", ru: "CF7: Некорректная настройка радара" },
+    category: { uk: "Фактор сприяння (Organizational)", en: "Contributing Factor (Organizational)", ru: "Способствующий фактор (Организация)" },
+    title: { uk: "CF7: Неформалізований розподіл завдань і зв'язку", en: "CF7: Unformalized task allocation & communication", ru: "CF7: Неформализованное распределение задач" },
     desc: {
-      uk: "Шкала 1.5 милі була завеликою для басейну, а придушення хвиль відфільтрувало низький відбиток буя.",
-      en: "Range scale 1.5 nm too broad for basin; heavy anti-clutter suppression filtered weak buoy echo.",
-      ru: "Шкала 1.5 мили слишком велика для бассейна; подавление волн стерло слабый эхо-сигнал буя."
+      uk: "Обов'язки матроса щодо спостереження та регламент доповіді про небезпеки не були формально закріплені.",
+      en: "Deckhand watchkeeping duties and hazard reporting protocol were not formalized in operating procedures.",
+      ru: "Обязанности матроса по наблюдению и порядок доклада об опасностях не были закреплены."
     },
-    ref: "IMO Res. MSC.192(79) Radar Standards",
+    ref: "STCW Code Table A-II/4 & SMS Operating Procedures",
     mitigation: {
-      uk: "Автоматичний пресет 'Port Basin' з шкалою 0.5 милі та оптимізованим посиленням",
-      en: "Create 'Port Basin' radar preset locked to 0.5 nm range with calibrated gain",
-      ru: "Создание пресета 'Port Basin' с масштабом 0.5 мили и калиброванным усилением"
+      uk: "Затвердження СОП з чітким протоколом голосових доповідей про плавучі перешкоди",
+      en: "Approve SOP with standardized verbal callout protocol for floating obstacles",
+      ru: "Утверждение СОП с четким протоколом голосовых докладов о плавучих препятствиях"
+    }
+  },
+  CF8: {
+    category: { uk: "Фактор сприяння (Human)", en: "Contributing Factor (Human)", ru: "Способствующий фактор (Человеческий)" },
+    title: { uk: "CF8: Зниження пильності через нічний час (02:16 LT)", en: "CF8: Reduced alertness / circadian nadir", ru: "CF8: Снижение бдительности в ночное время" },
+    desc: {
+      uk: "Інцидент стався у пік біологічного спаду активності людини (циркадний надир 02:00–04:00), що знизило швидкість реакції.",
+      en: "Occurrence coincided with circadian trough of physiological alertness, depressing reaction speed.",
+      ru: "Происшествие совпало с циркадным спадом активности (02:16 LT), что снизило скорость реакции."
+    },
+    ref: "IMO MSC/Circ.1598 (Fatigue Mitigation Guidelines)",
+    mitigation: {
+      uk: "Наукове планування змін з обмеженням тривалості нічних чергувань та ротацією вахт",
+      en: "Bio-mathematical fatigue roster scheduling limiting consecutive night operations",
+      ru: "Научное планирование смен с ограничением продолжительности ночных дежурств"
+    }
+  },
+  CF9: {
+    category: { uk: "Фактор сприяння (Management)", en: "Contributing Factor (Management)", ru: "Способствующий фактор (Менеджмент)" },
+    title: { uk: "CF9: Недостатній операційний контроль транзитів біля буїв", en: "CF9: Inadequate risk controls near mooring buoys", ru: "CF9: Недостаточный контроль транзитов около буев" },
+    desc: {
+      uk: "Оцінка ризиків компанії не враховувала небезпеку швидкісного проходження поруч зі швартовними буями в темряві.",
+      en: "Company risk assessment omitted high-speed internal transits adjacent to unlit mooring buoys at night.",
+      ru: "Оценка рисков компании не учитывала опасность быстроходных транзитов возле буев в темноте."
+    },
+    ref: "ISM Code Section 1.2.2.2 (Risk Assessment)",
+    mitigation: {
+      uk: "Комплексна ревізія матриці ризиків акваторії порту з встановленням охоронних зон навколо буїв",
+      en: "Comprehensive port basin risk assessment establishing safe buffer zones around mooring buoys",
+      ru: "Комплексная ревизия матрицы рисков порта с установлением буферных зон вокруг буев"
+    }
+  },
+  CF10: {
+    category: { uk: "Фактор сприяння (Organizational)", en: "Contributing Factor (Organizational)", ru: "Способствующий фактор (Организация)" },
+    title: { uk: "CF10: Відсутність процедури дій після інциденту", en: "CF10: Lack of post-occurrence action procedure", ru: "CF10: Отсутствие процедуры действий после аварии" },
+    desc: {
+      uk: "Не було регламенту негайної зупинки, доповіді VTS та оцінки пошкоджень перед продовженням руху.",
+      en: "No procedure governed immediate stop, VTS occurrence reporting, or hull assessment before resuming transit.",
+      ru: "Отсутствовал регламент немедленной остановки, доклада VTS и осмотра корпуса перед продолжением движения."
+    },
+    ref: "MAIIS Safety Deficiency No. 6 & IMO Res. A.1075(28)",
+    mitigation: {
+      uk: "Обов'язковий чеклист дій після контакту: зупинка, перевірка трюмів, доповідь диспетчеру порту",
+      en: "Mandatory post-contact checklist: emergency stop, bilge inspection, instant harbor master notification",
+      ru: "Обязательный чеклист действий после контакта: остановка, осмотр трюмов, доклад диспетчеру"
     }
   },
   SD1: {
     category: { uk: "Системний дефіцит", en: "Safety Deficiency", ru: "Системный дефицит" },
-    title: { uk: "SD1: Відсутність швидкісного ліміту в СУБ", en: "SD1: Missing SMS Speed Regulation", ru: "SD1: Отсутствие лимита скорости в СУБ" },
+    title: { uk: "SD1: Недостатні вимоги контролю швидкості в порту", en: "SD1: Insufficient port speed management controls", ru: "SD1: Недостаточный контроль скорости в порту" },
     desc: {
-      uk: "Система управління безпекою лоцманської служби не містила конкретних обмежень швидкості катерів.",
-      en: "SMS manual lacked quantitative speed thresholds for internal port waters.",
-      ru: "Система управления безопасностью лоцманской службы не содержала лимитов скорости."
+      uk: "Операційні вимоги СУБ щодо безпечної швидкості та контролю руху катерів у внутрішніх басейнах порту були відсутні.",
+      en: "Operational SMS requirements for speed management and safe transit of pilot craft in internal port were inadequate.",
+      ru: "Операционные требования СУБ по безопасной скорости катеров во внутренних бассейнах порта отсутствовали."
     },
-    ref: "ISM Code Section 7 & Port Bylaws",
+    ref: "MAIIS Safety Deficiency No. 1 / Recommendation SR004",
     mitigation: {
-      uk: "Затвердити директиву СУБ: максимум 10 вузлів у басейні I для всіх службових катерів",
-      en: "Formalize SMS operational directive enforcing 10 kt maximum in Basin I",
-      ru: "Утвердить директиву СУБ: максимум 10 узлов в бассейне I для служебных катеров"
+      uk: "Впровадження обов'язкового швидкісного регламенту ≤ 10 вузлів для службових катерів у басейнах",
+      en: "Enforce formal operational directive: <= 10 knots speed cap for service craft in basins",
+      ru: "Внедрение регламента: ограничение скорости <= 10 узлов для служебных катеров в бассейнах"
     }
   },
   SD2: {
     category: { uk: "Системний дефіцит", en: "Safety Deficiency", ru: "Системный дефицит" },
-    title: { uk: "SD2: Відсутність СОП щодо спостереження", en: "SD2: Lack of Watchkeeping SOP", ru: "SD2: Отсутствие СОП по наблюдению" },
+    title: { uk: "SD2: Відсутність документованої системи тренінгів", en: "SD2: Lack of documented training system", ru: "SD2: Отсутствие документированной системы тренингов" },
     desc: {
-      uk: "Не було стандартної операційної процедури щодо розподілу ролей на містку катера у нічний час.",
-      en: "Absence of formalized standard operating procedure for bridge team cooperation.",
-      ru: "Отсутствие стандартной операционной процедуры распределения ролей на катере ночью."
+      uk: "Відсутня надійна документована система початкового, періодичного та практичного навчання судноводіїв і матросів.",
+      en: "No reliable documented system for initial, recurrent and practical verification training for crews.",
+      ru: "Отсутствует надежная документированная система начальной и периодической подготовки экипажей."
     },
-    ref: "STCW A-VIII/2 & ISM Code Section 6",
+    ref: "MAIIS Safety Deficiency No. 2 / Recommendations SR003 & SR008",
     mitigation: {
-      uk: "Розробка СОП 'Нічні переходи катерів' з чек-листом взаємодії екіпажу",
-      en: "Issue SOP 'Night Pilot Craft Transits' with bridge interaction checklist",
-      ru: "Разработка СОП 'Ночные переходы катеров' с чек-листом взаимодействия"
+      uk: "Розробка стандартизованої програми тренажерної підготовки з маневрування у стиснених водах",
+      en: "Develop standardized simulator training curriculum for confined basin maneuvering",
+      ru: "Разработка стандартизированной программы тренажерной подготовки в стесненных водах"
     }
   },
   SD3: {
     category: { uk: "Системний дефіцит", en: "Safety Deficiency", ru: "Системный дефицит" },
-    title: { uk: "SD3: Відсутність нічних симуляторних тренінгів", en: "SD3: Lack of Simulation Training", ru: "SD3: Отсутствие тренажерной подготовки" },
+    title: { uk: "SD3: Відсутність формалізованого розподілу обов'язків", en: "SD3: Unformalized allocation of lookout duties", ru: "SD3: Неформализованное распределение обязанностей" },
     desc: {
-      uk: "Екіпажі катерів не проходили регулярні тренінги з навігації в умовах оптичного засвічення порту.",
-      en: "Boat crews received no periodic simulator training for high-glare nocturnal navigation.",
-      ru: "Экипажи катеров не проходили тренировок по ночной навигации в условиях засветки."
+      uk: "Відсутній офіційний документований розподіл обов'язків спостереження, підтримки та зв'язку під час переходів.",
+      en: "No formal documented allocation of lookout, support and communication duties during fast transits.",
+      ru: "Отсутствует официальное распределение обязанностей наблюдения и взаимной поддержки."
     },
-    ref: "STCW Section B-I/12 (Simulator Guidance)",
+    ref: "MAIIS Safety Deficiency No. 3 / Recommendations SR005 & SR009",
     mitigation: {
-      uk: "Щорічні тренажерні курси з маневрування катерів у стиснених водах порту",
-      en: "Annual full-mission simulator drills on confined basin night pilotage",
-      ru: "Ежегодные курсы на тренажере по маневрированию катеров в стесненных водах"
+      uk: "Внесення функцій другого впередсмотрящого до посадових інструкцій екіпажів катерів",
+      en: "Formalize secondary lookout responsibilities in crew job descriptions and watch bills",
+      ru: "Внесение функций второго наблюдателя в должностные инструкции экипажей катеров"
     }
   },
   SD4: {
     category: { uk: "Системний дефіцит", en: "Safety Deficiency", ru: "Системный дефицит" },
-    title: { uk: "SD4: Відсутність контролю швидкості з боку VTS", en: "SD4: Absence of VTS Speed Enforcement", ru: "SD4: Отсутствие контроля скорости VTS" },
+    title: { uk: "SD4: Нестандартизоване використання радара/плотера", en: "SD4: Unstandardized radar/plotter utilization", ru: "SD4: Нестандартизированное использование радара" },
     desc: {
-      uk: "Система VTS порту контролювала лише великі морські судна, ігноруючи швидкість службових плавзасобів.",
-      en: "VTS radar tracked only commercial merchant ships, overlooking auxiliary service craft.",
-      ru: "Служба VTS контролировала только крупные суда, игнорируя служебные катера."
+      uk: "Використання радіолокатора/плотера, виявлення небезпек та перехресна перевірка курсу не стандартизовані.",
+      en: "Radar/plotter use, hazard awareness, and route cross-checking are not standardized or supervised.",
+      ru: "Использование радара и плоттера, обнаружение угроз и контроль курса не стандартизированы."
     },
-    ref: "IMO Res. A.1158(32) (VTS Guidelines)",
+    ref: "MAIIS Safety Deficiency No. 4 / Recommendation SR006",
     mitigation: {
-      uk: "Налаштування в системі VTS порту автоматичного алерту перевищення швидкості службовими суднами",
-      en: "Configure automated VTS speed violation alerts for pilot and auxiliary craft",
-      ru: "Настройка в системе VTS автоматического алерта о превышении скорости катерами"
+      uk: "Впровадження СОП з налаштування радарних шкал (0.5–0.75 NM) та постійного плотерного супроводу",
+      en: "Implement SOP mandating 0.5-0.75 NM radar range scales and active chart cross-check",
+      ru: "Внедрение СОП по настройке шкал радара (0.5-0.75 мили) и контролю плоттера"
     }
   },
   SD5: {
     category: { uk: "Системний дефіцит", en: "Safety Deficiency", ru: "Системный дефицит" },
-    title: { uk: "SD5: Застарілі стандарти маркування буїв", en: "SD5: Outdated Buoy Markings", ru: "SD5: Устаревшие стандарты маркировки" },
+    title: { uk: "SD5: Відсутність відображення буя 2/I на дисплеї", en: "SD5: Electronic display barrier failure", ru: "SD5: Отсутствие отображения буя на дисплее" },
     desc: {
-      uk: "Портові правила не вимагали оснащення швартовних буїв пасивними або активними засобами розпізнавання.",
-      en: "Port bylaws did not mandate retroreflective wrapping or AIS AtoN transponders on buoys.",
-      ru: "Правила порта не требовали оснащения буев пассивными или активными средствами опознавания."
+      uk: "Електронний навігаційний дисплей у день події не надав індикацію буя 2/I як надійного бар'єра безпеки.",
+      en: "Electronic display on occurrence day failed to present buoy 2/I as safety barrier; historical data lost.",
+      ru: "Электронный дисплей в день аварии не показал буй 2/I как барьер безопасности; данные не сохранились."
     },
-    ref: "IALA Guideline G1062",
+    ref: "MAIIS Safety Deficiency No. 4 & Technical Annex",
     mitigation: {
-      uk: "Модернізація портової навігаційної інфраструктури згідно зі стандартами IALA",
-      en: "Upgrade all port mooring aids to modern IALA conspicuity standards",
-      ru: "Модернизация портовой инфраструктуры согласно стандартам IALA"
+      uk: "Автоматична синхронізація гідрографічних баз даних та збереження журналів переходів на захищений носій",
+      en: "Automated hydrographic database synchronization and tamper-proof voyage data logging",
+      ru: "Автоматическая синхронизация гидрографических данных и архивация рейсовых логов"
     }
   },
   SD6: {
     category: { uk: "Системний дефіцит", en: "Safety Deficiency", ru: "Системный дефицит" },
-    title: { uk: "SD6: Ергономічний прорахунок кабіни", en: "SD6: Cabin Ergonomic Deficiency", ru: "SD6: Эргономический просчет кабины" },
+    title: { uk: "SD6: Відсутність процедури дій та техогляду після навалу", en: "SD6: Missing post-contact occurrence protocol", ru: "SD6: Отсутствие протокола действий после удара" },
     desc: {
-      uk: "Монітор радара було змонтовано збоку від пульта, що вимагало повороту голови на 60° від курсу.",
-      en: "Radar display mounted offset by 60 degrees from helm center, discouraging continuous cross-check.",
-      ru: "Монитор радара был смонтирован сбоку от руля, требуя отворота взгляда на 60 градусов."
+      uk: "Відсутня формальна процедура негайного сповіщення VTS/URSP, фіксації доказів та техогляду перед рухом.",
+      en: "No formal procedure for immediate VTS reporting, evidence preservation, and technical survey before transit.",
+      ru: "Отсутствовала процедура доклада VTS, сбора данных и технического осмотра перед движением."
     },
-    ref: "IEC 62288 / OpenBridge Guidelines",
+    ref: "MAIIS Safety Deficiency No. 5 / Recommendation SR007",
     mitigation: {
-      uk: "Перепланування містка: монтаж комбінованого дисплея (ECDIS/Radar) прямо перед рульовим",
-      en: "Refit helm console to align primary radar/chart display in direct forward line of sight",
-      ru: "Перепланировка пульта: установка монитора радара прямо по линии взгляда рулевого"
+      uk: "Введення обов'язкового протоколу 'Safety Stand-down' та ультразвукового обстеження корпусу після контакту",
+      en: "Institute mandatory 'Safety Stand-down' and hull/shaft ultrasonic NDT inspection after any impact",
+      ru: "Введение обязательного протокола 'Safety Stand-down' и осмотра корпуса после навала"
+    }
+  },
+  SD7: {
+    category: { uk: "Системний дефіцит", en: "Safety Deficiency", ru: "Системный дефицит" },
+    title: { uk: "SD7: Недостатня ідентифікація небезпек біля інфраструктури", en: "SD7: Inadequate hazard identification near infrastructure", ru: "SD7: Недостаточная оценка рисков около инфраструктуры" },
+    desc: {
+      uk: "Ідентифікація небезпек та оцінка ризиків внутрішніх швидкісних переходів біля фіксованих буїв були недостатніми.",
+      en: "Hazard identification and risk assessment for high-speed transits near fixed mooring infrastructure inadequate.",
+      ru: "Идентификация опасностей и оценка рисков быстрых переходов около швартовных буев были недостаточны."
+    },
+    ref: "MAIIS Safety Deficiency No. 7 / ISM Code Section 1.2",
+    mitigation: {
+      uk: "Розробка карти критичних навігаційних перешкод басейнів порту з буферними зонами безпеки",
+      en: "Produce port basin restricted hazard chart with automated proximity safety buffers",
+      ru: "Разработка карты критических препятствий портовых бассейнов с буферными зонами безопасности"
     }
   },
   SI1: {
     category: { uk: "Проблема безпеки (Safety Issue)", en: "Safety Issue", ru: "Проблема безопасности" },
-    title: { uk: "SI1: Нормалізація відхилень (Normalization of Deviance)", en: "SI1: Normalization of Deviance", ru: "SI1: Нормализация отклонений" },
+    title: { uk: "SI1: Управління швидкісними ризиками в портах", en: "SI1: High-speed transit risk governance", ru: "SI1: Управление скоростными рисками в портах" },
     desc: {
-      uk: "Систематичне перевищення швидкості стало неформальною нормою і толерувалося керівництвом.",
-      en: "Speeding inside basins became institutionalized habit due to absence of enforcement.",
-      ru: "Систематическое превышение скорости стало неформальной привычкой и не пресекалось."
+      uk: "Управління навігаційними ризиками під час швидкісних операцій службових катерів у стиснених водах порту.",
+      en: "Systemic risk governance of high-speed craft operations in restricted internal port basins.",
+      ru: "Системное управление рисками быстроходных служебных катеров в стесненных бассейнах порта."
     },
-    ref: "Safety Culture & Human Reliability Theory",
+    ref: "IMO High-Speed Craft Code (HSC) & Port Safety Management",
     mitigation: {
-      uk: "Аудит культури безпеки та нульова толерантність до порушення швидкісних режимів",
-      en: "Institute safety culture audit and zero-tolerance policy for navigational violations",
-      ru: "Аудит культуры безопасности и нулевая толерантность к превышению скорости"
+      uk: "Встановлення жорсткого нормативного контролю швидкості службових суден адміністрацією порту",
+      en: "Enact strict regulatory speed controls for auxiliary fleet by port administration",
+      ru: "Установление строгого контроля скорости служебного флота администрацией порта"
     }
   },
   SI2: {
     category: { uk: "Проблема безпеки (Safety Issue)", en: "Safety Issue", ru: "Проблема безопасности" },
-    title: { uk: "SI2: Вразливість одиночного оператора (Single Operator)", en: "SI2: Single-Operator Vulnerability", ru: "SI2: Уязвимость одиночного оператора" },
+    title: { uk: "SI2: Синергія містка (BRM) при лоцманських операціях", en: "SI2: Bridge team synergy during pilotage operations", ru: "SI2: Синергия мостика (BRM) при лоцманских проводках" },
     desc: {
-      uk: "Критична залежність безпеки швидкісного судна від уваги лише однієї людини без перевірки дій.",
-      en: "Total vulnerability of high-speed craft to single point of human failure.",
-      ru: "Полная зависимость безопасности быстроходного судна от одного человека без страховки."
+      uk: "Управління ресурсами містка (BRM) та спільний моніторинг загроз під час висадки й посадки лоцманів.",
+      en: "Bridge Resource Management and shared threat monitoring during pilot transfers.",
+      ru: "Управление ресурсами мостика (BRM) и совместный мониторинг угроз при высадке лоцманов."
     },
-    ref: "IMO High-Speed Craft Code (HSC Code 2000)",
+    ref: "STCW Section A-VIII/2 (BRM Standards)",
     mitigation: {
-      uk: "Принцип двох операторів (Two-person bridge operation) на швидкостях понад 15 вузлів",
-      en: "Adopt mandatory two-person operating principle for speeds above 15 knots",
-      ru: "Принцип двух операторов на мостике при скорости свыше 15 узлов"
+      uk: "Обов'язковий спільний тренінг BRM для лоцманів, судноводіїв катерів та матросів",
+      en: "Mandatory joint BRM synergy training for pilots, coxswains, and deckhands",
+      ru: "Обязательный совместный тренинг BRM для лоцманов, судоводителей катеров и матросов"
     }
   },
   SI3: {
     category: { uk: "Проблема безпеки (Safety Issue)", en: "Safety Issue", ru: "Проблема безопасности" },
-    title: { uk: "SI3: Відставання оптико-електронного оснащення", en: "SI3: Lack of Modern Night Sensor Tech", ru: "SI3: Отставание оптико-электронного оснащения" },
+    title: { uk: "SI3: Гарантія надійності навігаційних дисплеїв", en: "SI3: Operational reliability of navigation displays", ru: "SI3: Надежность навигационных дисплеев" },
     desc: {
-      uk: "Катер не мав тепловізійних приладів, які нівелюють берегове освітлення та виявляють холодні пластикові буї.",
-      en: "Lack of thermal imaging sensor technology capable of piercing harbor light pollution.",
-      ru: "Катер не имел тепловизоров, способных нивелировать засветку и видеть холодные буи."
+      uk: "Оперативне використання навігаційних дисплеїв та обов'язкова перехресна перевірка небезпек маршруту.",
+      en: "Operational utilization of navigation displays and mandatory cross-checking of route hazards.",
+      ru: "Использование навигационных дисплеев и обязательная перекрестная проверка опасностей курса."
     },
-    ref: "SOLAS V/19 & Fast Craft Equipment Standards",
+    ref: "SOLAS V/19 & IMO Performance Standards",
     mitigation: {
-      uk: "Оснащення службових катерів камерами FLIR з автодетекцією перешкод",
-      en: "Equip service fleet with FLIR marine cameras with automated obstacle detection",
-      ru: "Оснащение катеров тепловизорами FLIR с автодетекцией препятствий"
+      uk: "Сертифікація та автоматичний аудит навігаційних баз даних на бортових плотерах",
+      en: "Certification and automated audit of hydrographic chart databases on onboard plotters",
+      ru: "Сертификация и автоматический аудит гидрографических баз данных на плоттерах"
     }
   },
   SI4: {
     category: { uk: "Проблема безпеки (Safety Issue)", en: "Safety Issue", ru: "Проблема безопасности" },
-    title: { uk: "SI4: Прогалини в нагляді за службовим флотом", en: "SI4: Service Fleet Oversight Gaps", ru: "SI4: Пробелы в надзоре за служебным флотом" },
+    title: { uk: "SI4: Стандартизація та верифікація навчання персоналу", en: "SI4: Standardized competence certification & verification", ru: "SI4: Стандартизация и верификация обучения персонала" },
     desc: {
-      uk: "Службові катери тривалий час функціонували у 'сірій зоні' портового нагляду та перевірок безпеки.",
-      en: "Auxiliary and pilot craft historically operated with minimal port authority oversight.",
-      ru: "Служебные катера длительное время оставались вне строгого контроля администрации порта."
+      uk: "Підготовка, атестація та періодичне підтвердження кваліфікації екіпажів катерів портофлоту.",
+      en: "Competence certification, documented approval, and recurrent practical skill verification for small craft crews.",
+      ru: "Подготовка, аттестация и периодическое подтверждение квалификации экипажей катеров."
     },
-    ref: "Port State Control & Harbor Master Authority",
+    ref: "STCW Regulation I/11 & National Maritime Authority Rules",
     mitigation: {
-      uk: "Регулярні інспекції катерів портофлоту за чек-листами безпеки капітана порту",
-      en: "Institute regular Harbor Master safety audits of all auxiliary service vessels",
-      ru: "Регулярные проверки катеров портофлота инспекцией капитана порта"
+      uk: "Законодавче закріплення обов'язкових стандартів підготовки екіпажів лоцманських суден",
+      en: "Statutory formalization of training standards for pilot boat operating personnel",
+      ru: "Законодательное закрепление стандартов подготовки экипажей лоцманских катеров"
     }
   },
   SI5: {
     category: { uk: "Проблема безпеки (Safety Issue)", en: "Safety Issue", ru: "Проблема безопасности" },
-    title: { uk: "SI5: Кумулятивна втома у позмінних графіках", en: "SI5: Shift Fatigue Under Pilotage Rosters", ru: "SI5: Накопленная усталость в сменных графиках" },
+    title: { uk: "SI5: Післяаварійне реагування та збереження доказів", en: "SI5: Post-occurrence response & evidence preservation", ru: "SI5: Реагирование после аварии и сбор данных" },
     desc: {
-      uk: "Цілодобове чергування в режимі постійної готовності призводить до фрагментованого сну та хронічної втоми.",
-      en: "24/7 on-call readiness generates fragmented sleep patterns and cumulative fatigue.",
-      ru: "Круглосуточное дежурство в режиме ожидания приводит к фрагментации сна и усталости."
+      uk: "Звітність після інциденту, збереження об'єктивних доказів та правила продовження комерційних операцій.",
+      en: "Post-occurrence reporting, forensic evidence preservation, and continuation-of-service decision frameworks.",
+      ru: "Отчетность после аварий, сохранение объективных данных и правила продолжения операций."
     },
-    ref: "MLC 2006 Standard A2.3 & IMO MSC/Circ.1598",
+    ref: "IMO Casualty Investigation Code (Res. MSC.255(84))",
     mitigation: {
-      uk: "Впровадження науково обґрунтованого біодинамічного планування графіків чергувань",
-      en: "Adopt scientifically validated fatigue risk management software for crew rosters",
-      ru: "Внедрение биодинамического планирования графиков дежурств с контролем усталости"
+      uk: "Впровадження автоматичних реєстраторів рейсів (VDR/mini-VDR) на службових швидкохідних катерах",
+      en: "Equip fast service craft with simplified voyage data recorders (mini-VDR/AIS loggers)",
+      ru: "Установка упрощенных регистраторов рейсовых данных (мини-VDR) на служебных катерах"
     }
   }
 };
@@ -2280,6 +2355,7 @@ function renderEcfaDiagram(activeFilter = "all") {
 
   const events = KP965_GISIS_RECORD.ecfaDiagram.events;
   const accidentEvents = KP965_GISIS_RECORD.ecfaDiagram.accidentEvents;
+  const casualtyEvent = KP965_GISIS_RECORD.ecfaDiagram.casualtyEvent;
   const factors = KP965_GISIS_RECORD.ecfaDiagram.contributingFactors;
   const deficiencies = KP965_GISIS_RECORD.ecfaDiagram.safetyDeficiencies;
   const issues = KP965_GISIS_RECORD.ecfaDiagram.safetyIssues;
@@ -2287,10 +2363,10 @@ function renderEcfaDiagram(activeFilter = "all") {
   const eventBoxes = events.map((e, idx) => ({
     id: e.id,
     type: "events",
-    x: 12 + idx * 123,
+    x: 15 + idx * 133,
     y: 35,
-    w: 115,
-    h: 56,
+    w: 122,
+    h: 52,
     stroke: "#f59e0b",
     tagColor: "#f59e0b",
     time: e.time,
@@ -2300,35 +2376,51 @@ function renderEcfaDiagram(activeFilter = "all") {
   const accidentBoxes = accidentEvents.map((ae, idx) => ({
     id: ae.id,
     type: "accident",
-    x: 35 + idx * 240,
-    y: 155,
-    w: 220,
-    h: 58,
+    x: 25 + idx * 265,
+    y: 135,
+    w: 245,
+    h: 52,
     stroke: "#f43f5e",
     tagColor: "#f43f5e",
     label: currentLang === "en" ? ae.labelEn : ae.labelUk
   }));
 
-  const factorBoxes = factors.map((cf, idx) => ({
-    id: cf.id,
-    type: "factors",
-    x: 12 + idx * 140,
-    y: 280,
-    w: 132,
-    h: 58,
-    stroke: "#06b6d4",
-    tagColor: "#06b6d4",
-    category: cf.category,
-    label: currentLang === "en" ? cf.labelEn : cf.labelUk
-  }));
+  const casualtyBox = {
+    id: casualtyEvent.id,
+    type: "casualty",
+    x: 310,
+    y: 228,
+    w: 460,
+    h: 52,
+    stroke: "#ef4444",
+    tagColor: "#ef4444",
+    label: currentLang === "en" ? casualtyEvent.labelEn : casualtyEvent.labelUk
+  };
+
+  const factorBoxes = factors.map((cf, idx) => {
+    const isSecondRow = idx >= 5;
+    const colIdx = isSecondRow ? idx - 5 : idx;
+    return {
+      id: cf.id,
+      type: "factors",
+      x: 18 + colIdx * 212,
+      y: isSecondRow ? 388 : 322,
+      w: 200,
+      h: 52,
+      stroke: "#06b6d4",
+      tagColor: "#06b6d4",
+      category: cf.category,
+      label: currentLang === "en" ? cf.labelEn : cf.labelUk
+    };
+  });
 
   const deficiencyBoxes = deficiencies.map((sd, idx) => ({
     id: sd.id,
     type: "deficiencies",
-    x: 18 + idx * 163,
-    y: 410,
-    w: 152,
-    h: 58,
+    x: 15 + idx * 151,
+    y: 480,
+    w: 142,
+    h: 52,
     stroke: "#a855f7",
     tagColor: "#a855f7",
     label: currentLang === "en" ? sd.labelEn : sd.labelUk
@@ -2337,44 +2429,61 @@ function renderEcfaDiagram(activeFilter = "all") {
   const issueBoxes = issues.map((si, idx) => ({
     id: si.id,
     type: "issues",
-    x: 25 + idx * 194,
-    y: 540,
-    w: 182,
-    h: 58,
+    x: 18 + idx * 212,
+    y: 572,
+    w: 200,
+    h: 52,
     stroke: "#38bdf8",
     tagColor: "#38bdf8",
     label: currentLang === "en" ? si.labelEn : si.labelUk
   }));
 
-  const allBoxes = [...eventBoxes, ...accidentBoxes, ...factorBoxes, ...deficiencyBoxes, ...issueBoxes];
+  const allBoxes = [...eventBoxes, ...accidentBoxes, casualtyBox, ...factorBoxes, ...deficiencyBoxes, ...issueBoxes];
   const boxMap = Object.fromEntries(allBoxes.map((b) => [b.id, b]));
 
   const connectors = [
+    // Chronology chain
     { from: "E1", to: "E2" }, { from: "E2", to: "E3" }, { from: "E3", to: "E4" },
     { from: "E4", to: "E5" }, { from: "E5", to: "E6" }, { from: "E6", to: "E7" }, { from: "E7", to: "E8" },
-    { from: "E3", to: "AE1" }, { from: "E5", to: "AE2" }, { from: "E6", to: "AE3" }, { from: "E6", to: "AE4" },
-    { from: "AE1", to: "CF3" }, { from: "AE1", to: "CF5" },
-    { from: "AE2", to: "CF1" }, { from: "AE2", to: "CF2" }, { from: "AE2", to: "CF4" },
-    { from: "AE3", to: "CF7" }, { from: "AE4", to: "CF6" },
-    { from: "CF3", to: "SD1" }, { from: "CF3", to: "SD6" },
-    { from: "CF6", to: "SD2" }, { from: "CF7", to: "SD3" },
-    { from: "CF1", to: "SD4" }, { from: "CF4", to: "SD5" },
-    { from: "SD1", to: "SI1" }, { from: "SD2", to: "SI2" }, { from: "SD3", to: "SI3" },
-    { from: "SD4", to: "SI4" }, { from: "SD5", to: "SI4" }, { from: "SD6", to: "SI3" },
-    { from: "SD1", to: "SI5" }
+    // Events to Accident Events
+    { from: "E3", to: "AE2" },
+    { from: "E4", to: "AE1" },
+    { from: "E4", to: "AE3" },
+    { from: "E5", to: "AE4" },
+    // Accident Event to Casualty Event
+    { from: "AE4", to: "CE1" },
+    // Contributing Factors to Accident Events
+    { from: "CF1", to: "AE1" }, { from: "CF2", to: "AE1" }, { from: "CF8", to: "AE1" }, { from: "CF9", to: "AE1" },
+    { from: "CF3", to: "AE2" }, { from: "CF4", to: "AE2" }, { from: "CF6", to: "AE2" }, { from: "CF7", to: "AE2" },
+    { from: "CF1", to: "AE3" }, { from: "CF5", to: "AE3" },
+    { from: "CF10", to: "AE4" },
+    // Contributing Factors to Safety Deficiencies
+    { from: "CF1", to: "SD1" },
+    { from: "CF6", to: "SD2" },
+    { from: "CF3", to: "SD3" }, { from: "CF4", to: "SD3" }, { from: "CF7", to: "SD3" },
+    { from: "CF5", to: "SD4" }, { from: "CF5", to: "SD5" },
+    { from: "CF10", to: "SD6" },
+    { from: "CF2", to: "SD7" }, { from: "CF9", to: "SD7" },
+    // Safety Deficiencies to Safety Issues
+    { from: "SD1", to: "SI1" }, { from: "SD7", to: "SI1" },
+    { from: "SD3", to: "SI2" },
+    { from: "SD4", to: "SI3" }, { from: "SD5", to: "SI3" },
+    { from: "SD2", to: "SI4" },
+    { from: "SD6", to: "SI5" }
   ];
 
-  let svg = `<svg class="ecfa-diagram-svg" viewBox="0 0 1000 640" role="img" aria-label="ECFA Diagram KP-965">
+  let svg = `<svg class="ecfa-diagram-svg" viewBox="0 0 1080 655" role="img" aria-label="ECFA Diagram KP-965">
     <defs>
       <marker id="ecfa-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
         <polygon points="0 0, 6 3, 0 6" fill="#475569" />
       </marker>
     </defs>
     <text x="15" y="22" fill="#94a3b8" font-size="10" font-weight="700" letter-spacing="0.05em">ХРОНОЛОГІЯ ПОДІЙ (CHRONOLOGICAL EVENTS · E1..E8)</text>
-    <text x="15" y="142" fill="#94a3b8" font-size="10" font-weight="700" letter-spacing="0.05em">АВАРІЙНІ ТОЧКИ ЗРИВУ БЕЗПЕКИ (ACCIDENT EVENTS · AE1..AE4)</text>
-    <text x="15" y="267" fill="#94a3b8" font-size="10" font-weight="700" letter-spacing="0.05em">СПРИЯЮЧІ ФАКТОРИ (CONTRIBUTING FACTORS · CF1..CF7)</text>
-    <text x="15" y="397" fill="#94a3b8" font-size="10" font-weight="700" letter-spacing="0.05em">СИСТЕМНІ ДЕФІЦИТИ (SAFETY DEFICIENCIES · SD1..SD6)</text>
-    <text x="15" y="527" fill="#94a3b8" font-size="10" font-weight="700" letter-spacing="0.05em">СИСТЕМНІ ПРОБЛЕМИ БЕЗПЕКИ (SAFETY ISSUES · SI1..SI5)</text>
+    <text x="15" y="122" fill="#94a3b8" font-size="10" font-weight="700" letter-spacing="0.05em">АВАРІЙНІ ТОЧКИ ЗРИВУ БЕЗПЕКИ (ACCIDENT EVENTS · AE1..AE4)</text>
+    <text x="15" y="214" fill="#94a3b8" font-size="10" font-weight="700" letter-spacing="0.05em">ОСНОВНА АВАРІЙНА ПОДІЯ (CASUALTY EVENT · CE1)</text>
+    <text x="15" y="306" fill="#94a3b8" font-size="10" font-weight="700" letter-spacing="0.05em">СПРИЯЮЧІ ФАКТОРИ (CONTRIBUTING FACTORS · CF1..CF10)</text>
+    <text x="15" y="465" fill="#94a3b8" font-size="10" font-weight="700" letter-spacing="0.05em">СИСТЕМНІ ДЕФІЦИТИ БЕЗПЕКИ (SAFETY DEFICIENCIES · SD1..SD7)</text>
+    <text x="15" y="558" fill="#94a3b8" font-size="10" font-weight="700" letter-spacing="0.05em">СИСТЕМНІ ПРОБЛЕМИ БЕЗПЕКИ (SAFETY ISSUES · SI1..SI5)</text>
 
     <g class="ecfa-connectors" aria-hidden="true">`;
 
@@ -2382,13 +2491,24 @@ function renderEcfaDiagram(activeFilter = "all") {
     const src = boxMap[c.from];
     const dst = boxMap[c.to];
     if (!src || !dst) continue;
-    const x1 = src.x + src.w / 2;
-    const y1 = src.y + src.h;
-    const x2 = dst.x + dst.w / 2;
-    const y2 = dst.y;
     if (src.y === dst.y) {
-      svg += `<path d="M ${src.x + src.w} ${src.y + src.h / 2} L ${dst.x} ${dst.y + dst.h / 2}" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3,3" marker-end="url(#ecfa-arrow)" />`;
+      const x1 = src.x < dst.x ? src.x + src.w : src.x;
+      const y1 = src.y + src.h / 2;
+      const x2 = src.x < dst.x ? dst.x : dst.x + dst.w;
+      const y2 = dst.y + dst.h / 2;
+      svg += `<path d="M ${x1} ${y1} L ${x2} ${y2}" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3,3" marker-end="url(#ecfa-arrow)" />`;
+    } else if (src.y < dst.y) {
+      const x1 = src.x + src.w / 2;
+      const y1 = src.y + src.h;
+      const x2 = dst.x + dst.w / 2;
+      const y2 = dst.y;
+      const midY = (y1 + y2) / 2;
+      svg += `<path d="M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}" stroke="#475569" stroke-width="1.2" fill="none" marker-end="url(#ecfa-arrow)" />`;
     } else {
+      const x1 = src.x + src.w / 2;
+      const y1 = src.y;
+      const x2 = dst.x + dst.w / 2;
+      const y2 = dst.y + dst.h;
       const midY = (y1 + y2) / 2;
       svg += `<path d="M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}" stroke="#475569" stroke-width="1.2" fill="none" marker-end="url(#ecfa-arrow)" />`;
     }
@@ -2399,14 +2519,15 @@ function renderEcfaDiagram(activeFilter = "all") {
   for (const b of allBoxes) {
     const isSelected = b.id === currentSelectedEcfaNode;
     const isDimmed = activeFilter !== "all" && b.type !== activeFilter;
-    const opacity = isDimmed ? "0.25" : "1.0";
+    const opacity = isDimmed ? "0.22" : "1.0";
     const selectedClass = isSelected ? "selected" : "";
+    const bgColor = b.type === "casualty" ? "#190e18" : "#0b1726";
 
     svg += `<g class="ecfa-node ${selectedClass}" data-node-id="${b.id}" data-node-type="${b.type}" opacity="${opacity}" tabindex="0" role="button" aria-label="${b.id}: ${escapeHtml(b.label)}">
-      <rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="6" fill="#0b1726" stroke="${b.stroke}" stroke-width="${isSelected ? '2.5' : '1.2'}" />
-      <text x="${b.x + 8}" y="${b.y + 16}" fill="${b.tagColor}" font-size="10" font-weight="700">${b.id}${b.time ? ' · ' + b.time : ''}</text>
-      <text x="${b.x + 8}" y="${b.y + 32}" fill="#f1f5f9" font-size="9" font-weight="600">${escapeHtml(b.label.slice(0, 26))}</text>
-      <text x="${b.x + 8}" y="${b.y + 45}" fill="#94a3b8" font-size="8.5">${escapeHtml(b.label.slice(26, 52))}${b.label.length > 52 ? '...' : ''}</text>
+      <rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="6" fill="${bgColor}" stroke="${b.stroke}" stroke-width="${isSelected ? '2.5' : '1.2'}" />
+      <text x="${b.x + 8}" y="${b.y + 15}" fill="${b.tagColor}" font-size="9.5" font-weight="700">${b.id}${b.time ? ' · ' + b.time : ''}</text>
+      <text x="${b.x + 8}" y="${b.y + 29}" fill="#f1f5f9" font-size="8.5" font-weight="600">${escapeHtml(b.label.slice(0, 27))}</text>
+      <text x="${b.x + 8}" y="${b.y + 42}" fill="#94a3b8" font-size="8">${escapeHtml(b.label.slice(27, 54))}${b.label.length > 54 ? '...' : ''}</text>
     </g>`;
   }
 
@@ -2434,7 +2555,8 @@ function renderPortBasinRisk() {
     glareVisualImpairment: $("#factor-glare")?.checked ?? true,
     radarNotUsed: $("#factor-radar")?.checked ?? true,
     routineComplacency: $("#factor-complacency")?.checked ?? true,
-    unlitObstacle: $("#factor-obstacle")?.checked ?? true
+    unlitObstacle: $("#factor-obstacle")?.checked ?? true,
+    trainingOrOrgDeficiency: $("#factor-training")?.checked ?? true
   };
   const severityCode = Number($("#gisis-severity-select")?.value ?? 3);
 
@@ -2455,6 +2577,18 @@ function renderPortBasinRisk() {
     badge.textContent = currentLang === "en" ? currentPortBasinRisk.riskCategoryLabelEn : currentPortBasinRisk.riskCategoryLabelUk;
   }
 
+  // Automated Critical Safety Alert Banner
+  const alertBox = $("#gisis-critical-alert");
+  const alertText = $("#gisis-critical-alert-text");
+  if (alertBox && alertText) {
+    if (currentPortBasinRisk.riskIndex >= 10.0 && currentPortBasinRisk.criticalAlertUk) {
+      alertBox.removeAttribute("hidden");
+      alertText.textContent = currentLang === "en" ? currentPortBasinRisk.criticalAlertEn : currentPortBasinRisk.criticalAlertUk;
+    } else {
+      alertBox.setAttribute("hidden", "");
+    }
+  }
+
   const list = $("#gisis-mitigation-list");
   if (list) {
     list.innerHTML = currentPortBasinRisk.mitigationRules.map((r) => {
@@ -2466,12 +2600,42 @@ function renderPortBasinRisk() {
       </li>`;
     }).join("");
   }
+
+  // Populate MAIIS official recommendations
+  const maiisList = $("#maiis-recs-list");
+  if (maiisList && KP965_GISIS_RECORD.ecfaDiagram?.safetyRecommendations) {
+    maiisList.innerHTML = KP965_GISIS_RECORD.ecfaDiagram.safetyRecommendations.map((rec) => {
+      const title = currentLang === "en" ? rec.titleEn : rec.titleUk;
+      const summary = rec.summaryUk;
+      return `<li class="maiis-rec-item">
+        <div class="maiis-rec-header">
+          <strong>${escapeHtml(rec.id)}: ${escapeHtml(title)}</strong>
+          <span class="maiis-rec-addressee">${escapeHtml(rec.addressee)}</span>
+        </div>
+        <p class="maiis-rec-desc">${escapeHtml(summary)}</p>
+      </li>`;
+    }).join("");
+  }
+
+  // Populate Key Finding & Preventive Potential
+  const keyFindingEl = $("#maiis-key-finding");
+  if (keyFindingEl && KP965_GISIS_RECORD.ecfaDiagram?.synthesis) {
+    keyFindingEl.textContent = currentLang === "en"
+      ? KP965_GISIS_RECORD.ecfaDiagram.synthesis.keyFindingEn
+      : KP965_GISIS_RECORD.ecfaDiagram.synthesis.keyFindingUk;
+  }
+  const prevPotEl = $("#maiis-preventive-potential");
+  if (prevPotEl && KP965_GISIS_RECORD.ecfaDiagram?.synthesis) {
+    prevPotEl.textContent = currentLang === "en"
+      ? KP965_GISIS_RECORD.ecfaDiagram.synthesis.preventivePotentialEn
+      : KP965_GISIS_RECORD.ecfaDiagram.synthesis.preventivePotentialUk;
+  }
 }
 
 function initGisisEcfaModule() {
   const factorIds = [
     "factor-speed", "factor-lookout", "factor-fatigue", "factor-glare",
-    "factor-radar", "factor-complacency", "factor-obstacle"
+    "factor-radar", "factor-complacency", "factor-obstacle", "factor-training"
   ];
   factorIds.forEach((id) => {
     $(`#${id}`)?.addEventListener("change", renderPortBasinRisk);

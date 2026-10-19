@@ -202,9 +202,19 @@
 
 ## ADR-025: Digitization of IMO GISIS Casualty Data (MSC-MEPC.3/Circ.4/Rev.1), ECFA Causal Analysis (IMO Res. A.1075(28)), and Port Basin Risk Modeling (R = P x S)
 
-**Decision:** Digitize the pilot boat KP-965 allision incident (Port of Koper Basin I, 14.04.2026) according to IMO MSC-MEPC.3/Circ.4/Rev.1 (Appendix 5 Field Value Option Tables: 3, 4, 5, 6, 7, 9, 10, 16, 19, 20, 22, 23). Implement an interactive 5-tier SVG ECFA (Event and Causal Factors Analysis) diagram adhering to IMO Res. A.1075(28). Develop an automated port basin navigation risk model ($R = P \times S$) with deterministic mitigation generation and student export capabilities (JSON & Python).
+**Decision:** Digitize the pilot boat KP-965 allision incident (Port of Koper Basin I, 14.04.2026, 02:16:48 LT) according to IMO MSC-MEPC.3/Circ.4/Rev.1 (Appendix 5 Field Value Option Tables: 3, 4, 5, 6, 7, 9, 10, 16, 19, 20, 22, 23) and the official Slovenian Maritime Incident Investigation Scheme (MAIIS) Final Investigation Report (31 pages). Implement an interactive 6-tier SVG ECFA (Event and Causal Factors Analysis) diagram adhering to IMO Res. A.1075(28) and Figure 6 of the official MAIIS report:
+- 8 chronological events (E1..E8);
+- 4 accident events (AE1..AE4);
+- 1 casualty event (CE1: port bow allision with mooring buoy 2/I in Basin I);
+- 10 contributing factors (CF1..CF10) across operational, human, workplace, technical, organizational, and management domains;
+- 7 safety deficiencies (SD1..SD7);
+- 5 systemic safety issues (SI1..SI5);
+- Official synthesis (key finding, direct cause, systemic factors, preventive potential);
+- 7 official MAIIS safety recommendations (SI-MAIIS-SR003-2026 to SR009-2026 addressed to KOPP d.o.o., MZIE, URSP, and Bureau Veritas).
 
-**Why:** Coursework requirements formulated by instructor Nataliia Tiron-Vorobiova require students to analyze IMO marine safety investigation reports (GISIS MCIR), decode casualty events using official IMO circular classifiers, construct ECFA structural diagrams, and design algorithms for automated risk evaluation and mitigation rule generation in inland waterways and port basins.
+Develop an automated port basin navigation risk model ($R = P \times S$) with deterministic mitigation generation (including critical automated safety warnings when $R \ge 10$) and student export capabilities (JSON & Python script with matplotlib heatmap).
+
+**Why:** University coursework requirements formulated by instructor Nataliia Tiron-Vorobiova require maritime engineering students to analyze IMO marine safety investigation reports (GISIS MCIR), decode casualty events using official IMO circular classifiers, construct ECFA structural diagrams, and design algorithms for automated risk evaluation and mitigation rule generation in inland waterways and port basins.
 
 **Consequence:** All computations and SVG generation are 100% pure client-side in-memory JavaScript with zero external runtime dependencies and zero data retention. Checkboxes and buttons use standard accessible semantics without infringing on the strict 5 `role="switch"` questionnaire rule. Students can download `KP-965-gisis-record.json` and copy an autonomous Python script for their practical work. Verified with unit and DOM contract tests in `scripts/feature-checks.mjs` (Tests 25–28).
 
