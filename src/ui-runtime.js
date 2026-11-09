@@ -31,3 +31,8 @@ export function initializeModule(name, initializer, fallbackTarget = null, logge
     return false;
   }
 }
+
+export function resolveViewMode(search = "") {
+  const params = new URLSearchParams(search);
+  return params.get("view") === "tools" ? "tools" : "assignment";
+}

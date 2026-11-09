@@ -22,7 +22,7 @@ import {
   calculatePortBasinRisk,
   generatePythonAssignmentScript
 } from "./model.js";
-import { formatEngineeringIndex, initializeModule } from "./ui-runtime.js";
+import { formatEngineeringIndex, initializeModule, resolveViewMode } from "./ui-runtime.js";
 
 const $ = (selector) => document.querySelector(selector);
 const form = $("#risk-form");
@@ -3871,12 +3871,16 @@ function setLanguage(lang) {
   }
 
   // Header & Navigation
-  const navLinks = document.querySelectorAll("header nav a");
-  if (navLinks[0]) navLinks[0].textContent = t.navAssess;
-  if (navLinks[1]) navLinks[1].textContent = t.navCases;
-  if (navLinks[2]) navLinks[2].textContent = "GISIS & ECFA";
-  if (navLinks[3]) navLinks[3].textContent = t.navStats;
-  if (navLinks[4]) navLinks[4].textContent = t.navMethod;
+  const navLabels = {
+    assessment: t.navAssess,
+    cases: t.navCases,
+    gisis: "GISIS & ECFA",
+    statistics: t.navStats,
+    methodology: t.navMethod
+  };
+  document.querySelectorAll("[data-nav-key]").forEach((link) => {
+    link.textContent = navLabels[link.dataset.navKey] ?? link.textContent;
+  });
 
   const bMode1 = document.querySelector('[data-bridge-mode="cockpit"]');
   if (bMode1) bMode1.textContent = t.bridgeCockpit;
@@ -4457,6 +4461,46 @@ function setLanguage(lang) {
   renderRisk(calculateRisk(input), input, activeScenario, $("#result-panel")?.dataset.initial === "true");
 }
 
+function applyViewMode(search = window.location.search) {
+  const mode = resolveViewMode(search);
+  document.documentElement.dataset.view = mode;
+
+  const t = I18N[currentLang];
+  const eyebrow = document.querySelector(".hero-copy .eyebrow");
+  const title = document.querySelector(".hero-copy h1");
+  const lede = document.querySelector(".hero-lede");
+  const primary = $("#assignment-primary-action");
+  const sources = document.querySelector(".assignment-sources-link");
+
+  if (mode === "tools") {
+    if (eyebrow) eyebrow.textContent = t.heroEyebrow;
+    if (title) title.textContent = t.heroTitle;
+    if (lede) lede.textContent = t.heroLede;
+    if (primary) {
+      primary.href = "#assessment";
+      primary.textContent = t.heroActionStart;
+    }
+    if (sources) {
+      sources.href = "#methodology";
+      sources.textContent = t.heroActionMethod;
+    }
+  } else {
+    if (eyebrow) eyebrow.textContent = "Практична робота · KP-965";
+    if (title) title.textContent = "Автоматизована оцінка ризику судноплавства";
+    if (lede) lede.textContent = "Розбір аварії лоцманського катера KP-965 для внутрішніх водних шляхів і портових басейнів: кодування GISIS, аналіз ECFA, розрахунок R = P × S та превентивні заходи безпеки.";
+    if (primary) {
+      primary.href = "#gisis-ecfa";
+      primary.textContent = "Переглянути розрахунок";
+    }
+    if (sources) {
+      sources.href = "#assignment-sources";
+      sources.textContent = "Офіційні джерела ↗";
+    }
+  }
+
+  return mode;
+}
+
 document.querySelectorAll(".lang-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
     setLanguage(btn.dataset.lang);
@@ -4602,6 +4646,8 @@ async function loadIncidents() {
     $("#event-bars").innerHTML = `<p>Не вдалося завантажити агреговані дані: ${escapeHtml(error.message)}</p>`;
   }
 }
+
+applyViewMode();
 
 // Assignment-first startup: optional dashboard failures must not blank GISIS/ECFA.
 initializeModule("assignment", initGisisEcfaModule, $("#ecfa-diagram-wrap"));

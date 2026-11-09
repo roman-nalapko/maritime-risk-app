@@ -35,11 +35,12 @@
         </a>
 
         <nav class="site-nav" aria-label="Основна навігація">
-          <a href="#assessment">Оцінювання</a>
-          <a href="#cases">Аварії MAIB</a>
-          <a href="#gisis-ecfa">GISIS &amp; ECFA</a>
-          <a href="#statistics">Статистика</a>
-          <a href="#methodology">Методика</a>
+          <a href="#assessment" data-nav-key="assessment">Оцінювання</a>
+          <a href="#cases" data-nav-key="cases">Аварії MAIB</a>
+          <a href="#gisis-ecfa" data-nav-key="gisis">GISIS &amp; ECFA</a>
+          <a href="#statistics" data-nav-key="statistics">Статистика</a>
+          <a href="#methodology" data-nav-key="methodology">Методика</a>
+          <a class="assignment-tools-link" href="?view=tools#assessment">Додаткові інструменти</a>
         </nav>
 
         <div class="header-controls">
@@ -65,15 +66,16 @@
       <section class="hero" id="top">
         <div class="shell hero-grid">
           <div class="hero-copy">
-            <p class="eyebrow">Безпека, яку можна пояснити</p>
-            <h1>Побачте, що саме формує професійний ризик.</h1>
+            <p class="eyebrow">Практична робота · KP-965</p>
+            <h1>Автоматизована оцінка ризику судноплавства</h1>
             <p class="hero-lede">
-              Безкоштовний освітній сервіс для самостійного аналізу факторів морського ризику —
-              з локальним розрахунком, контекстом інцидентів і практичними кроками.
+              Розбір аварії лоцманського катера KP-965 для внутрішніх водних шляхів і портових басейнів:
+              кодування GISIS, аналіз ECFA, розрахунок R = P × S та превентивні заходи безпеки.
             </p>
             <div class="hero-actions">
-              <a class="button button-primary" href="#assessment">Почати оцінювання</a>
-              <a class="text-link" href="#methodology">Як працює модель ↗</a>
+              <a class="button button-primary" id="assignment-primary-action" href="#gisis-ecfa">Переглянути розрахунок</a>
+              <a class="text-link assignment-sources-link" href="#assignment-sources">Офіційні джерела ↗</a>
+              <a class="text-link assignment-tools-link" href="?view=tools#assessment">Додаткові дослідницькі інструменти</a>
             </div>
           </div>
           <div class="hero-visual" aria-label="Приклад структури оцінки ризику">

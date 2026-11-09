@@ -338,6 +338,37 @@ html[data-bridge-mode="day"] .site-header {
 }
 @media (min-width: 960px) { .status-pill { display: flex; } }
 
+/* ── Assignment-first root view ── */
+html[data-view="assignment"] .workspace,
+html[data-view="assignment"] .cases-section,
+html[data-view="assignment"] .statistics,
+html[data-view="assignment"] .trust-strip,
+html[data-view="assignment"] .bridge-mode-switch,
+html[data-view="assignment"] .lang-switch-group,
+html[data-view="assignment"] .presentation-mode-btn,
+html[data-view="assignment"] .status-pill,
+html[data-view="assignment"] .site-nav [data-nav-key="assessment"],
+html[data-view="assignment"] .site-nav [data-nav-key="cases"],
+html[data-view="assignment"] .site-nav [data-nav-key="statistics"] {
+  display: none;
+}
+
+html[data-view="assignment"] .hero-grid {
+  grid-template-columns: minmax(0, 760px);
+}
+
+html[data-view="assignment"] .hero-visual {
+  display: none;
+}
+
+html[data-view="assignment"] .hero-lede {
+  max-width: 760px;
+}
+
+html[data-view="tools"] .assignment-tools-link {
+  display: none;
+}
+
 /* ── Hero ── */
 .hero {
   padding-block: 56px 68px;

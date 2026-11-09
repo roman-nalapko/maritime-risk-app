@@ -347,6 +347,18 @@ const htmlContent = await readFile(path.join(root, "src/index.html"), "utf8");
 const cssContent = await readFile(path.join(root, "src/styles.css"), "utf8");
 const appContent = await readFile(path.join(root, "src/app.js"), "utf8");
 
+// Assignment-first root view contract (Issue #38)
+assert.ok(htmlContent.includes('id="assignment-primary-action"'), "root view must expose a stable assignment primary action");
+assert.ok(htmlContent.includes('href="#gisis-ecfa"'), "assignment primary action must jump to the GISIS/ECFA work");
+assert.ok(htmlContent.includes('?view=tools#assessment'), "root view must preserve a route to the full research tools");
+assert.ok(htmlContent.includes("Автоматизована оцінка ризику судноплавства"), "hero must name the actual course assignment");
+assert.equal((htmlContent.match(/role="switch"/g) ?? []).length, 5, "optional questionnaire must preserve exactly five switches");
+assert.ok(cssContent.includes('html[data-view="assignment"]'), "styles must define the focused assignment view");
+assert.ok(cssContent.includes('html[data-view="tools"]'), "styles must preserve the full tools view");
+assert.ok(appContent.includes("applyViewMode"), "app must apply the URL-selected view mode");
+assert.ok(htmlContent.includes('data-nav-key="assessment"'), "navigation links must use stable localization keys");
+assert.ok(!appContent.includes('document.querySelectorAll("header nav a")'), "navigation translation must not depend on link position");
+
 assert.ok(htmlContent.includes('id="brm-watch-card"'), "index.html must have brm-watch-card");
 assert.ok(htmlContent.includes('id="brm-lookout-toggle"'), "index.html must have brm-lookout-toggle");
 assert.ok(htmlContent.includes('id="brm-pilot-toggle"'), "index.html must have brm-pilot-toggle");
