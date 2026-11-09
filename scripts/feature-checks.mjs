@@ -517,6 +517,7 @@ assert.ok(htmlContent.includes('id="port-basin-risk-card"'), "index.html must ha
 assert.ok(htmlContent.includes('id="factor-speed"'), "index.html must have factor-speed checkbox");
 assert.ok(htmlContent.includes('id="factor-lookout"'), "index.html must have factor-lookout checkbox");
 assert.ok(htmlContent.includes('id="factor-training"'), "index.html must have factor-training checkbox");
+assert.equal((htmlContent.match(/id="factor-[^"]+"/g) || []).length, 5, "assignment must expose exactly five factor switches");
 assert.ok(htmlContent.includes('id="gisis-critical-alert"'), "index.html must have gisis-critical-alert box");
 assert.ok(htmlContent.includes('id="gisis-severity-select"'), "index.html must have gisis-severity-select");
 assert.ok(htmlContent.includes('id="gisis-risk-display"'), "index.html must have gisis-risk-display");
@@ -542,6 +543,20 @@ assert.ok(cssContent.includes(".maiis-recs-list"), "styles.css must style maiis-
 assert.ok(appContent.includes("renderPortBasinRisk"), "app.js must implement renderPortBasinRisk");
 assert.ok(appContent.includes("renderEcfaDiagram"), "app.js must implement renderEcfaDiagram");
 assert.ok(appContent.includes("initGisisEcfaModule"), "app.js must implement initGisisEcfaModule");
+
+// 29. Assignment narrative, evidence, and truthful export contract (Issue #38)
+assert.ok(htmlContent.includes("KP-965 (GRP, L = 14.2 м)"), "assignment must identify the worked vessel");
+assert.ok(htmlContent.includes("Басейн I порту Копер"), "assignment must identify the worked location");
+assert.ok(htmlContent.includes("KP-965 = 22 вузли"), "assignment must expose the incident speed");
+assert.ok(htmlContent.indexOf('id="gisis-mitigation-title"') < htmlContent.indexOf('id="ecfa-diagram-card"'), "generated measures must precede the ECFA diagram");
+assert.ok(htmlContent.includes('id="assignment-sources"'), "assignment must expose a compact official-source section");
+for (const sourceLabel of ["GISIS", "MSC-MEPC.3/Circ.4/Rev.1", "A.1075(28)", "Final safety report for less serious marine casualty of Pilot boat KP-965"]) {
+  assert.ok(htmlContent.includes(sourceLabel), `assignment sources must include ${sourceLabel}`);
+}
+assert.ok(htmlContent.includes("базового кейсу KP-965"), "Python export must be labelled as a baseline-case reproduction");
+assert.ok(appContent.includes("async function copyPythonAssignment"), "clipboard UI must have an observable asynchronous boundary");
+assert.ok(appContent.includes("await copyText("), "clipboard success must wait for the real write operation");
+assert.ok(appContent.includes("Не вдалося скопіювати"), "clipboard denial must produce truthful failure feedback");
 
 console.log("All platform feature checks passed.");
 

@@ -36,3 +36,9 @@ export function resolveViewMode(search = "") {
   const params = new URLSearchParams(search);
   return params.get("view") === "tools" ? "tools" : "assignment";
 }
+
+export async function copyText(clipboard, value) {
+  if (!clipboard?.writeText) throw new Error("Clipboard API is unavailable");
+  await clipboard.writeText(value);
+  return true;
+}

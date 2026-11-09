@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { calculateRisk, categoryFor } from "../src/model.js";
 import { approvedValue, COEFFICIENTS, REGISTRY_ID, REQUIRED_METADATA, validateRegistry } from "../src/coefficients.js";
-import { formatEngineeringIndex, initializeModule, resolveViewMode } from "../src/ui-runtime.js";
+import { copyText, formatEngineeringIndex, initializeModule, resolveViewMode } from "../src/ui-runtime.js";
 import { normalizeTables, parseDelimited, stableJson, validateNormalized } from "./import-maib.mjs";
 import { aggregateMaib } from "./aggregate-maib.mjs";
 import { runReleaseChecks, validateReleaseDataset } from "./release-checks.mjs";
@@ -33,6 +33,12 @@ assert.equal(resolveViewMode(""), "assignment", "the root URL must default to th
 assert.equal(resolveViewMode("?view=tools"), "tools", "the explicit tools URL must expose the research suite");
 assert.equal(resolveViewMode("?source=teacher&view=tools"), "tools", "view mode must tolerate unrelated query parameters");
 assert.equal(resolveViewMode("?view=unknown"), "assignment", "unknown view values must fail closed to the assignment");
+
+const copiedValues = [];
+assert.equal(await copyText({ async writeText(value) { copiedValues.push(value); } }, "baseline-script"), true);
+assert.deepEqual(copiedValues, ["baseline-script"], "clipboard helper must write the complete requested value once");
+await assert.rejects(() => copyText(null, "baseline-script"), /Clipboard API is unavailable/);
+await assert.rejects(() => copyText({ async writeText() { throw new Error("denied"); } }, "baseline-script"), /denied/);
 
 const baseline = calculateRisk({ age: 35, sex: "male", residence: "city", role: "officer", hours: 2024, night: 25, ppe: true });
 assert.ok(baseline.total > 0 && baseline.total < 1, "prototype index must remain bounded");

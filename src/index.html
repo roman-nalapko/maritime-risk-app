@@ -1050,7 +1050,7 @@
                 <span class="gisis-card-badge">Акваторії та басейни</span>
               </div>
               <p class="gisis-card-intro" id="gisis-calc-intro">
-                Розрахунок індексу навігаційного ризику за добутком частотної ймовірності виникнення інциденту (P, шкала 1–5) та важкості наслідків (S за Table 5, шкала 1–5).
+                Оберіть п’ять ключових факторів кейсу. Алгоритм обчислить умовний бал імовірності P, помножить його на тяжкість S та запропонує превентивні заходи.
               </p>
 
               <div class="gisis-factors-form" role="group" aria-labelledby="gisis-factors-legend">
@@ -1067,7 +1067,7 @@
                     <input type="checkbox" id="factor-lookout" checked />
                     <span class="gisis-checkbox-label">
                       <strong>Одиночне спостереження рульовим без матроса (Solo watch)</strong>
-                      <small>COLREG Rule 5 / Матрос сидів у каюті без огляду горизонту [+1.5]</small>
+                      <small>COLREG Rule 5 / Матрос сидів у каюті без огляду горизонту [+2.0]</small>
                     </span>
                   </label>
                   <label class="gisis-checkbox-item">
@@ -1078,31 +1078,10 @@
                     </span>
                   </label>
                   <label class="gisis-checkbox-item">
-                    <input type="checkbox" id="factor-glare" checked />
-                    <span class="gisis-checkbox-label">
-                      <strong>Берегове оптичне засвічення та сліпий сектор через диферент</strong>
-                      <small>Знецінення контрасту плавучого буя на фоні освітлення терміналу [+1.0]</small>
-                    </span>
-                  </label>
-                  <label class="gisis-checkbox-item">
                     <input type="checkbox" id="factor-radar" checked />
                     <span class="gisis-checkbox-label">
                       <strong>Нехтування радаром або відсутність буя на екрані плотера</strong>
                       <small>Table 19 Error Type 1 / Радар на шкалі 1.5 милі без контролю дистанції [+1.5]</small>
-                    </span>
-                  </label>
-                  <label class="gisis-checkbox-item">
-                    <input type="checkbox" id="factor-complacency" checked />
-                    <span class="gisis-checkbox-label">
-                      <strong>Рутинна самовпевненість на знайомому маршруті (Habituation)</strong>
-                      <small>Table 20 Factor 4 / Нормалізація небезпечного швидкісного транзиту [+0.5]</small>
-                    </span>
-                  </label>
-                  <label class="gisis-checkbox-item">
-                    <input type="checkbox" id="factor-obstacle" checked />
-                    <span class="gisis-checkbox-label">
-                      <strong>Неосвітлена навігаційна перешкода (Швартовний буй 2/I)</strong>
-                      <small>Відсутність активного вогню та пасивного радіолокаційного відбивача [+1.0]</small>
                     </span>
                   </label>
                   <label class="gisis-checkbox-item">
@@ -1256,7 +1235,7 @@
               <span class="gisis-card-badge">Open Data / Reproducibility</span>
             </div>
             <p class="gisis-card-intro" id="gisis-export-intro">
-              Завантажте валідоване цифрове досьє інциденту за формою GISIS або скопіюйте готовий автономний скрипт Python (NumPy / Matplotlib) для побудови матриці ризиків і звіту в Jupyter Notebook чи PyCharm.
+              JSON містить оцифроване досьє інциденту, а Python-скрипт відтворює розрахунок базового кейсу KP-965 (п’ять факторів увімкнено, S = 3). Це навчальна модель, а не офіційна оцінка IMO.
             </p>
 
             <div class="gisis-export-actions">
@@ -1275,6 +1254,20 @@
               <pre id="gisis-json-preview"><code>{ /* Завантаження структури... */ }</code></pre>
             </div>
           </div>
+
+          <aside class="assignment-sources" id="assignment-sources" aria-labelledby="assignment-sources-title">
+            <div>
+              <p class="gisis-kicker">ДЖЕРЕЛА ТА МЕЖІ МОДЕЛІ</p>
+              <h3 id="assignment-sources-title">На чому побудована практична робота</h3>
+              <p>Класифікація, хронологія та рекомендації звіряються з матеріалами IMO і звітом розслідування. Значення P та пороги кольорових зон є прозорими навчальними припущеннями цього прототипу.</p>
+            </div>
+            <ul class="assignment-source-list">
+              <li><a href="https://gisis.imo.org/Public/MCIR/InvestigationReportsDashboard.aspx" target="_blank" rel="noreferrer">GISIS — Marine Safety Investigation Reports</a></li>
+              <li><a href="https://drive.google.com/file/d/1Aqeume5CyxHe8_eUW4clH6l_4z66Jek5/view" target="_blank" rel="noreferrer">MSC-MEPC.3/Circ.4/Rev.1</a></li>
+              <li><a href="https://wwwcdn.imo.org/localresources/en/KnowledgeCentre/IndexofIMOResolutions/AssemblyDocuments/A.1075%2828%29.pdf" target="_blank" rel="noreferrer">IMO Resolution A.1075(28) — ECFA guidance</a></li>
+              <li><a href="https://drive.google.com/file/d/1V8ueD0PRRHu_GAKjsTRN2ky_jaWYhff1/view" target="_blank" rel="noreferrer">Final safety report for less serious marine casualty of Pilot boat KP-965</a></li>
+            </ul>
+          </aside>
         </div>
       </section>
 

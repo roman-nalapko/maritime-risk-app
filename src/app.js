@@ -22,7 +22,7 @@ import {
   calculatePortBasinRisk,
   generatePythonAssignmentScript
 } from "./model.js";
-import { formatEngineeringIndex, initializeModule, resolveViewMode } from "./ui-runtime.js";
+import { copyText, formatEngineeringIndex, initializeModule, resolveViewMode } from "./ui-runtime.js";
 
 const $ = (selector) => document.querySelector(selector);
 const form = $("#risk-form");
@@ -2543,10 +2543,10 @@ function renderPortBasinRisk() {
     excessSpeed: $("#factor-speed")?.checked ?? true,
     singleLookout: $("#factor-lookout")?.checked ?? true,
     circadianFatigue: $("#factor-fatigue")?.checked ?? true,
-    glareVisualImpairment: $("#factor-glare")?.checked ?? true,
+    glareVisualImpairment: false,
     radarNotUsed: $("#factor-radar")?.checked ?? true,
-    routineComplacency: $("#factor-complacency")?.checked ?? true,
-    unlitObstacle: $("#factor-obstacle")?.checked ?? true,
+    routineComplacency: false,
+    unlitObstacle: false,
     trainingOrOrgDeficiency: $("#factor-training")?.checked ?? true
   };
   const severityCode = Number($("#gisis-severity-select")?.value ?? 3);
@@ -2655,16 +2655,39 @@ function initGisisEcfaModule() {
     URL.revokeObjectURL(url);
   });
 
-  $("#copy-python-script-btn")?.addEventListener("click", () => {
-    const pyScript = generatePythonAssignmentScript(KP965_GISIS_RECORD, currentPortBasinRisk);
-    navigator.clipboard?.writeText(pyScript).catch(() => {});
+  async function copyPythonAssignment() {
     const btn = $("#copy-python-script-btn");
-    if (btn) {
-      const orig = btn.textContent;
-      btn.textContent = I18N[currentLang].copiedPythonNotice || "Скопійовано!";
-      setTimeout(() => { btn.textContent = orig; }, 2000);
+    if (!btn) return;
+
+    const originalLabel = btn.textContent;
+    const baselineRisk = calculatePortBasinRisk({
+      excessSpeed: true,
+      singleLookout: true,
+      circadianFatigue: true,
+      glareVisualImpairment: false,
+      radarNotUsed: true,
+      routineComplacency: false,
+      unlitObstacle: false,
+      trainingOrOrgDeficiency: true
+    }, { severityCode: 3 });
+    const pyScript = generatePythonAssignmentScript(KP965_GISIS_RECORD, baselineRisk);
+
+    btn.disabled = true;
+    try {
+      await copyText(navigator.clipboard, pyScript);
+      btn.textContent = I18N[currentLang].copiedPythonNotice || "Скрипт скопійовано!";
+    } catch (error) {
+      console.warn("Python assignment copy failed", error);
+      btn.textContent = "Не вдалося скопіювати — дозвольте доступ до буфера";
+    } finally {
+      window.setTimeout(() => {
+        btn.textContent = originalLabel;
+        btn.disabled = false;
+      }, 2500);
     }
-  });
+  }
+
+  $("#copy-python-script-btn")?.addEventListener("click", copyPythonAssignment);
 
   $("#toggle-gisis-json-preview-btn")?.addEventListener("click", () => {
     const previewBox = $("#gisis-code-preview");
@@ -3029,14 +3052,14 @@ const I18N = {
     gisisMainLead: "Практичне дослідження аварії лоцманського катера KP-965 (Копер, 14.04.2026): цифрові класифікатори Додатка 5, причинно-наслідкова схема ECFA, розрахунок матриці ризику портових басейнів (R = P × S) та автоматична генерація превентивних правил безпеки.",
     gisisCalcKicker: "IMO FSA METHODOLOGY · R = P × S",
     gisisCalcTitle: "Автоматизована оцінка ризику акваторій",
-    gisisCalcIntro: "Розрахунок індексу навігаційного ризику за добутком частотної ймовірності виникнення інциденту (P, шкала 1–5) та важкості наслідків (S за Table 5, шкала 1–5).",
+    gisisCalcIntro: "Оберіть п’ять ключових факторів кейсу. Алгоритм обчислить умовний бал імовірності P, помножить його на тяжкість S та запропонує превентивні заходи.",
     gisisMitigationTitle: "Автоматично згенеровані превентивні заходи безпеки:",
     ecfaKicker: "IMO RES. A.1075(28) · КАСКАДНИЙ ПРИЧИННИЙ АНАЛІЗ",
     ecfaTitle: "Інтерактивна векторна діаграма ECFA",
     ecfaIntro: "Структурно-логічна схема Event and Causal Factors Analysis аварії катера KP-965. Оберіть фільтр або клацніть вузол для перегляду аналітичної картки та превентивного заходу.",
     gisisExportKicker: "ОЦИФРОВАНЕ ДОСЬЄ АВАРІЇ · MSC-MEPC.3/CIRC.4/REV.1",
     gisisExportTitle: "Експорт для практичної роботи (JSON та Python)",
-    gisisExportIntro: "Завантажте валідоване цифрове досьє інциденту за формою GISIS або скопіюйте готовий автономний скрипт Python (NumPy / Matplotlib) для побудови матриці ризиків і звіту в Jupyter Notebook чи PyCharm.",
+    gisisExportIntro: "JSON містить оцифроване досьє інциденту, а Python-скрипт відтворює розрахунок базового кейсу KP-965 (п’ять факторів увімкнено, S = 3). Це навчальна модель, а не офіційна оцінка IMO.",
     downloadGisisJsonBtn: "Завантажити KP-965-gisis-record.json",
     copyPythonScriptBtn: "Копіювати Python-скрипт (Jupyter / PyCharm)",
     toggleGisisJsonPreviewBtn: "Переглянути JSON Додатка 5",

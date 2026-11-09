@@ -1865,6 +1865,58 @@ details[open] summary { border-bottom: 1px solid var(--line); }
   color: var(--text-secondary);
 }
 
+.assignment-sources {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 24px;
+  margin-top: 20px;
+  padding: 20px;
+  background: var(--raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.assignment-sources h3 {
+  margin: 4px 0 8px;
+  color: var(--text-primary);
+  font-size: 16px;
+}
+.assignment-sources p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.assignment-source-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.assignment-source-list a {
+  display: block;
+  padding: 9px 11px;
+  color: var(--teal);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  line-height: 1.35;
+  text-decoration: none;
+}
+.assignment-source-list a:hover,
+.assignment-source-list a:focus-visible {
+  border-color: var(--teal);
+  color: var(--text-primary);
+}
+
+@media (max-width: 700px) {
+  .assignment-sources {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
 /* ── Statistics Section ── */
 .statistics {
   padding-block: 56px 68px;
