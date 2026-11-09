@@ -1,5 +1,5 @@
-const CACHE = "searisk-ua-v0.8.1";
-const APP_SHELL = ["./", "./index.html", "./styles.css", "./app.js", "./model.js", "./coefficients.js", "./manifest.webmanifest", "./icons/searisk.svg", "./icons/searisk-192.png", "./icons/searisk-512.png", "./data/incidents.maib.aggregate.json", "./data/release-manifest.json"];
+const CACHE = "searisk-ua-v0.9.0";
+const APP_SHELL = ["./", "./index.html", "./styles.css", "./app.js", "./model.js", "./coefficients.js", "./ui-runtime.js", "./manifest.webmanifest", "./icons/searisk.svg", "./icons/searisk-192.png", "./icons/searisk-512.png", "./data/incidents.maib.aggregate.json", "./data/release-manifest.json"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
@@ -7,7 +7,9 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(caches.keys()
-    .then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))))
+    .then((keys) => Promise.all(keys
+      .filter((key) => key.startsWith("searisk-ua-") && key !== CACHE)
+      .map((key) => caches.delete(key))))
     .then(() => self.clients.claim()));
 });
 

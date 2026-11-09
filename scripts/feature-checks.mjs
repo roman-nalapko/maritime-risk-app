@@ -558,6 +558,13 @@ assert.ok(appContent.includes("async function copyPythonAssignment"), "clipboard
 assert.ok(appContent.includes("await copyText("), "clipboard success must wait for the real write operation");
 assert.ok(appContent.includes("Не вдалося скопіювати"), "clipboard denial must produce truthful failure feedback");
 
+// 30. Assignment responsive containment contract
+assert.match(cssContent, /\.gisis-grid\s*>\s*\*[^}]*min-width:\s*0/s, "assignment grid children must be allowed to shrink");
+assert.match(cssContent, /\.ecfa-diagram-wrap[^}]*overscroll-behavior-inline:\s*contain/s, "wide ECFA content must scroll only inside its labelled region");
+assert.match(cssContent, /@media \(max-width: 620px\)[\s\S]*?\.gisis-export-actions[^}]*flex-direction:\s*column/s, "mobile export actions must stack");
+assert.match(cssContent, /@media \(max-width: 620px\)[\s\S]*?\.gisis-export-actions \.button[^}]*width:\s*100%/s, "mobile export buttons must use the available width");
+assert.match(cssContent, /@media \(max-width: 620px\)[\s\S]*?\.port-basin-risk-card[^}]*padding:/s, "mobile assignment cards need compact padding");
+
 console.log("All platform feature checks passed.");
 
 

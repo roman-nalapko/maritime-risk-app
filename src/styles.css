@@ -1417,6 +1417,11 @@ details[open] summary { border-bottom: 1px solid var(--line); }
   gap: 20px;
   margin-bottom: 24px;
 }
+.gisis-grid > *,
+.gisis-card-header > *,
+.assignment-sources > * {
+  min-width: 0;
+}
 .port-basin-risk-card,
 .ecfa-diagram-card,
 .gisis-export-card {
@@ -1639,6 +1644,9 @@ details[open] summary { border-bottom: 1px solid var(--line); }
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   overflow-x: auto;
+  max-width: 100%;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
   padding: 12px;
   margin-bottom: 14px;
   min-height: 320px;
@@ -2173,6 +2181,15 @@ details[open] summary { border-bottom: 1px solid var(--line); }
   .field-grid { grid-template-columns: 1fr; }
   .stats-toolbar, .stat-summary { grid-template-columns: 1fr; }
   .gisis-score-summary { grid-template-columns: 1fr; }
+  .port-basin-risk-card,
+  .ecfa-diagram-card,
+  .gisis-export-card,
+  .assignment-sources { padding: 16px; }
+  .gisis-card-header { flex-direction: column; }
+  .gisis-card-badge, .ecfa-format-badge { white-space: normal; }
+  .gisis-checkbox-item { padding: 10px; }
+  .gisis-export-actions { flex-direction: column; }
+  .gisis-export-actions .button { width: 100%; }
   .stat-summary > div { border-right: none; border-bottom: 1px solid var(--line); }
   .stat-summary > div:last-child { border-bottom: none; }
   .form-footer { flex-direction: column; align-items: stretch; }

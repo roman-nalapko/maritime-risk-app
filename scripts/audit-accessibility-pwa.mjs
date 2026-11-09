@@ -70,6 +70,7 @@ const cachedShell = [];
 const deletedCaches = [];
 const cacheName = serviceWorker.match(/const CACHE = "([^"]+)"/)?.[1];
 assert.ok(cacheName, "service worker cache must be explicitly versioned");
+assert.notEqual(cacheName, "searisk-ua-v0.8.1", "assignment release must use a fresh cache identity");
 let skippedWaiting = false;
 let claimedClients = false;
 const offlineDocument = { source: "offline-shell" };
@@ -81,7 +82,7 @@ const context = {
   },
   caches: {
     open: async () => ({ addAll: async (files) => cachedShell.push(...files) }),
-    keys: async () => ["obsolete-cache", cacheName],
+    keys: async () => ["unrelated-app-cache", "searisk-ua-v0.8.1", cacheName],
     delete: async (key) => { deletedCaches.push(key); return true; },
     match: async (request) => typeof request === "string" ? offlineDocument : null
   },
@@ -95,12 +96,28 @@ let installPromise;
 listeners.install({ waitUntil: (promise) => { installPromise = promise; } });
 await installPromise;
 assert.equal(skippedWaiting, true, "new service worker must activate without an extra visit");
+for (const asset of [
+  "./index.html",
+  "./styles.css",
+  "./app.js",
+  "./model.js",
+  "./coefficients.js",
+  "./ui-runtime.js",
+  "./manifest.webmanifest",
+  "./icons/searisk.svg",
+  "./icons/searisk-192.png",
+  "./icons/searisk-512.png",
+  "./data/incidents.maib.aggregate.json",
+  "./data/release-manifest.json"
+]) {
+  assert.ok(cachedShell.includes(asset), `offline shell must precache ${asset}`);
+}
 for (const item of cachedShell.filter((entry) => entry !== "./")) await access(source(item.replace(/^\.\//, "")));
 
 let activatePromise;
 listeners.activate({ waitUntil: (promise) => { activatePromise = promise; } });
 await activatePromise;
-assert.deepEqual(deletedCaches, ["obsolete-cache"]);
+assert.deepEqual(deletedCaches, ["searisk-ua-v0.8.1"], "activation must remove only older SeaRisk caches");
 assert.equal(claimedClients, true, "active service worker must claim open clients");
 
 let responsePromise;
