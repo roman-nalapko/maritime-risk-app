@@ -22,26 +22,28 @@ flowchart LR
 
 ## Runtime boundary
 
-The MVP is a static application. At runtime, the browser loads versioned application assets and an aggregate incident dataset. Questionnaire values and calculations stay in memory on the user's device.
+The application is a static site. At runtime, the browser loads versioned assets and a bundled aggregate incident dataset. The root URL opens the assignment-first KP-965 experience; `?view=tools` exposes the extended research dashboard. Inputs and calculations stay in memory on the user's device.
 
 ```text
 Browser
 ├── Presentation layer
-│   ├── Questionnaire
-│   ├── Risk result
-│   └── Incident explorer
+│   ├── Assignment view: KP-965 → factors → R = P × S → measures → ECFA
+│   └── Optional tools view
+│       ├── Questionnaire and risk result
+│       └── Incident explorer
 ├── Domain layer
 │   ├── Input validation
 │   ├── Versioned coefficient registry
 │   ├── Deterministic calculation
 │   ├── Risk classification
-│   └── Rule-based recommendations
+│   ├── Rule-based recommendations
+│   └── GISIS/ECFA case model and exports
 └── Data layer
     ├── Published aggregate incidents
     └── Source and model metadata
 ```
 
-No authentication, backend database, telemetry, or external AI call is required for the research prototype.
+No authentication, backend database, telemetry, external AI call, or runtime third-party API is required. The service worker precaches both views and their bundled modules.
 
 ## Offline data preparation
 
@@ -69,7 +71,8 @@ Raw records are not shipped to the browser unless their licence, privacy status,
 | Classification | Map annual estimate to labelled scale | Provisional model |
 | Recommendations | Produce deterministic, controllable actions | Prototype complete |
 | Incident explorer | Filter MAIB affected-person counts and outcome distribution | Official aggregate v1.0 |
-| Coefficient registry | Store values with units, scope, provenance, and review status | Planned |
+| Coefficient registry | Store values with units, scope, provenance, and review status | Implemented, registry `0.1.0`; coefficients remain provisional |
+| KP-965 assignment | Calculate a worked training index, generate mitigations, display ECFA, and export evidence | Implemented |
 | Import pipeline | Normalize official incident sources | MAIB CSV pipeline complete |
 | Statistical layer | Rates, denominators, uncertainty, sparse-data warnings | Planned |
 | Optional AI | Reviewed tagging, retrieval, grounded explanation | Deferred |
@@ -84,12 +87,16 @@ Raw records are not shipped to the browser unless their licence, privacy status,
 
 ## Versioning
 
-- Application: semantic version, for example `0.2.0`.
+- Application: `0.9.0` (package, visible footer, and service-worker cache identity).
 - Model: independent identifier, for example `SR-UA-1.0`.
 - Dataset: source and retrieval period, for example `MAIB-2021-2025@2026-10-09`.
 - Taxonomy: explicit revision, for example `event-taxonomy-1.0`.
 
-Every result view should eventually expose all four versions.
+Application, model, registry, and dataset identifiers remain independent. Updating the app release must not imply model or data validation.
+
+## Build and deployment boundary
+
+`npm test` runs the calculation, governance, accessibility/PWA, research, AI-evaluation, and feature contracts. `npm run build` validates the public data bundle and writes a static `dist/` directory. Deployment is a separate, explicitly authorized action; no build command pushes or publishes content.
 
 ## Future backend trigger
 
