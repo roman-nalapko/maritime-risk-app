@@ -4,13 +4,30 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { calculateRisk, categoryFor } from "../src/model.js";
 import { approvedValue, COEFFICIENTS, REGISTRY_ID, REQUIRED_METADATA, validateRegistry } from "../src/coefficients.js";
+import { formatEngineeringIndex, initializeModule } from "../src/ui-runtime.js";
 import { normalizeTables, parseDelimited, stableJson, validateNormalized } from "./import-maib.mjs";
 import { aggregateMaib } from "./aggregate-maib.mjs";
 import { runReleaseChecks, validateReleaseDataset } from "./release-checks.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const required = ["src/index.html", "src/styles.css", "src/app.js", "src/model.js", "src/coefficients.js", "src/manifest.webmanifest", "src/data/incidents.maib.aggregate.json", "AGENTS.md"];
+const required = ["src/index.html", "src/styles.css", "src/app.js", "src/model.js", "src/coefficients.js", "src/ui-runtime.js", "src/manifest.webmanifest", "src/data/incidents.maib.aggregate.json", "AGENTS.md"];
 await Promise.all(required.map((file) => access(path.join(root, file))));
+
+assert.equal(formatEngineeringIndex(0, "uk-UA"), "0", "zero engineering index must stay legible");
+assert.equal(formatEngineeringIndex(0.00232, "uk-UA"), "2,32 × 10⁻³", "engineering index must use the selected locale and exponent glyphs");
+
+const initializationEvents = [];
+const fallbackTarget = {
+  textContent: "",
+  attributes: {},
+  setAttribute(name, value) { this.attributes[name] = value; }
+};
+const silentLogger = { error(message) { initializationEvents.push(message); } };
+assert.equal(initializeModule("assignment", () => initializationEvents.push("assignment-ready"), null, silentLogger), true);
+assert.equal(initializeModule("optional-dashboard", () => { throw new Error("dashboard failed"); }, fallbackTarget, silentLogger), false);
+assert.deepEqual(initializationEvents, ["assignment-ready", "optional-dashboard initialization failed"]);
+assert.equal(fallbackTarget.attributes.role, "alert", "failed module fallback must be announced");
+assert.equal(fallbackTarget.textContent, "Цей розділ тимчасово недоступний. Оновіть сторінку або спробуйте пізніше.");
 
 const baseline = calculateRisk({ age: 35, sex: "male", residence: "city", role: "officer", hours: 2024, night: 25, ppe: true });
 assert.ok(baseline.total > 0 && baseline.total < 1, "prototype index must remain bounded");

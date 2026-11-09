@@ -22,6 +22,7 @@ import {
   calculatePortBasinRisk,
   generatePythonAssignmentScript
 } from "./model.js";
+import { formatEngineeringIndex, initializeModule } from "./ui-runtime.js";
 
 const $ = (selector) => document.querySelector(selector);
 const form = $("#risk-form");
@@ -249,18 +250,8 @@ function asWholeShare(value) {
 
 // Guard: log10(0) = -Infinity and log10 of NaN/Infinity would break superscript rendering
 function asIndex(value) {
-  if (value === 0) return "0";
-  if (!isFinite(value) || isNaN(value)) return value.toExponential(2);
-  const exponent = Math.floor(Math.log10(Math.abs(value)));
-  if (!isFinite(exponent)) return value.toExponential(2);
-  const coefficient = value / (10 ** exponent);
-  const superscript = String(exponent)
-    .replace("-", "⁻")
-    .replaceAll("0", "⁰").replaceAll("1", "¹").replaceAll("2", "²").replaceAll("3", "³")
-    .replaceAll("4", "⁴").replaceAll("5", "⁵").replaceAll("6", "⁶").replaceAll("7", "⁷")
-    .replaceAll("8", "⁸").replaceAll("9", "⁹");
   const locale = currentLang === "en" ? "en-GB" : (currentLang === "ru" ? "ru-RU" : "uk-UA");
-  return `${coefficient.toLocaleString(locale, { maximumFractionDigits: 2 })} × 10${superscript}`;
+  return formatEngineeringIndex(value, locale);
 }
 
 function renderLiveRadar(result, input) {
@@ -286,7 +277,7 @@ function renderLiveRadar(result, input) {
 
   const t = I18N[currentLang];
   const axisDescriptions = [
-    `${t.radarLabel3}: ${formatEngineeringValue(result.components.health)}`,
+    `${t.radarLabel3}: ${asIndex(result.components.health)}`,
     `${t.radarLabel2}: ${input.hours} ${t.hoursUnit}`,
     `${t.radarLabel1}: ${input.night}%`,
     `${t.radarLabel4}: ${input.smoking || input.alcohol ? (currentLang === "en" ? "Elevated" : (currentLang === "ru" ? "Повышенный" : "Підвищений")) : (currentLang === "en" ? "Controlled" : (currentLang === "ru" ? "Контролируемый" : "Контрольований"))}`,
@@ -4612,11 +4603,15 @@ async function loadIncidents() {
   }
 }
 
-// Initial render with default form values, marked as preview (isInitial=true)
-const initialInput = currentInput();
-renderRisk(calculateRisk(initialInput), initialInput, "Користувацький профіль", true);
-loadIncidents();
-initGisisEcfaModule();
+// Assignment-first startup: optional dashboard failures must not blank GISIS/ECFA.
+initializeModule("assignment", initGisisEcfaModule, $("#ecfa-diagram-wrap"));
+
+initializeModule("risk-preview", () => {
+  const initialInput = currentInput();
+  renderRisk(calculateRisk(initialInput), initialInput, "Користувацький профіль", true);
+}, $("#result-panel"));
+
+initializeModule("incident-data", loadIncidents, $("#statistics"));
 
 if ("serviceWorker" in navigator && (location.protocol === "https:" || ["localhost", "127.0.0.1"].includes(location.hostname))) {
   window.addEventListener("load", () => {
