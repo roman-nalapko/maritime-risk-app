@@ -1872,6 +1872,27 @@ details[open] summary { border-bottom: 1px solid var(--line); }
   word-break: break-all;
   color: var(--text-secondary);
 }
+.python-copy-fallback {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+.python-copy-fallback[hidden] { display: none; }
+.python-copy-fallback label {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.python-copy-fallback textarea {
+  width: 100%;
+  min-height: 220px;
+  resize: vertical;
+  padding: 12px;
+  color: var(--text-secondary);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font: 11.5px/1.5 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
 
 .assignment-sources {
   display: grid;

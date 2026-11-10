@@ -22,7 +22,7 @@ import {
   calculatePortBasinRisk,
   generatePythonAssignmentScript
 } from "./model.js";
-import { copyText, formatEngineeringIndex, initializeModule, resolveViewMode } from "./ui-runtime.js";
+import { copyTextOrFallback, formatEngineeringIndex, initializeModule, resolveViewMode } from "./ui-runtime.js";
 
 const $ = (selector) => document.querySelector(selector);
 const form = $("#risk-form");
@@ -2673,18 +2673,25 @@ function initGisisEcfaModule() {
     const pyScript = generatePythonAssignmentScript(KP965_GISIS_RECORD, baselineRisk);
 
     btn.disabled = true;
-    try {
-      await copyText(navigator.clipboard, pyScript);
+    const copyResult = await copyTextOrFallback(navigator.clipboard, pyScript);
+    if (copyResult.copied) {
       btn.textContent = I18N[currentLang].copiedPythonNotice || "Скрипт скопійовано!";
-    } catch (error) {
-      console.warn("Python assignment copy failed", error);
-      btn.textContent = "Не вдалося скопіювати — дозвольте доступ до буфера";
-    } finally {
-      window.setTimeout(() => {
-        btn.textContent = originalLabel;
-        btn.disabled = false;
-      }, 2500);
+    } else {
+      const fallback = $("#python-copy-fallback");
+      const preview = $("#python-script-preview");
+      if (fallback && preview) {
+        preview.value = copyResult.fallbackText;
+        fallback.removeAttribute("hidden");
+        preview.focus();
+        preview.select();
+      }
+      btn.textContent = "Не вдалося скопіювати — скрипт показано нижче";
     }
+
+    window.setTimeout(() => {
+      btn.textContent = originalLabel;
+      btn.disabled = false;
+    }, 2500);
   }
 
   $("#copy-python-script-btn")?.addEventListener("click", copyPythonAssignment);
@@ -3415,7 +3422,7 @@ const I18N = {
     ecfaIntro: "Structural Event and Causal Factors Analysis diagram for pilot craft KP-965. Select a filter or click any node to inspect details and preventative actions.",
     gisisExportKicker: "DIGITIZED CASUALTY DOSSIER · MSC-MEPC.3/CIRC.4/REV.1",
     gisisExportTitle: "Coursework Export Toolkit (JSON & Python)",
-    gisisExportIntro: "Download validated GISIS incident JSON file or copy standalone Python script (NumPy/Matplotlib) to compute risk matrix and generate charts in Jupyter or PyCharm.",
+    gisisExportIntro: "The JSON contains the digitized incident dossier. The Python script reproduces the KP-965 baseline with all five factors enabled and S = 3. This is a training model, not an official IMO assessment.",
     downloadGisisJsonBtn: "Download KP-965-gisis-record.json",
     copyPythonScriptBtn: "Copy Python Script (Jupyter / PyCharm)",
     toggleGisisJsonPreviewBtn: "View Appendix 5 JSON",
@@ -3771,7 +3778,7 @@ const I18N = {
     ecfaIntro: "Структурно-логическая схема Event and Causal Factors Analysis аварии катера KP-965. Выберите фильтр или нажмите на узел для просмотра аналитической карточки и превентивной меры.",
     gisisExportKicker: "ОЦИФРОВАННОЕ ДОСЬЕ АВАРИИ · MSC-MEPC.3/CIRC.4/REV.1",
     gisisExportTitle: "Экспорт для практической работы (JSON и Python)",
-    gisisExportIntro: "Скачайте валидированное цифровое досье инцидента по форме GISIS или скопируйте готовый автономный скрипт Python (NumPy / Matplotlib) для построения матрицы рисков и отчета в Jupyter Notebook или PyCharm.",
+    gisisExportIntro: "JSON содержит оцифрованное досье инцидента. Python-скрипт воспроизводит базовый кейс KP-965: включены все пять факторов, S = 3. Это учебная модель, а не официальная оценка IMO.",
     downloadGisisJsonBtn: "Скачать KP-965-gisis-record.json",
     copyPythonScriptBtn: "Копировать Python-скрипт (Jupyter / PyCharm)",
     toggleGisisJsonPreviewBtn: "Просмотреть JSON Приложения 5",

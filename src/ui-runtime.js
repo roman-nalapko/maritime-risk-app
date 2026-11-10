@@ -42,3 +42,12 @@ export async function copyText(clipboard, value) {
   await clipboard.writeText(value);
   return true;
 }
+
+export async function copyTextOrFallback(clipboard, value) {
+  try {
+    await copyText(clipboard, value);
+    return { copied: true, fallbackText: "" };
+  } catch {
+    return { copied: false, fallbackText: value };
+  }
+}

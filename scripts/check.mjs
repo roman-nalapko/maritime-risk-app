@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { calculateRisk, categoryFor } from "../src/model.js";
 import { approvedValue, COEFFICIENTS, REGISTRY_ID, REQUIRED_METADATA, validateRegistry } from "../src/coefficients.js";
-import { copyText, formatEngineeringIndex, initializeModule, resolveViewMode } from "../src/ui-runtime.js";
+import { copyText, copyTextOrFallback, formatEngineeringIndex, initializeModule, resolveViewMode } from "../src/ui-runtime.js";
 import { normalizeTables, parseDelimited, stableJson, validateNormalized } from "./import-maib.mjs";
 import { aggregateMaib } from "./aggregate-maib.mjs";
 import { runReleaseChecks, validateReleaseDataset } from "./release-checks.mjs";
@@ -39,6 +39,9 @@ assert.equal(await copyText({ async writeText(value) { copiedValues.push(value);
 assert.deepEqual(copiedValues, ["baseline-script"], "clipboard helper must write the complete requested value once");
 await assert.rejects(() => copyText(null, "baseline-script"), /Clipboard API is unavailable/);
 await assert.rejects(() => copyText({ async writeText() { throw new Error("denied"); } }, "baseline-script"), /denied/);
+assert.deepEqual(await copyTextOrFallback(null, "baseline-script"), { copied: false, fallbackText: "baseline-script" }, "missing Clipboard API must preserve the full script for manual copying");
+assert.deepEqual(await copyTextOrFallback({ async writeText() { throw new Error("denied"); } }, "baseline-script"), { copied: false, fallbackText: "baseline-script" }, "denied clipboard access must preserve the full script for manual copying");
+assert.deepEqual(await copyTextOrFallback({ async writeText() {} }, "baseline-script"), { copied: true, fallbackText: "" }, "successful clipboard writes must not expose a redundant fallback");
 
 const baseline = calculateRisk({ age: 35, sex: "male", residence: "city", role: "officer", hours: 2024, night: 25, ppe: true });
 assert.ok(baseline.total > 0 && baseline.total < 1, "prototype index must remain bounded");

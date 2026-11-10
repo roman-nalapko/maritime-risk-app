@@ -346,6 +346,7 @@ assert.ok(pilotWatch.findings.some((f) => f.rule.includes("IMO Res. A.960")), "M
 const htmlContent = await readFile(path.join(root, "src/index.html"), "utf8");
 const cssContent = await readFile(path.join(root, "src/styles.css"), "utf8");
 const appContent = await readFile(path.join(root, "src/app.js"), "utf8");
+const runtimeContent = await readFile(path.join(root, "src/ui-runtime.js"), "utf8");
 
 // Assignment-first root view contract (Issue #38)
 assert.ok(htmlContent.includes('id="assignment-primary-action"'), "root view must expose a stable assignment primary action");
@@ -555,8 +556,12 @@ for (const sourceLabel of ["GISIS", "MSC-MEPC.3/Circ.4/Rev.1", "A.1075(28)", "Fi
 }
 assert.ok(htmlContent.includes("базового кейсу KP-965"), "Python export must be labelled as a baseline-case reproduction");
 assert.ok(appContent.includes("async function copyPythonAssignment"), "clipboard UI must have an observable asynchronous boundary");
-assert.ok(appContent.includes("await copyText("), "clipboard success must wait for the real write operation");
+assert.ok(runtimeContent.includes("await copyText("), "clipboard success must wait for the real write operation");
 assert.ok(appContent.includes("Не вдалося скопіювати"), "clipboard denial must produce truthful failure feedback");
+assert.ok(htmlContent.includes('id="python-copy-fallback"'), "clipboard denial must reveal a manual-copy fallback");
+assert.ok(htmlContent.includes('id="python-script-preview"'), "manual-copy fallback must expose the complete Python script");
+assert.ok(appContent.includes("reproduces the KP-965 baseline"), "English export copy must retain the fixed-baseline disclosure");
+assert.ok(appContent.includes("воспроизводит базовый кейс KP-965"), "Russian export copy must retain the fixed-baseline disclosure");
 
 // 30. Assignment responsive containment contract
 assert.match(cssContent, /\.gisis-grid\s*>\s*\*[^}]*min-width:\s*0/s, "assignment grid children must be allowed to shrink");
