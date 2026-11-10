@@ -1922,7 +1922,8 @@ details[open] summary { border-bottom: 1px solid var(--line); }
   padding: 0;
   list-style: none;
 }
-.assignment-source-list a {
+.assignment-source-list a,
+.assignment-source-list span {
   display: block;
   padding: 9px 11px;
   color: var(--teal);

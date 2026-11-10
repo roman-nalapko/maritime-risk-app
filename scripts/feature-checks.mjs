@@ -554,6 +554,9 @@ assert.ok(htmlContent.includes('id="assignment-sources"'), "assignment must expo
 for (const sourceLabel of ["GISIS", "MSC-MEPC.3/Circ.4/Rev.1", "A.1075(28)", "Final safety report for less serious marine casualty of Pilot boat KP-965"]) {
   assert.ok(htmlContent.includes(sourceLabel), `assignment sources must include ${sourceLabel}`);
 }
+const assignmentSourcesMarkup = htmlContent.match(/<aside class="assignment-sources"[\s\S]*?<\/aside>/)?.[0] ?? "";
+assert.doesNotMatch(assignmentSourcesMarkup, /drive\.google\.com|gisis\.imo\.org\/Public\/MCIR/i, "assignment sources must not require Google Drive or GISIS account access");
+assert.match(assignmentSourcesMarkup, /wwwcdn\.imo\.org\/localresources/i, "assignment sources must use public direct IMO documents");
 assert.ok(htmlContent.includes("базового кейсу KP-965"), "Python export must be labelled as a baseline-case reproduction");
 assert.ok(appContent.includes("async function copyPythonAssignment"), "clipboard UI must have an observable asynchronous boundary");
 assert.ok(runtimeContent.includes("await copyText("), "clipboard success must wait for the real write operation");
