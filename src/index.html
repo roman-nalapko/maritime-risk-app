@@ -1,0 +1,1498 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#07111c" />
+    <meta
+      name="description"
+      content="Дослідницький прототип прозорої оцінки індивідуального ризику працівника морської галузі."
+    />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icons/searisk.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icons/searisk-192.png" />
+    <script>
+      const initialView = new URLSearchParams(window.location.search).get("view");
+      const initialStepMatch = window.location.hash.match(/^#step-([1-5])$/);
+      document.documentElement.dataset.view = initialView === "tools" ? "tools" : "assignment";
+      document.documentElement.dataset.guidedStep = initialStepMatch ? initialStepMatch[1] : "0";
+    </script>
+    <link rel="stylesheet" href="styles.css" />
+    <title>SeaRisk UA — оцінка морських ризиків</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">До основного вмісту</a>
+
+    <header class="site-header">
+      <div class="shell header-shell">
+        <a class="brand" href="#top" aria-label="SeaRisk UA, на початок">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 44 44" role="img" aria-labelledby="brand-svg-title">
+              <title id="brand-svg-title">Логотип SeaRisk UA</title>
+              <path d="M7 25c5-6 9-6 14 0s9 6 16 0" />
+              <path d="M8 17h28l-5 9H13z" />
+              <path d="M22 8v9M22 9l8 6" />
+            </svg>
+          </span>
+          <span>
+            <span class="brand-name"><strong>SeaRisk</strong> UA</span>
+            <span class="brand-sub">прототип</span>
+          </span>
+        </a>
+
+        <nav class="site-nav" aria-label="Основна навігація">
+          <a class="tools-return-link" href="?view=assignment#step-1" data-nav-key="assignment">Розбір KP-965</a>
+          <a href="#assessment" data-nav-key="assessment">Оцінювання</a>
+          <a href="#cases" data-nav-key="cases">Аварії MAIB</a>
+          <a href="#step-1" data-nav-key="gisis" data-guided-entry>GISIS &amp; ECFA</a>
+          <a href="#statistics" data-nav-key="statistics">Статистика</a>
+          <a href="#methodology" data-nav-key="methodology">Методика</a>
+          <a class="assignment-tools-link" href="?view=tools#assessment">Додаткові інструменти</a>
+        </nav>
+
+        <div class="header-controls">
+          <div class="bridge-mode-switch" role="group" aria-label="Світловий режим містка (IMO MSC.252 / IEC 62288)">
+            <button type="button" class="bridge-mode-btn active" data-bridge-mode="cockpit" title="Режим містка (OpenBridge Cockpit)">Ніч</button>
+            <button type="button" class="bridge-mode-btn" data-bridge-mode="red" title="Червоне підсвічування містка">Чер</button>
+            <button type="button" class="bridge-mode-btn" data-bridge-mode="day" title="Денний морський режим">День</button>
+          </div>
+          <div class="lang-switch-group" role="group" aria-label="Мова інтерфейсу">
+            <button type="button" class="lang-btn active" id="lang-switch-btn" data-lang="uk" title="Українська мова">UA</button>
+            <button type="button" class="lang-btn" data-lang="en" title="IMO SMCP English">EN</button>
+          </div>
+          <button type="button" class="presentation-mode-btn" id="presentation-mode-btn" title="Презентаційний режим (HUD)">HUD</button>
+          <span class="status-pill"><i aria-hidden="true"></i> Дослідницький прототип</span>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content" tabindex="-1">
+
+      <!-- HERO -->
+      <section class="hero" id="top">
+        <div class="shell hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">Практична робота · KP-965</p>
+            <h1>Чому сталася аварія і як її запобігти</h1>
+            <p class="hero-lede">
+              Пройдіть п’ять коротких кроків на прикладі катера KP-965: від фактів аварії до зрозумілого
+              розрахунку ризику, превентивних заходів і готового висновку для практичної роботи.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" id="start-guided-review-btn" href="#step-1" data-guided-entry>Почати розбір</a>
+              <a class="text-link assignment-sources-link" href="#step-5" data-guided-entry>Висновок і докази ↗</a>
+              <a class="text-link assignment-tools-link" href="?view=tools#assessment">Додаткові дослідницькі інструменти</a>
+            </div>
+          </div>
+          <div class="hero-visual" aria-label="Приклад структури оцінки ризику">
+            <div class="radar-card">
+              <div class="radar-topline"><span>Профіль ризику</span><b>DEMO</b></div>
+              <div class="radar-wrap">
+                <svg viewBox="0 0 240 190" role="img" aria-label="Демонстраційна радарна діаграма">
+                  <g class="radar-grid">
+                    <path d="M120 18 203 66 184 153 56 153 37 66Z" />
+                    <path d="M120 48 172 78 160 132 80 132 68 78Z" />
+                    <path d="M120 76 143 89 138 113 102 113 97 89Z" />
+                    <path d="M120 18v135M37 66l147 87M203 66 56 153M184 153 68 78M56 153l116-75" />
+                  </g>
+                  <path class="radar-value" d="M120 40 180 78 151 131 77 141 72 80Z" />
+                  <g class="radar-dots">
+                    <circle cx="120" cy="40" r="4" /><circle cx="180" cy="78" r="4" />
+                    <circle cx="151" cy="131" r="4" /><circle cx="77" cy="141" r="4" />
+                    <circle cx="72" cy="80" r="4" />
+                  </g>
+                </svg>
+                <span class="radar-label label-1">Втома</span>
+                <span class="radar-label label-2">Операції</span>
+                <span class="radar-label label-3">Здоров'я</span>
+                <span class="radar-label label-4">Звички</span>
+                <span class="radar-label label-5">Середовище</span>
+              </div>
+              <p><span>Пріоритет</span><strong>контроль втоми</strong></p>
+            </div>
+            <div class="hero-signals">
+              <div class="signal signal-a">01 <span>Локальний розрахунок</span></div>
+              <div class="signal signal-b">02 <span>Прозорі фактори</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TRUST STRIP -->
+      <section class="trust-strip" aria-label="Принципи продукту">
+        <div class="shell trust-grid">
+          <p><span>01</span><strong>Без передачі даних</strong><small>Анкета обробляється у браузері</small></p>
+          <p><span>02</span><strong>Без чорної скриньки</strong><small>Кожен внесок можна перевірити</small></p>
+          <p><span>03</span><strong>Два різні контексти</strong><small>Оцінка ≠ частка інцидентів</small></p>
+        </div>
+      </section>
+
+      <!-- ASSESSMENT WORKSPACE -->
+      <section class="workspace" id="assessment">
+        <div class="shell">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Індивідуальне оцінювання</p>
+              <h2>Профіль працівника</h2>
+            </div>
+            <p>Заповнення займає приблизно дві хвилини. Поля не зберігаються після закриття сторінки.</p>
+          </div>
+
+          <div class="assessment-grid">
+            <!-- FORM -->
+            <form class="assessment-form card" id="risk-form">
+              <section class="scenario-panel" aria-labelledby="scenario-title">
+                <div class="scenario-intro">
+                  <span>Без особистих даних</span>
+                  <h3 id="scenario-title">Спробуйте вигаданий сценарій</h3>
+                </div>
+                <div class="scenario-controls">
+                  <label for="demo-scenario">Демонстраційний профіль
+                    <select id="demo-scenario">
+                      <option value="cadet">Курсант · навчальна практика</option>
+                      <option value="engine">Механік · нічні зміни</option>
+                      <option value="deck">Палубна команда · висока експозиція</option>
+                    </select>
+                  </label>
+                  <button class="button button-secondary" id="apply-scenario" type="button">Застосувати</button>
+                </div>
+              </section>
+
+              <fieldset>
+                <legend><span>1</span> Основні дані</legend>
+                <div class="field-grid">
+                  <label>Вік
+                    <input id="age" name="age" type="number" min="18" max="80" value="35" required />
+                  </label>
+                  <label>Стать
+                    <select id="sex" name="sex">
+                      <option value="male">Чоловіча</option>
+                      <option value="female">Жіноча</option>
+                    </select>
+                  </label>
+                  <label>Місце проживання
+                    <select id="residence" name="residence">
+                      <option value="city">Місто</option>
+                      <option value="village">Сільська місцевість</option>
+                    </select>
+                  </label>
+                  <label class="toggle-field">Хронічні захворювання
+                    <input id="chronic" name="chronic" type="checkbox" role="switch" />
+                    <span class="toggle" aria-hidden="true"></span>
+                  </label>
+                </div>
+              </fieldset>
+
+              <fieldset>
+                <legend><span>2</span> Робота та експозиція</legend>
+                <div class="field-grid">
+                  <label class="wide">Професійна група
+                    <select id="role" name="role">
+                      <option value="deck">Палубна команда</option>
+                      <option value="engine">Машинна команда</option>
+                      <option value="officer">Командний склад</option>
+                      <option value="port">Портовий працівник</option>
+                      <option value="cadet">Курсант / практикант</option>
+                      <option value="diver">Водолазні роботи</option>
+                    </select>
+                  </label>
+                  <label>Робочих годин на рік
+                    <input id="hours" name="hours" type="number" min="1" max="5000" value="2024" required />
+                  </label>
+                  <label>Нічні зміни, %
+                    <input id="night" name="night" type="number" min="0" max="100" value="25" required />
+                  </label>
+                  <label>Розклад вахт
+                    <select id="watch-system" name="watchSystem">
+                      <option value="4on8off">3-вахтовий (4/8 — стандарт)</option>
+                      <option value="6on6off">2-вахтовий (6/6 — ризик втоми)</option>
+                      <option value="daywork">Денна зміна (Day-work)</option>
+                    </select>
+                  </label>
+                  <label>Тип судна / флот
+                    <select id="vessel-type" name="vesselType">
+                      <option value="container">Контейнеровоз</option>
+                      <option value="tanker">Танкер / Газовоз / Хімовоз</option>
+                      <option value="bulker">Балкер / Суховантаж</option>
+                      <option value="tug">Буксир / Портофлот</option>
+                    </select>
+                  </label>
+                  <label class="toggle-field">Завжди використовую ЗІЗ
+                    <input id="ppe" name="ppe" type="checkbox" role="switch" checked />
+                    <span class="toggle" aria-hidden="true"></span>
+                  </label>
+                  <label class="toggle-field">Був інцидент за 3 роки
+                    <input id="previous" name="previous" type="checkbox" role="switch" />
+                    <span class="toggle" aria-hidden="true"></span>
+                  </label>
+                </div>
+              </fieldset>
+
+              <fieldset>
+                <legend><span>3</span> Додаткові фактори</legend>
+                <div class="field-grid">
+                  <label class="toggle-field">Куріння
+                    <input id="smoking" name="smoking" type="checkbox" role="switch" />
+                    <span class="toggle" aria-hidden="true"></span>
+                  </label>
+                  <label class="toggle-field">Регулярне надмірне вживання алкоголю
+                    <input id="alcohol" name="alcohol" type="checkbox" role="switch" />
+                    <span class="toggle" aria-hidden="true"></span>
+                  </label>
+                </div>
+              </fieldset>
+
+              <div class="profile-file-actions">
+                <button class="button-ghost" id="export-profile-btn" type="button">
+                  Експорт профілю (.json)
+                </button>
+                <label class="button-ghost file-label" for="import-profile-input">
+                  Імпорт з файлу
+                  <input id="import-profile-input" type="file" accept=".json" class="sr-only" />
+                </label>
+              </div>
+
+              <p class="privacy-note"><strong>Приватність:</strong> вводьте лише власні дані й лише добровільно. Значення обробляються в цьому браузері, не зберігаються та не надсилаються. Не вводьте ПІБ, контакти чи дані іншої людини.</p>
+
+              <div class="form-footer">
+                <p>Результат є дослідницькою оцінкою, а не медичним чи професійним висновком.</p>
+                <button class="button button-primary" type="submit">Розрахувати ризик <span>→</span></button>
+              </div>
+            </form>
+
+            <!-- RESULT CARD -->
+            <aside class="result-card card" id="result-panel" data-initial="true">
+              <p class="sr-only" id="result-announcement" role="status" aria-live="polite" aria-atomic="true"></p>
+              <div class="result-header">
+                <span class="result-kicker">Демонстраційний індекс прототипу</span>
+                <span class="method-badge" id="method-badge">Реєстр 0.1.0</span>
+              </div>
+              <div class="result-initial-banner" role="note" aria-live="off">
+                <strong>Попередній перегляд.</strong> Показано розрахунок для дефолтних значень форми. Заповніть анкету та натисніть «Розрахувати ризик», щоб побачити свій результат.
+              </div>
+              <p class="result-disclaimer"><strong>Орієнтовна оцінка.</strong> Показує відносну структуру факторів, але не є точною ймовірністю травми чи загибелі та може відрізнятися від фактичного ризику.</p>
+              <div class="score-row">
+                <div>
+                  <strong id="risk-value">≈ 0,34%</strong>
+                  <span id="risk-ratio">Не є ймовірністю травми або загибелі</span>
+                  <small id="scientific-notation" class="scientific-notation">інженерний показник: 3,36 × 10⁻³</small>
+                </div>
+                <div class="risk-badge" id="risk-badge"><i></i><span>Дуже високий</span></div>
+              </div>
+              <div class="meter" aria-hidden="true"><i id="risk-meter"></i></div>
+              <div class="meter-labels"><span>Низький</span><span>Середній</span><span>Екстремальний · навчальна шкала</span></div>
+
+              <nav class="result-tabs-nav" role="tablist" aria-label="Розділи аналізу">
+                <button type="button" role="tab" class="result-tab-btn active" data-tab="radar" aria-selected="true" id="tab-btn-radar" aria-controls="pane-radar">
+                  Аналіз і радар
+                </button>
+                <button type="button" role="tab" class="result-tab-btn" data-tab="whatif" aria-selected="false" id="tab-btn-whatif" aria-controls="pane-whatif">
+                  What-If
+                </button>
+                <button type="button" role="tab" class="result-tab-btn" data-tab="checklist" aria-selected="false" id="tab-btn-checklist" aria-controls="pane-checklist">
+                  Чек-лист
+                </button>
+                <button type="button" role="tab" class="result-tab-btn" data-tab="method" aria-selected="false" id="tab-btn-method" aria-controls="pane-method">
+                  Методика
+                </button>
+              </nav>
+
+              <!-- PANE: RADAR/ANALYSIS -->
+              <div class="result-tab-pane" id="pane-radar" data-tab-pane="radar" role="tabpanel" aria-labelledby="tab-btn-radar">
+                <div class="mlc-advice-card" id="mlc-advice-card" hidden>
+                  <div class="mlc-advice-heading">
+                    <span class="mlc-tag">MLC 2006 · STCW</span>
+                    <h4>Контроль навантаження та втоми</h4>
+                  </div>
+                  <ul id="mlc-findings-list"></ul>
+                </div>
+
+                <div class="live-radar-box" id="live-radar-box">
+                  <div class="live-radar-header">
+                    <h3>Профіль факторів</h3>
+                    <small>Нормований радар поточного розрахунку</small>
+                  </div>
+                  <div class="live-radar-wrapper">
+                    <svg viewBox="0 0 240 190" id="live-radar-svg" role="img" aria-label="Радарна діаграма поточного розрахунку">
+                      <g class="live-radar-bg-grid">
+                        <polygon points="120,20 200,68 180,150 60,150 40,68" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1" />
+                        <polygon points="120,52 170,82 155,130 85,130 70,82" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
+                        <line x1="120" y1="98" x2="120" y2="20" stroke="rgba(255,255,255,0.06)" />
+                        <line x1="120" y1="98" x2="200" y2="68" stroke="rgba(255,255,255,0.06)" />
+                        <line x1="120" y1="98" x2="180" y2="150" stroke="rgba(255,255,255,0.06)" />
+                        <line x1="120" y1="98" x2="60" y2="150" stroke="rgba(255,255,255,0.06)" />
+                        <line x1="120" y1="98" x2="40" y2="68" stroke="rgba(255,255,255,0.06)" />
+                      </g>
+                      <polygon id="live-radar-poly" points="120,60 160,95 140,135 90,135 75,95" fill="rgba(29,184,168,0.2)" stroke="#1db8a8" stroke-width="1.5" />
+                      <g id="live-radar-markers"></g>
+                    </svg>
+                    <div class="live-radar-axis-labels">
+                      <span class="lra-1">Здоров'я</span>
+                      <span class="lra-2">Експозиція</span>
+                      <span class="lra-3">Нічні</span>
+                      <span class="lra-4">Звички</span>
+                      <span class="lra-5">ЗІЗ</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="benchmark-box" id="benchmark-box">
+                  <div class="benchmark-header">
+                    <span class="benchmark-tag">ГАЛУЗЕВИЙ ОРІЄНТИР · BIMCO / ICS</span>
+                    <h4>Порівняння зі світовим флотом</h4>
+                  </div>
+                  <div class="benchmark-metrics">
+                    <div class="benchmark-row">
+                      <span class="bm-label">Річне навантаження</span>
+                      <div class="bm-bar-wrap">
+                        <div class="bm-bar-fill" id="bm-hours-fill" style="width: 50%;"></div>
+                        <span class="bm-fleet-marker" title="Базовий норматив флоту: 2150 год"></span>
+                      </div>
+                      <span class="bm-stat" id="bm-hours-stat">—</span>
+                    </div>
+                    <div class="benchmark-row">
+                      <span class="bm-label">Нічні вахти</span>
+                      <div class="bm-bar-wrap">
+                        <div class="bm-bar-fill" id="bm-night-fill" style="width: 25%;"></div>
+                        <span class="bm-fleet-marker" title="Середнє у флоті (вахта 4/8): ~28%"></span>
+                      </div>
+                      <span class="bm-stat" id="bm-night-stat">—</span>
+                    </div>
+                  </div>
+                  <small class="benchmark-note">Орієнтири базуються на узагальнених даних звітів BIMCO/ICS Seafarer Workforce. Не є персональною нормою.</small>
+                </div>
+
+                <div class="circadian-card" id="circadian-card">
+                  <div class="circadian-header">
+                    <div>
+                      <span class="circadian-kicker">IMO MSC/Circ.1598</span>
+                      <h3>Циркадна уважність і сонливість (KSS)</h3>
+                    </div>
+                    <div class="kss-pill" id="kss-pill">
+                      <span class="kss-number" id="kss-number">KSS 3</span>
+                      <small id="kss-label">Бадьорий</small>
+                    </div>
+                  </div>
+                  <div class="circadian-meta-row">
+                    <div><span>Дефіцит сну</span><strong id="sleep-debt-stat">0 год/тижд</strong></div>
+                    <div><span>Пік уразливості</span><strong id="nadir-time-stat">03:00 – 05:00</strong></div>
+                    <div><span>Статус небезпеки</span><strong id="fatigue-status-stat">Контрольовано</strong></div>
+                  </div>
+                  <div class="tz-shift-row">
+                    <label for="tz-shift-slider">Транзит через часові пояси (Jet-lag):
+                      <div class="slider-row">
+                        <input type="range" id="tz-shift-slider" min="0" max="12" value="0" />
+                        <strong id="tz-shift-display">Δ 0 год</strong>
+                      </div>
+                    </label>
+                  </div>
+                  <div class="circadian-chart-wrap" aria-label="24-годинний профіль бадьорості">
+                    <div class="circadian-bars" id="circadian-bars"></div>
+                    <div class="circadian-timeline">
+                      <span>00:00</span><span>04:00</span><span>08:00</span><span>12:00</span><span>16:00</span><span>20:00</span><span>23:00</span>
+                    </div>
+                  </div>
+                  <ul class="circadian-recs" id="circadian-recs"></ul>
+                </div>
+
+                <div class="weather-hazard-card" id="weather-hazard-card">
+                  <div class="weather-header">
+                    <div>
+                      <span class="weather-kicker">ГІДРОМЕТЕОРОЛОГІЧНІ НЕБЕЗПЕКИ · ISO 2631 / POLAR CODE</span>
+                      <h3>Погодні умови та морське середовище</h3>
+                    </div>
+                    <span class="sea-state-badge" id="sea-state-badge">3 бали (Слабкий)</span>
+                  </div>
+                  <label for="beaufort-slider" class="weather-slider-label">Шкала Бофорта (хвилювання моря 0–12):
+                    <div class="slider-row">
+                      <input type="range" id="beaufort-slider" min="0" max="12" value="3" />
+                      <strong id="beaufort-val-display">3 бали</strong>
+                    </div>
+                  </label>
+                  <div class="weather-toggles">
+                    <label class="checkbox-inline">
+                      <input type="checkbox" id="polar-zone-toggle" />
+                      <span>Полярні води (IMO Polar Code · ризик обледеніння)</span>
+                    </label>
+                    <label class="checkbox-inline">
+                      <input type="checkbox" id="engine-heat-toggle" />
+                      <span>Тепловий стрес машинного відділення (WBGT &gt; 32°C)</span>
+                    </label>
+                  </div>
+                  <div class="weather-metrics">
+                    <div class="wm-cell">
+                      <span>Хитавиця та заколисування (MSI)</span>
+                      <strong id="msi-display">12%</strong>
+                      <small>ймовірність морської хвороби за 2 год</small>
+                    </div>
+                    <div class="wm-cell">
+                      <span>Коефіцієнт ковзання палуби</span>
+                      <strong id="slip-display">× 1.0</strong>
+                      <small>ризик послизання під час качки</small>
+                    </div>
+                  </div>
+                  <div class="weather-warnings" id="weather-warnings"></div>
+                </div>
+
+                <div class="breakdown">
+                  <div class="breakdown-title"><h3>Внесок факторів</h3><button type="button" id="details-toggle" aria-expanded="true">Сховати деталі</button></div>
+                  <div id="breakdown-list"></div>
+                </div>
+
+                <div class="recommendations">
+                  <h3>Що варто контролювати</h3>
+                  <ul id="recommendation-list"></ul>
+                </div>
+
+                <div class="grounded-retrieval-box" id="grounded-retrieval-box">
+                  <div class="grounded-header">
+                    <div>
+                      <span class="grounded-kicker">Вибірка MAIB</span>
+                      <h4>Релевантні інциденти у флоті</h4>
+                    </div>
+                    <span class="grounded-badge">Джерельно прив'язано</span>
+                  </div>
+                  <div class="grounded-body">
+                    <div class="grounded-facts-col">
+                      <strong>Факти вибірки розслідувань:</strong>
+                      <ul id="grounded-facts-list"></ul>
+                    </div>
+                    <div class="grounded-expl-col">
+                      <strong>Факторний аналіз групи:</strong>
+                      <p id="grounded-explanation">—</p>
+                    </div>
+                  </div>
+                  <small class="grounded-disclaimer" id="grounded-disclaimer">Це статистика записів про постраждалих у вибірці MAIB, а не персональна ймовірність настання події.</small>
+                </div>
+
+                <section class="profile-summary" aria-labelledby="profile-summary-title">
+                  <div class="profile-summary-heading"><h3 id="profile-summary-title">Вхідний профіль</h3><span id="scenario-name">Користувацький профіль</span></div>
+                  <dl id="profile-summary-list"></dl>
+                  <p>Сформовано локально: <time id="report-date">—</time>. Дані не збережено.</p>
+                </section>
+              </div>
+
+              <!-- PANE: WHAT-IF -->
+              <div class="result-tab-pane" id="pane-whatif" data-tab-pane="whatif" role="tabpanel" aria-labelledby="tab-btn-whatif" hidden>
+                <div class="what-if-section" id="what-if-section">
+                  <div class="what-if-header">
+                    <h3>Симуляція «Що, якщо?»</h3>
+                    <small>Оцінка потенційного зниження ризику</small>
+                  </div>
+                  <div class="what-if-grid" id="what-if-grid"></div>
+                </div>
+
+                <div class="sensitivity-section" id="sensitivity-section">
+                  <div class="sensitivity-header">
+                    <div>
+                      <span class="sensitivity-kicker">Факторний аналіз</span>
+                      <h3>Чутливість та маржинальний вплив</h3>
+                    </div>
+                    <span class="sensitivity-lead-badge" id="sensitivity-lead-factor">—</span>
+                  </div>
+                  <p class="sensitivity-subtitle">Маржинальна еластичність: ранжування факторів за силою впливу на зміну загального показника безпеки.</p>
+                  <div class="sensitivity-bars" id="sensitivity-bars"></div>
+                </div>
+              </div>
+
+              <!-- PANE: CHECKLIST -->
+              <div class="result-tab-pane" id="pane-checklist" data-tab-pane="checklist" role="tabpanel" aria-labelledby="tab-btn-checklist" hidden>
+                <div class="checklist-section" id="checklist-section">
+                  <div class="checklist-header">
+                    <div>
+                      <span class="checklist-kicker">ОПБ / ПЕРЕДЗМІННИЙ ЧЕК-ЛИСТ</span>
+                      <h3>Контрольний список вахти</h3>
+                    </div>
+                    <span class="checklist-progress" id="checklist-progress">0 / 0</span>
+                  </div>
+                  <ul class="checklist-list" id="checklist-list"></ul>
+                </div>
+
+                <div class="psc-sire-card" id="psc-sire-card">
+                  <div class="psc-header">
+                    <div>
+                      <span class="psc-kicker">PORT STATE CONTROL &amp; OCIMF SIRE 2.0</span>
+                      <h3>Готовність до перевірки інспекцією PSC</h3>
+                    </div>
+                    <div class="psc-score-wrap">
+                      <strong id="psc-score-display">100</strong>
+                      <span class="psc-status" id="psc-status-label">Висока готовність</span>
+                    </div>
+                  </div>
+                  <div class="psc-deficiencies" id="psc-deficiencies-list"></div>
+                  <div class="psc-cap-box" id="psc-cap-box">
+                    <strong>План коригувальних дій (CAP):</strong>
+                    <ul id="psc-cap-list"></ul>
+                  </div>
+                </div>
+
+                <div class="brm-watch-card" id="brm-watch-card">
+                  <div class="brm-header">
+                    <div>
+                      <span class="brm-kicker">BRM · STCW A-VIII/2 &amp; COLREG RULE 5</span>
+                      <h3 id="brm-card-title">Синергія ходової вахти (BRM)</h3>
+                    </div>
+                    <div class="brm-score-badge-wrap">
+                      <div class="brm-team-score-box">
+                        <span class="brm-score-sub" id="brm-score-sub-label">Ризик вахти</span>
+                        <strong id="brm-team-score">18</strong>
+                      </div>
+                      <span class="brm-badge brm-badge-optimal" id="brm-redundancy-badge">Оптимальний рівень</span>
+                    </div>
+                  </div>
+                  <div class="brm-controls-bar">
+                    <label class="brm-toggle-label">
+                      <input type="checkbox" id="brm-lookout-toggle" checked />
+                      <span id="brm-lookout-text">Окремий впередсмотрящий (Lookout)</span>
+                    </label>
+                    <label class="brm-toggle-label">
+                      <input type="checkbox" id="brm-pilot-toggle" />
+                      <span id="brm-pilot-text">Лоцман на борту (Pilotage / MPX)</span>
+                    </label>
+                  </div>
+                  <div class="brm-findings-box" id="brm-findings-box">
+                    <h4 id="brm-findings-title">Оцінка структури вахти та взаємодії</h4>
+                    <div class="brm-findings-list" id="brm-findings-list"></div>
+                  </div>
+                  <div class="brm-recs-box" id="brm-recs-box">
+                    <h4 id="brm-recs-title">Рекомендації капітану та вахтовому помічнику</h4>
+                    <ul class="brm-recs-list" id="brm-recs-list"></ul>
+                  </div>
+                </div>
+
+                <div class="mlc-rest-validator-card" id="mlc-rest-validator-card">
+                  <div class="mlc-val-header">
+                    <div>
+                      <span class="mlc-val-kicker">MLC 2006 STANDARD A2.3 &amp; STCW A-VIII/1</span>
+                      <h3 id="mlc-val-title">Валідатор годин відпочинку (Table of Hours of Rest)</h3>
+                    </div>
+                    <div class="mlc-val-status-wrap">
+                      <div class="mlc-val-total-box">
+                        <span class="mlc-val-total-sub" id="mlc-val-total-sub-label">Відпочинок за 7 діб</span>
+                        <strong id="mlc-val-total-hours">112 / 77 год</strong>
+                      </div>
+                      <span class="mlc-val-badge mlc-val-badge-compliant" id="mlc-compliance-badge">Відповідає конвенції</span>
+                    </div>
+                  </div>
+
+                  <p class="mlc-val-desc" id="mlc-val-desc">
+                    Симуляція суднового журналу обліку праці та відпочинку. Перевірка ковзних 24-годинних та 7-денних вікон за стандартами Paris MoU / PSC.
+                  </p>
+
+                  <div class="mlc-val-presets-bar">
+                    <span class="mlc-presets-label" id="mlc-presets-label">Шаблони вахт:</span>
+                    <button type="button" class="mlc-preset-btn active" id="mlc-preset-48">Вахта 4/8 (STCW)</button>
+                    <button type="button" class="mlc-preset-btn" id="mlc-preset-66">Вахта 6/6 (Feeder)</button>
+                    <button type="button" class="mlc-preset-btn" id="mlc-preset-overtime">Порт / Овертайм</button>
+                  </div>
+
+                  <div class="mlc-val-days-bar" id="mlc-day-tabs" role="tablist" aria-label="Дні тижня розкладу">
+                    <button type="button" class="mlc-day-tab active" data-day="0" role="tab" aria-selected="true">День 1</button>
+                    <button type="button" class="mlc-day-tab" data-day="1" role="tab" aria-selected="false">День 2</button>
+                    <button type="button" class="mlc-day-tab" data-day="2" role="tab" aria-selected="false">День 3</button>
+                    <button type="button" class="mlc-day-tab" data-day="3" role="tab" aria-selected="false">День 4</button>
+                    <button type="button" class="mlc-day-tab" data-day="4" role="tab" aria-selected="false">День 5</button>
+                    <button type="button" class="mlc-day-tab" data-day="5" role="tab" aria-selected="false">День 6</button>
+                    <button type="button" class="mlc-day-tab" data-day="6" role="tab" aria-selected="false">День 7</button>
+                  </div>
+
+                  <div class="mlc-timeline-wrapper">
+                    <div class="mlc-timeline-meta">
+                      <span id="mlc-active-day-label">День 1: погодинний графік</span>
+                      <small id="mlc-timeline-hint">Натисніть на слот, щоб перемкнути: Відпочинок / Робота</small>
+                    </div>
+                    <div class="mlc-hours-grid" id="mlc-hours-grid" role="region" aria-label="Погодинний графік 24 години"></div>
+                  </div>
+
+                  <div class="mlc-rules-checklist">
+                    <div class="mlc-rule-item" id="mlc-rule-daily">
+                      <span class="mlc-rule-icon">✓</span>
+                      <div class="mlc-rule-content">
+                        <strong>Мінімум 10 год відпочинку за кожні 24 год</strong>
+                        <small>MLC Standard A2.3.5(b) / STCW Section A-VIII/1</small>
+                      </div>
+                    </div>
+                    <div class="mlc-rule-item" id="mlc-rule-splits">
+                      <span class="mlc-rule-icon">✓</span>
+                      <div class="mlc-rule-content">
+                        <strong>Не більше 2 періодів відпочинку за добу</strong>
+                        <small>MLC Standard A2.3.6 / Нерозривність відновлення</small>
+                      </div>
+                    </div>
+                    <div class="mlc-rule-item" id="mlc-rule-blocklen">
+                      <span class="mlc-rule-icon">✓</span>
+                      <div class="mlc-rule-content">
+                        <strong>Один нерозривний блок відпочинку ≥ 6 годин</strong>
+                        <small>STCW A-VIII/1.3 / Профілактика хронічної втоми</small>
+                      </div>
+                    </div>
+                    <div class="mlc-rule-item" id="mlc-rule-interval">
+                      <span class="mlc-rule-icon">✓</span>
+                      <div class="mlc-rule-content">
+                        <strong>Інтервал між періодами відпочинку ≤ 14 годин</strong>
+                        <small>MLC Standard A2.3.6 / Максимальний безперервний цикл</small>
+                      </div>
+                    </div>
+                    <div class="mlc-rule-item" id="mlc-rule-weekly">
+                      <span class="mlc-rule-icon">✓</span>
+                      <div class="mlc-rule-content">
+                        <strong>Мінімум 77 год відпочинку за будь-які 7 діб</strong>
+                        <small>MLC Standard A2.3.5(b) / Тижневий баланс праці</small>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mlc-violations-box" id="mlc-violations-box" hidden>
+                    <h4 id="mlc-violations-title">Зафіксовані невідповідності (Non-Conformities):</h4>
+                    <ul class="mlc-violations-list" id="mlc-violations-list"></ul>
+                  </div>
+                </div>
+
+                <div class="emergency-drill-card" id="emergency-drill-card">
+                  <div class="drill-header">
+                    <div>
+                      <span class="drill-kicker">SOLAS III/19 · АВАРІЙНІ ТРИВОГИ</span>
+                      <h3>Симуляція реакції на тривогу</h3>
+                    </div>
+                    <div class="drill-header-controls">
+                      <button type="button" class="button-ghost drill-sound-btn" id="drill-sound-btn" title="Сигнал тривоги за кодом IMO BAM MSC.302(87) / SOLAS">
+                        Сигнал тривоги (BAM)
+                      </button>
+                      <label for="drill-type-select" class="sr-only">Тип суднової тривоги</label>
+                      <select id="drill-type-select">
+                        <option value="fire">Пожежна тривога (Fire Drill)</option>
+                        <option value="abandon_ship">Шлюпкова тривога (Abandon Ship)</option>
+                        <option value="enclosed_space">Рятування з замкненого простору</option>
+                        <option value="oil_spill">Аварійний розлив нафти (SOPEP)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="drill-results">
+                    <div class="drill-stat-cell">
+                      <span>Затримка реакції</span>
+                      <strong id="drill-delay-display">+1.2 с</strong>
+                      <small>через фактори втоми</small>
+                    </div>
+                    <div class="drill-stat-cell">
+                      <span>Ймовірність помилки</span>
+                      <strong id="drill-error-display">4%</strong>
+                      <small>критичні збої дій</small>
+                    </div>
+                    <div class="drill-stat-cell">
+                      <span>Рівень готовності</span>
+                      <strong id="drill-readiness-display" class="readiness-optimal">Оптимальний</strong>
+                      <small>за розкладом Muster List</small>
+                    </div>
+                  </div>
+                  <p class="drill-advice" id="drill-advice-text">—</p>
+                </div>
+
+                <div class="qr-handover-card" id="qr-handover-card">
+                  <div class="qr-header">
+                    <div>
+                      <span class="qr-kicker">Офлайн-передача вахти</span>
+                      <h3>Офлайн-передача стану вахти (QR)</h3>
+                    </div>
+                    <span class="qr-badge">Без мережі</span>
+                  </div>
+                  <p class="qr-lead">
+                    Скануйте з екрана для миттєвої передачі параметрів безпеки вахтовому помічнику (Relieving Officer) без Інтернету чи супутникового каналу.
+                  </p>
+                  <div class="qr-visual-box">
+                    <div class="qr-svg-wrap" id="qr-svg-wrap"></div>
+                    <div class="qr-meta-text">
+                      <span id="qr-digest-text">SEARISK:OFFLINE:WATCH</span>
+                      <small>Деперсоналізований оптичний зріз вахти</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PANE: METHOD -->
+              <div class="result-tab-pane" id="pane-method" data-tab-pane="method" role="tabpanel" aria-labelledby="tab-btn-method" hidden>
+                <div class="fsa-matrix-section" id="fsa-matrix-section">
+                  <div class="fsa-matrix-header">
+                    <div>
+                      <span class="fsa-matrix-kicker">IMO FSA METHODOLOGY · MSC-MEPC.2/CIRC.12</span>
+                      <h3>Матриця ризиків IMO FSA</h3>
+                    </div>
+                    <span class="fsa-matrix-badge" id="fsa-matrix-badge">Оцінка матриці</span>
+                  </div>
+                  <div class="fsa-matrix-grid-wrap">
+                    <div class="fsa-matrix-grid" id="fsa-matrix-grid" role="region" aria-label="Таблиця оцінки ризику IMO FSA"></div>
+                  </div>
+                  <div class="fsa-matrix-footer">
+                    <strong id="fsa-region-title">—</strong>
+                    <p id="fsa-region-action">—</p>
+                  </div>
+                </div>
+
+                <div class="academic-export-card" id="academic-export-card">
+                  <div class="academic-header">
+                    <div>
+                      <span class="academic-kicker">Експорт для публікації</span>
+                      <h3>Експорт наукових артефактів (LaTeX / BibTeX / CSV)</h3>
+                    </div>
+                    <span class="academic-format-badge">LaTeX / CSV</span>
+                  </div>
+                  <p class="academic-lead">
+                    Таблиці та цитування для курсових, дипломних або наукових робіт.
+                  </p>
+                  <div class="academic-actions">
+                    <button type="button" class="button button-secondary" id="copy-latex-btn">Копіювати LaTeX таблицю</button>
+                    <button type="button" class="button button-secondary" id="copy-bibtex-btn">Копіювати BibTeX цитування</button>
+                    <button type="button" class="button button-secondary" id="download-csv-btn">Завантажити CSV зріз</button>
+                  </div>
+                  <div class="academic-preview-box">
+                    <pre id="academic-preview-code"><code>% Натисніть кнопку вище для перегляду згенерованого артефакту</code></pre>
+                  </div>
+                </div>
+
+                <div class="profile-compare-card" id="profile-compare-card">
+                  <div class="compare-header">
+                    <div>
+                      <span class="compare-kicker">Порівняння профілів</span>
+                      <h3>Порівняння вахтових профілів</h3>
+                    </div>
+                    <span class="compare-badge" id="compare-verdict-badge">Δ 0%</span>
+                  </div>
+                  <div class="compare-grid">
+                    <div class="compare-col" id="compare-col-a">
+                      <h4>Поточний розрахунок</h4>
+                      <p class="compare-val" id="compare-val-a">—</p>
+                      <span class="compare-cat" id="compare-cat-a">—</span>
+                    </div>
+                    <div class="compare-divider">VS</div>
+                    <div class="compare-col" id="compare-col-b">
+                      <h4>Альтернативний графік (3-вахтовий 4/8 + ЗІЗ)</h4>
+                      <p class="compare-val" id="compare-val-b">—</p>
+                      <span class="compare-cat" id="compare-cat-b">—</span>
+                    </div>
+                  </div>
+                  <p class="compare-note" id="compare-note-text">
+                    Порівняльний аналіз демонструє вплив організаційних покращень без зміни технічних характеристик судна.
+                  </p>
+                </div>
+
+                <dl class="model-context" aria-label="Статус і обмеження моделі">
+                  <div><dt>Статус моделі</dt><dd id="model-status">Попередня</dd></div>
+                  <div><dt>Версія</dt><dd id="model-version">SR-UA-PROTOTYPE-0.1</dd></div>
+                  <div><dt>Невизначеність</dt><dd id="uncertainty-status">Не оцінена</dd></div>
+                </dl>
+
+                <details class="evidence-details" open>
+                  <summary>Джерела компонентів і статус перевірки</summary>
+                  <div id="component-evidence"></div>
+                </details>
+
+                <details class="calculation-details">
+                  <summary>Формула та припущення</summary>
+                  <p id="formula-copy"></p>
+                  <ul id="assumption-list"></ul>
+                </details>
+
+                <details class="glossary-details">
+                  <summary>Морський глосарій і стандарти IMO / ILO</summary>
+                  <dl class="glossary-list">
+                    <div><dt>MLC 2006</dt><dd>Конвенція МОП про працю в морському судноплавстві. Встановлює обов'язкові ліміти: не менше 10 год відпочинку на добу та 77 год за 7 днів.</dd></div>
+                    <div><dt>STCW (ПДНВ)</dt><dd>Міжнародна конвенція про підготовку і дипломування моряків та несення вахти (Розділ A-VIII/1: придатність до несення ходової вахти).</dd></div>
+                    <div><dt>IMO FSA</dt><dd>Formal Safety Assessment (MSC-MEPC.2/Circ.12) — формалізована оцінка безпеки суден та екіпажу на основі матриць частоти та важкості наслідків.</dd></div>
+                    <div><dt>ALARP</dt><dd>As Low As Reasonably Practicable — фундаментальний принцип безпеки: зниження ризику до практично досяжного рівня через технічні та організаційні заходи.</dd></div>
+                    <div><dt>IMO MSC/Circ.1598</dt><dd>Керівні рекомендації IMO з управління судновою втомою (Fatigue Management Guidelines).</dd></div>
+                    <div><dt>ISGOTT</dt><dd>International Safety Guide for Oil Tankers and Terminals — стандарт безпеки газового середовища, статичної електрики та наливних операцій.</dd></div>
+                    <div><dt>IMSBC Code</dt><dd>International Maritime Solid Bulk Cargoes Code — вимоги до перевезення навалювальних вантажів, схильних до розрідження або виділення газів.</dd></div>
+                    <div><dt>Snap-Back Zone</dt><dd>Небезпечна зона віддачі швартовного троса. Розраховується для всіх типів синтетичних і сталевих кінців.</dd></div>
+                    <div><dt>Stop Work Authority</dt><dd>Безумовне право будь-якого члена екіпажу негайно зупинити роботу за підозри на загрозу життю без дисциплінарних наслідків.</dd></div>
+                    <div><dt>GMDSS / ГМЗЛБ</dt><dd>Глобальна морська система зв'язку під час лиха та для забезпечення безпеки мореплавства (SOLAS IV).</dd></div>
+                    <div><dt>Профіль ризику судна</dt><dd>Категорія високого, стандартного або низького ризику на основі типу, віку, кількості та частоти затримань судна, держави прапора (Правила контролю суден z0353-04).</dd></div>
+                    <div><dt>GISIS IMO</dt><dd>Глобальна інтегрована система інформації про судноплавство IMO — аварії та розслідування.</dd></div>
+                    <div><dt>CleanSeaNet</dt><dd>Європейська супутникова служба виявлення розливів нафти та моніторингу аварійного забруднення.</dd></div>
+                  </dl>
+                </details>
+              </div>
+
+              <div class="report-actions">
+                <button class="button button-secondary" id="print-report" type="button">Друк / зберегти PDF</button>
+                <small>Діалог друку відкривається локально у браузері.</small>
+              </div>
+
+              <div class="print-audit-block" aria-hidden="true">
+                <div class="print-audit-header">
+                  <div>
+                    <span class="p-doc-type">МОРСЬКИЙ САМОАУДИТ ВАХТИ</span>
+                    <strong class="p-doc-title">КАРТКА ПЕРЕВІРКИ ФАКТОРІВ РИЗИКУ (SAFETY WATCHKEEPING)</strong>
+                  </div>
+                  <div class="p-doc-stamp">
+                    <span>MLC 2006 · STCW A-VIII/1</span>
+                    <small>Zero-Data Local Audit</small>
+                  </div>
+                </div>
+                <div class="print-signatures">
+                  <div class="print-sig-col">
+                    <span>Підпис вахтового помічника / курсанта:</span>
+                    <div class="sig-line"></div>
+                    <small>Підтверджую коректність внесених годин та стану</small>
+                  </div>
+                  <div class="print-sig-col">
+                    <span>Офіцер з безпеки (Safety Officer / Ch.Off):</span>
+                    <div class="sig-line"></div>
+                    <small>Ознайомлений із показниками ризику та планом вахти</small>
+                  </div>
+                </div>
+                <p class="print-audit-disclaimer">SeaRisk UA (ДІ НУ «ОМА»). Розрахунок виконано локально на браузерному рушії. Документ призначений для самоконтролю безпеки мореплавства та не замінює обов'язкові суднові форми СУБ.</p>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <!-- CASES SECTION -->
+      <section class="cases-section" id="cases">
+        <div class="shell">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Уроки розслідувань</p>
+              <h2>Аварії MAIB</h2>
+            </div>
+            <p>Реальні випадки з офіційних звітів британської морської адміністрації з прив'язкою до факторів ризику моделі.</p>
+          </div>
+
+          <div class="cases-scroll">
+            <article class="case-card">
+              <div class="case-badge-row">
+                <span class="case-badge fatal">Посадка на мілину</span>
+                <span class="case-id">Звіт MAIB 10/2020</span>
+              </div>
+              <h3 class="case-title">CMA CGM Vasco de Gama</h3>
+              <p class="case-ship">Ультра-великий контейнеровоз (399 м) · Протока Торн-Шанел</p>
+              <p class="case-summary">
+                Під час нічного заходу в Саутгемптон судно сіло на мілину. Команда містка втратила контроль курсу 
+                через накопичену перевтому вахтового помічника: понад 70% нічних годин і високий темп роботи призвели до тунельного зору.
+              </p>
+              <div class="case-factors">
+                <span>2 750 год/рік</span>
+                <span>70% нічних вахт</span>
+                <span>Порушення MLC 2006</span>
+              </div>
+              <div class="case-actions">
+                <button type="button" class="button button-primary case-load-btn" data-case="vasco-de-gama">
+                  Завантажити в калькулятор
+                </button>
+                <a href="https://www.gov.uk/maib-reports/grounding-of-ultra-large-container-vessel-cma-cgm-vasco-de-gama" target="_blank" rel="noreferrer" class="case-link">
+                  Звіт розслідування ↗
+                </a>
+              </div>
+            </article>
+
+            <article class="case-card">
+              <div class="case-badge-row">
+                <span class="case-badge danger">Важке травмування</span>
+                <span class="case-id">Звіт MAIB 13/2017</span>
+              </div>
+              <h3 class="case-title">Танкер ЗПГ «Zarga»</h3>
+              <p class="case-ship">Газовоз LNG (288 м) · Термінал South Hook</p>
+              <p class="case-summary">
+                Розрив надміцного швартовного кінця (SBT) під натягом із зоною віддачі (Snap-back). 
+                Матрос отримав важку ЧМТ і травми кінцівок. Причини: втома палубної команди, відсутність захисту та робота в небезпечній зоні.
+              </p>
+              <div class="case-factors">
+                <span>Палубна команда</span>
+                <span>Порушення ЗІЗ</span>
+                <span>Snap-back zone</span>
+              </div>
+              <div class="case-actions">
+                <button type="button" class="button button-primary case-load-btn" data-case="zarga">
+                  Завантажити в калькулятор
+                </button>
+                <a href="https://www.gov.uk/maib-reports/failure-of-a-mooring-line-on-board-the-lng-carrier-zarga-resulting-in-serious-injury-to-an-officer" target="_blank" rel="noreferrer" class="case-link">
+                  Звіт розслідування ↗
+                </a>
+              </div>
+            </article>
+
+            <article class="case-card">
+              <div class="case-badge-row">
+                <span class="case-badge fatal">Зіткнення з загибеллю</span>
+                <span class="case-id">Звіт MAIB 18/2023</span>
+              </div>
+              <h3 class="case-title">Scot Carrier &amp; Karin Høj</h3>
+              <p class="case-ship">Суховантаж (90 м) · Балтійське море біля Борнгольма</p>
+              <p class="case-summary">
+                Нічний таран данської самохідної баржі на швидкості 12 вузлів. Баржа перекинулася, двоє моряків загинули. 
+                Вахтовий помічник Scot Carrier був на містку сам, заснув на ходовій вахті внаслідок безсоння та алкоголю.
+              </p>
+              <div class="case-factors">
+                <span>Алкоголь на вахті</span>
+                <span>80% нічних годин</span>
+                <span>Засинання за ECDIS</span>
+              </div>
+              <div class="case-actions">
+                <button type="button" class="button button-primary case-load-btn" data-case="scot-carrier">
+                  Завантажити в калькулятор
+                </button>
+                <a href="https://www.gov.uk/maib-reports/collision-between-general-cargo-vessel-scot-carrier-and-split-hopper-barge-karin-hoj-with-loss-of-2-lives" target="_blank" rel="noreferrer" class="case-link">
+                  Звіт розслідування ↗
+                </a>
+              </div>
+            </article>
+
+            <article class="case-card">
+              <div class="case-badge-row">
+                <span class="case-badge fatal">Загибель судна</span>
+                <span class="case-id">Звіт NTSB / USCG / IMO</span>
+              </div>
+              <h3 class="case-title">MV El Faro (Ураган Joaquin)</h3>
+              <p class="case-ship">Контейнеровоз Ro-Ro (241 м) · Атлантичний океан / Багами</p>
+              <p class="case-summary">
+                Загибель 33 членів екіпажу в урагані 4 категорії. Комплекс факторів: тиск комерційного розкладу, 
+                зміщення вантажу через послаблені талрепи (lashing), втрата остійності, авторитаризм капітана та втома від наднормових вахт.
+              </p>
+              <div class="case-factors">
+                <span>Контейнеровоз</span>
+                <span>2 950 год/рік</span>
+                <span>Втрата остійності</span>
+              </div>
+              <div class="case-actions">
+                <button type="button" class="button button-primary case-load-btn" data-case="el-faro">
+                  Завантажити в калькулятор
+                </button>
+                <a href="https://www.ntsb.gov/investigations/AccidentReports/Pages/MAR1701.aspx" target="_blank" rel="noreferrer" class="case-link">
+                  Звіт розслідування ↗
+                </a>
+              </div>
+            </article>
+
+            <article class="case-card">
+              <div class="case-badge-row">
+                <span class="case-badge eco">Екологічна катастрофа</span>
+                <span class="case-id">Звіт NTSB / US EPA</span>
+              </div>
+              <h3 class="case-title">Exxon Valdez</h3>
+              <p class="case-ship">Супертанкер VLCC (301 м) · Протока Принца Вільгельма</p>
+              <p class="case-summary">
+                Посадка на риф Блай та вилив 41 млн літрів сирої нафти. Розслідування NTSB виявило хронічну перевтому третього помічника 
+                на ходовій вахті через безперервний вахтовий графік 6/6 та понад 18 годин без сну, що призвело до повної втрати просторової орієнтації.
+              </p>
+              <div class="case-factors">
+                <span>Танкер VLCC</span>
+                <span>85% нічних вахт</span>
+                <span>3 200 год/рік</span>
+              </div>
+              <div class="case-actions">
+                <button type="button" class="button button-primary case-load-btn" data-case="exxon-valdez">
+                  Завантажити в калькулятор
+                </button>
+                <a href="https://www.ntsb.gov/investigations/AccidentReports/Reports/MAR9004.pdf" target="_blank" rel="noreferrer" class="case-link">
+                  Звіт розслідування ↗
+                </a>
+              </div>
+            </article>
+
+            <article class="case-card">
+              <div class="case-badge-row">
+                <span class="case-badge fatal">Перекидання судна</span>
+                <span class="case-id">Звіт NOU 2008</span>
+              </div>
+              <h3 class="case-title">Bourbon Dolphin</h3>
+              <p class="case-ship">Якорезавізний буксир AHTS (75 м) · Північне море / Шетланд</p>
+              <p class="case-summary">
+                Втрата динамічної остійності та перекидання під час заведення якоря бурової установки. Загинуло 8 членів екіпажу. 
+                Фактори: надмірне натягнення якірних тросів, робота палубної команди на слизькій палубі без відпочинку та екстремальна кумулятивна втома.
+              </p>
+              <div class="case-factors">
+                <span>Буксир / AHTS</span>
+                <span>Відсутність ЗІЗ</span>
+                <span>Динамічна остійність</span>
+              </div>
+              <div class="case-actions">
+                <button type="button" class="button button-primary case-load-btn" data-case="bourbon-dolphin">
+                  Завантажити в калькулятор
+                </button>
+                <a href="https://www.havarikommisjonen.no/Sjofart/Rapporter/Rapport/?accidentId=241" target="_blank" rel="noreferrer" class="case-link">
+                  Звіт розслідування ↗
+                </a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- GISIS IMO & ECFA INVESTIGATION SECTION -->
+      <section class="gisis-ecfa-section" id="gisis-ecfa">
+        <div class="shell">
+          <div class="section-heading light">
+            <div>
+              <p class="eyebrow" id="gisis-eyebrow">IMO Res. A.1075(28) &amp; MSC-MEPC.3/Circ.4/Rev.1</p>
+              <h2 id="gisis-main-title">Оцифрування аварій GISIS IMO та аналіз ECFA</h2>
+            </div>
+            <p id="gisis-main-lead">
+              Практичне дослідження аварії лоцманського катера KP-965 (Копер, 14.04.2026): цифрові класифікатори Додатка 5, причинно-наслідкова схема ECFA, розрахунок матриці ризику портових басейнів (R = P × S) та автоматична генерація превентивних правил безпеки.
+            </p>
+          </div>
+
+          <nav class="guided-progress" aria-label="Етапи розбору аварії">
+            <a href="#step-1" data-guided-progress="1"><span>1</span> Що сталося</a>
+            <a href="#step-2" data-guided-progress="2"><span>2</span> Чому це сталося</a>
+            <a href="#step-3" data-guided-progress="3"><span>3</span> Як працює оцінка</a>
+            <a href="#step-4" data-guided-progress="4"><span>4</span> Як запобігти повторенню</a>
+            <a href="#step-5" data-guided-progress="5"><span>5</span> Висновок і докази</a>
+          </nav>
+
+          <article class="guided-panel" id="step-1" data-guided-step="1" aria-labelledby="step-1-title">
+            <div class="guided-step-heading">
+              <span>Крок 1 із 5</span>
+              <h3 id="step-1-title" tabindex="-1">Що сталося</h3>
+              <p>Спочатку зафіксуємо факти без пошуку винного: де, коли та за яких умов стався навал.</p>
+            </div>
+          <div class="gisis-case-strip" aria-label="Параметри оцифрованого кейсу">
+            <div class="gisis-case-pill">
+              <span>Судно:</span> <strong>KP-965 (GRP, L = 14.2 м)</strong>
+            </div>
+            <div class="gisis-case-pill">
+              <span>Подія:</span> <strong>Навал на буй 2/I (v = 22.0 вузлів)</strong>
+            </div>
+            <div class="gisis-case-pill">
+              <span>Акваторія:</span> <strong>Басейн I порту Копер (Словенія)</strong>
+            </div>
+            <div class="gisis-case-pill">
+              <span>Міжнародний реєстр:</span> <strong>EMCIP 2026/002821 · GISIS C1001092</strong>
+            </div>
+          </div>
+            <p class="guided-plain-summary"><strong>Простими словами:</strong> катер ішов уночі портовим басейном зі швидкістю близько 22 вузлів і навалився на буй. Судно було пошкоджене, але подія не призвела до загибелі людей.</p>
+            <div class="guided-actions guided-actions-end">
+              <a class="button button-primary" href="#step-2" data-guided-next>Далі: знайти причини</a>
+            </div>
+          </article>
+
+          <div class="gisis-grid">
+            <!-- PORT BASIN RISK CARD (R = P x S) -->
+            <div class="port-basin-risk-card" id="port-basin-risk-card">
+              <article class="guided-panel" id="step-2" data-guided-step="2" aria-labelledby="step-2-title">
+                <div class="guided-step-heading">
+                  <span>Крок 2 із 5</span>
+                  <h3 id="step-2-title" tabindex="-1">Чому це сталося</h3>
+                  <p>Позначте фактори, які підтверджені матеріалами кейсу. У базовому сценарії KP-965 увімкнені всі п’ять.</p>
+                </div>
+              <div class="gisis-card-header">
+                <div>
+                  <span class="gisis-kicker" id="gisis-calc-kicker">IMO FSA METHODOLOGY · R = P × S</span>
+                  <h3 id="gisis-calc-title">Автоматизована оцінка ризику акваторій</h3>
+                </div>
+                <span class="gisis-card-badge">Акваторії та басейни</span>
+              </div>
+              <p class="gisis-card-intro" id="gisis-calc-intro">
+                Оберіть п’ять ключових факторів кейсу. Алгоритм обчислить умовний бал імовірності P, помножить його на тяжкість S та запропонує превентивні заходи.
+              </p>
+
+              <div class="gisis-factors-form" role="group" aria-labelledby="gisis-factors-legend">
+                <span class="gisis-factors-legend" id="gisis-factors-legend">Виявлені фактори сприяння (Contributing Factors):</span>
+                <div class="gisis-checkbox-grid">
+                  <label class="gisis-checkbox-item">
+                    <input type="checkbox" id="factor-speed" checked />
+                    <span class="gisis-checkbox-label">
+                      <strong>Перевищення швидкості (v &gt; 15 вузлів, KP-965 = 22 вузли)</strong>
+                      <small>COLREG Rule 6 / Небезпечна швидкість у стисненому басейні [+2.0]</small>
+                    </span>
+                  </label>
+                  <label class="gisis-checkbox-item">
+                    <input type="checkbox" id="factor-lookout" checked />
+                    <span class="gisis-checkbox-label">
+                      <strong>Одиночне спостереження рульовим без матроса (Solo watch)</strong>
+                      <small>COLREG Rule 5 / Матрос сидів у каюті без огляду горизонту [+2.0]</small>
+                    </span>
+                  </label>
+                  <label class="gisis-checkbox-item">
+                    <input type="checkbox" id="factor-fatigue" checked />
+                    <span class="gisis-checkbox-label">
+                      <strong>Циркадний надир (02:16 LT) та накопичена перевтома</strong>
+                      <small>IMO MSC/Circ.1598 / Засинання та сповільнення реакції [+1.0]</small>
+                    </span>
+                  </label>
+                  <label class="gisis-checkbox-item">
+                    <input type="checkbox" id="factor-radar" checked />
+                    <span class="gisis-checkbox-label">
+                      <strong>Нехтування радаром або відсутність буя на екрані плотера</strong>
+                      <small>Table 19 Error Type 1 / Радар на шкалі 1.5 милі без контролю дистанції [+1.5]</small>
+                    </span>
+                  </label>
+                  <label class="gisis-checkbox-item">
+                    <input type="checkbox" id="factor-training" checked />
+                    <span class="gisis-checkbox-label">
+                      <strong>Недоліки навчання та відсутність чек-лістів (SOP / Training)</strong>
+                      <small>Tables 22-23 / Відсутність відстежуваних тренінгів та розподілу дій [+1.0]</small>
+                    </span>
+                  </label>
+                </div>
+
+                <div class="gisis-severity-row">
+                  <label for="gisis-severity-select">
+                    <strong>Ступінь важкості наслідків (Severity S, Table 5):</strong>
+                    <select id="gisis-severity-select">
+                      <option value="1">1: Незначний інцидент (Minor incident / без зупинки)</option>
+                      <option value="2">2: Серйозний інцидент (Minor damage / без травм)</option>
+                      <option value="3" selected>3: Морська аварія — пошкодження корпусу та гвинтів (KP-965)</option>
+                      <option value="4">4: Дуже серйозна аварія з конструктивною загибеллю</option>
+                      <option value="5">5: Катастрофа / людські жертви або повне затоплення</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+
+                <div class="guided-actions">
+                  <a class="button button-ghost" href="#step-1" data-guided-prev>Назад</a>
+                  <a class="button button-primary" href="#step-3" data-guided-next>Далі: побачити розрахунок</a>
+                </div>
+              </article>
+
+              <article class="guided-panel" id="step-3" data-guided-step="3" aria-labelledby="step-3-title">
+                <div class="guided-step-heading">
+                  <span>Крок 3 із 5</span>
+                  <h3 id="step-3-title" tabindex="-1">Як працює оцінка</h3>
+                  <p>Ваги активних факторів додаються, але шкала ймовірності обмежена значенням 5. Потім P множиться на тяжкість S.</p>
+                </div>
+              <div class="guided-score-explanation" aria-live="polite">
+                <div><span>Сума ваг до обмеження</span><strong id="gisis-raw-prob-display">8.5</strong></div>
+                <p id="gisis-cap-explanation">Сума факторів 8.5 обмежена шкалою до P = 5.</p>
+              </div>
+              <div class="gisis-score-summary">
+                <div class="gisis-stat-cell">
+                  <span>Ймовірність (P)</span>
+                  <strong id="gisis-prob-display">5.0 / 5.0</strong>
+                  <small>Частота загрози</small>
+                </div>
+                <div class="gisis-stat-cell">
+                  <span>Тяжкість (S)</span>
+                  <strong id="gisis-sev-display">3 / 5</strong>
+                  <small>Table 5 Severity</small>
+                </div>
+                <div class="gisis-stat-cell">
+                  <span>Індекс ризику (R)</span>
+                  <strong id="gisis-risk-display">15.0</strong>
+                  <small>R = P × S</small>
+                </div>
+                <div class="gisis-stat-cell">
+                  <span>Категорія безпеки</span>
+                  <strong id="gisis-risk-badge" class="gisis-risk-critical">Критичний (Неприйнятний)</strong>
+                  <small>ALARP критерій</small>
+                </div>
+              </div>
+
+              <div class="gisis-critical-alert-box" id="gisis-critical-alert" role="alert">
+                <div class="alert-icon" aria-hidden="true">⚠️</div>
+                <div class="alert-content">
+                  <strong id="gisis-critical-alert-title">АВТОМАТИЧНЕ ЗАСТЕРЕЖЕННЯ З БЕЗПЕКИ:</strong>
+                  <p id="gisis-critical-alert-text">Виявлено високий рівень ризику Зіткнення/Контакту (R = 15.0). Для нівелювання вимагається: 1) Встановити програмний ліміт швидкості катерів у басейні порту до 10 вузлів; 2) Обов’язкове дублювання візуального спостереження другим членом екіпажу з прямим доступом до радара.</p>
+                </div>
+              </div>
+
+                <div class="guided-actions">
+                  <a class="button button-ghost" href="#step-2" data-guided-prev>Назад</a>
+                  <a class="button button-primary" href="#step-4" data-guided-next>Далі: заходи безпеки</a>
+                </div>
+              </article>
+
+              <article class="guided-panel" id="step-4" data-guided-step="4" aria-labelledby="step-4-title">
+                <div class="guided-step-heading">
+                  <span>Крок 4 із 5</span>
+                  <h3 id="step-4-title" tabindex="-1">Як запобігти повторенню</h3>
+                  <p>Алгоритм пов’язує кожен обраний фактор або поріг ризику з конкретним превентивним заходом.</p>
+                </div>
+              <div class="gisis-mitigation-box" id="gisis-mitigation-box">
+                <div class="gisis-mitigation-head">
+                  <span class="mitigation-icon" aria-hidden="true">🛡️</span>
+                  <h4 id="gisis-mitigation-title">Автоматично згенеровані превентивні заходи безпеки:</h4>
+                </div>
+                <ul class="gisis-mitigation-list" id="gisis-mitigation-list">
+                  <!-- dynamically filled by app.js -->
+                </ul>
+              </div>
+                <div class="guided-actions">
+                  <a class="button button-ghost" href="#step-3" data-guided-prev>Назад</a>
+                  <a class="button button-primary" href="#step-5" data-guided-next>Далі: готовий висновок</a>
+                </div>
+              </article>
+            </div>
+
+          </div>
+
+            <!-- INTERACTIVE ECFA DIAGRAM (IMO Res. A.1075(28)) -->
+          <article class="guided-panel" id="step-5" data-guided-step="5" aria-labelledby="step-5-title">
+            <div class="guided-step-heading">
+              <span>Крок 5 із 5</span>
+              <h3 id="step-5-title" tabindex="-1">Висновок і докази</h3>
+              <p>Отримайте короткий висновок для пояснення роботи, а за потреби відкрийте повну ECFA-схему та джерела.</p>
+            </div>
+            <div class="assignment-conclusion-card">
+              <p id="assignment-conclusion" aria-live="polite">Формуємо висновок за поточними параметрами…</p>
+              <div class="guided-actions">
+                <button type="button" class="button button-primary" id="copy-assignment-conclusion-btn">Копіювати висновок</button>
+                <button type="button" class="button button-secondary" id="print-assignment-btn">Друк / зберегти PDF</button>
+              </div>
+              <div class="python-copy-fallback" id="assignment-conclusion-fallback" hidden>
+                <label for="assignment-conclusion-preview">Буфер обміну недоступний. Скопіюйте висновок вручну:</label>
+                <textarea id="assignment-conclusion-preview" rows="8" readonly spellcheck="false"></textarea>
+              </div>
+            </div>
+
+            <details class="guided-disclosure" id="guided-ecfa-details">
+              <summary>Відкрити повну діаграму ECFA</summary>
+            <div class="ecfa-diagram-card" id="ecfa-diagram-card">
+              <div class="gisis-card-header">
+                <div>
+                  <span class="gisis-kicker" id="ecfa-kicker">IMO RES. A.1075(28) · КАСКАДНИЙ ПРИЧИННИЙ АНАЛІЗ</span>
+                  <h3 id="ecfa-title">Інтерактивна векторна діаграма ECFA</h3>
+                </div>
+                <span class="ecfa-format-badge">Векторний SVG</span>
+              </div>
+              <p class="gisis-card-intro" id="ecfa-intro">
+                Структурно-логічна схема Event and Causal Factors Analysis аварії катера KP-965. Оберіть фільтр або клацніть вузол для перегляду аналітичної картки та превентивного заходу.
+              </p>
+
+              <div class="ecfa-filter-bar" role="toolbar" aria-label="Фільтрація вузлів діаграми ECFA">
+                <button type="button" class="ecfa-filter-btn active" data-ecfa-filter="all">Всі рівні</button>
+                <button type="button" class="ecfa-filter-btn" data-ecfa-filter="events">Події (E)</button>
+                <button type="button" class="ecfa-filter-btn" data-ecfa-filter="accident">Аварійні точки (AE)</button>
+                <button type="button" class="ecfa-filter-btn" data-ecfa-filter="casualty">Аварія (CE)</button>
+                <button type="button" class="ecfa-filter-btn" data-ecfa-filter="factors">Фактори (CF)</button>
+                <button type="button" class="ecfa-filter-btn" data-ecfa-filter="deficiencies">Дефіцити (SD)</button>
+                <button type="button" class="ecfa-filter-btn" data-ecfa-filter="issues">Проблеми (SI)</button>
+              </div>
+
+              <div class="ecfa-diagram-wrap" id="ecfa-diagram-wrap" role="region" aria-label="Векторна діаграма ECFA">
+                <!-- SVG injected dynamically or statically initialized by app.js -->
+              </div>
+
+              <div class="ecfa-node-details" id="ecfa-node-details" aria-live="polite">
+                <div class="ecfa-node-details-header">
+                  <span class="ecfa-node-tag" id="ecfa-selected-node-category">Аварійна подія (AE1)</span>
+                  <h4 id="ecfa-selected-node-title">Перевищення безпечної швидкості (COLREG Rule 6)</h4>
+                </div>
+                <p class="ecfa-node-desc" id="ecfa-selected-node-desc">
+                  Рух зі швидкістю 22.0 вузлів у нічний час всередині Басейну I порту Копер унеможливив вчасне виявлення швартовного буя 2/I та маневр ухилення.
+                </p>
+                <div class="ecfa-node-meta-grid">
+                  <div>
+                    <span>Нормативне посилання:</span>
+                    <strong id="ecfa-selected-node-ref">COLREG Rule 6 &amp; Портові правила Копера</strong>
+                  </div>
+                  <div>
+                    <span>Превентивна дія:</span>
+                    <strong id="ecfa-selected-node-mitigation">Впровадження програмного ліміту швидкості ≤ 10 вузлів у басейні</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ecfa-synthesis-box" id="ecfa-synthesis-box">
+                <details class="ecfa-synthesis-details" id="ecfa-synthesis-details">
+                  <summary id="ecfa-synthesis-summary">Офіційні висновки MAIIS та рекомендації з безпеки (SR003–SR009)</summary>
+                  <div class="ecfa-synthesis-content">
+                    <div class="ecfa-synthesis-card">
+                      <span class="synthesis-badge">Ключовий висновок (Key Finding)</span>
+                      <p id="maiis-key-finding">
+                        Навал стався внаслідок поєднання високої швидкості (~22 вузли), запізнілого виявлення небезпеки, неефективного спільного спостереження, зниженого моніторингу траєкторії, обмеженого огляду через розміщення крісла матроса, невикористання навігаційного дисплея як ефективного бар'єра та організаційних прогалин у підготовці, розподілі обов'язків і післяаварійних процедурах.
+                      </p>
+                    </div>
+                    <div class="ecfa-synthesis-card">
+                      <span class="synthesis-badge">Потенціал запобігання (Preventive Potential)</span>
+                      <p id="maiis-preventive-potential">
+                        За умови зниження швидкості внутрішнього переходу, ефективного дублюючого спостереження, кращої перевірки небезпек курсу, чіткого розподілу обов'язків та задокументованої системи тренінгів аварії можна було б запобігти.
+                      </p>
+                    </div>
+                    <div class="ecfa-recommendations-section">
+                      <h5 id="maiis-recommendations-title">Рекомендації з безпеки MAIIS (Safety Recommendations):</h5>
+                      <ul class="maiis-recs-list" id="maiis-recs-list">
+                        <!-- Populated by app.js -->
+                      </ul>
+                    </div>
+                  </div>
+                </details>
+              </div>
+            </div>
+            </details>
+
+
+          <!-- GISIS DIGITAL RECORD & PYTHON SCRIPT EXPORT -->
+          <details class="guided-disclosure" id="guided-evidence-details">
+            <summary>Відкрити джерела та файли для перевірки</summary>
+          <div class="gisis-export-card" id="gisis-export-card">
+            <div class="gisis-card-header">
+              <div>
+                <span class="gisis-kicker" id="gisis-export-kicker">ОЦИФРОВАНЕ ДОСЬЄ АВАРІЇ · MSC-MEPC.3/CIRC.4/REV.1</span>
+                <h3 id="gisis-export-title">Експорт для практичної роботи (JSON та Python)</h3>
+              </div>
+              <span class="gisis-card-badge">Open Data / Reproducibility</span>
+            </div>
+            <p class="gisis-card-intro" id="gisis-export-intro">
+              JSON містить оцифроване досьє інциденту, а Python-скрипт відтворює розрахунок базового кейсу KP-965 (п’ять факторів увімкнено, S = 3). Це навчальна модель, а не офіційна оцінка IMO.
+            </p>
+
+            <div class="gisis-export-actions">
+              <button type="button" class="button button-primary" id="download-gisis-json-btn">
+                Завантажити KP-965-gisis-record.json
+              </button>
+              <button type="button" class="button button-secondary" id="copy-python-script-btn">
+                Копіювати Python-скрипт (Jupyter / PyCharm)
+              </button>
+              <button type="button" class="button button-ghost" id="toggle-gisis-json-preview-btn">
+                Переглянути JSON Додатка 5
+              </button>
+            </div>
+
+            <div class="gisis-code-preview" id="gisis-code-preview" hidden>
+              <pre id="gisis-json-preview"><code>{ /* Завантаження структури... */ }</code></pre>
+            </div>
+
+            <div class="python-copy-fallback" id="python-copy-fallback" hidden>
+              <label for="python-script-preview">Буфер обміну недоступний. Скопіюйте повний Python-скрипт вручну:</label>
+              <textarea id="python-script-preview" rows="12" readonly spellcheck="false"></textarea>
+            </div>
+          </div>
+
+          <aside class="assignment-sources" id="assignment-sources" aria-labelledby="assignment-sources-title">
+            <div>
+              <p class="gisis-kicker">ДЖЕРЕЛА ТА МЕЖІ МОДЕЛІ</p>
+              <h3 id="assignment-sources-title">На чому побудована практична робота</h3>
+              <p>Класифікація, хронологія та рекомендації звіряються з матеріалами IMO і звітом розслідування. Публічні документи відкриваються без реєстрації; дані звіту KP-965 вже перенесені в кейс.</p>
+            </div>
+            <ul class="assignment-source-list">
+              <li><a href="https://www.imo.org/en/ourwork/iiis/pages/reporting.aspx" target="_blank" rel="noreferrer">GISIS — публічне пояснення системи звітності IMO</a></li>
+              <li><a href="https://wwwcdn.imo.org/localresources/en/OurWork/MSAS/Documents/MSC-MEPC3/MSC-MEPC.3-Circ.4%20Rev%201%20%20Revised%20harmonized%20reporting%20procedures%20-%20Reports%20required%20under%20SOLAS%20regulations%20I21.pdf" target="_blank" rel="noreferrer">MSC-MEPC.3/Circ.4/Rev.1 — прямий PDF IMO</a></li>
+              <li><a href="https://wwwcdn.imo.org/localresources/en/KnowledgeCentre/IndexofIMOResolutions/AssemblyDocuments/A.1075%2828%29.pdf" target="_blank" rel="noreferrer">IMO Resolution A.1075(28) — ECFA guidance</a></li>
+              <li><span>Final safety report for less serious marine casualty of Pilot boat KP-965 — матеріал завдання, ключові дані вже наведені вище</span></li>
+            </ul>
+          </aside>
+          </details>
+
+            <div class="guided-actions">
+              <a class="button button-ghost" href="#step-4" data-guided-prev>Назад</a>
+              <a class="text-link" href="#top">Повернутися на початок ↑</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- STATISTICS SECTION -->
+      <section class="statistics" id="statistics">
+        <div class="shell">
+          <div class="section-heading light">
+            <div><p class="eyebrow">Контекст інцидентів</p><h2>Що відбувається у вибірці</h2></div>
+            <p>Це частки серед агрегованих записів MAIB про постраждалих, а не ймовірність для конкретної людини.</p>
+          </div>
+
+          <div class="stats-toolbar">
+            <label>Професійна група
+              <select id="stats-role"><option value="all">Усі групи</option></select>
+            </label>
+            <label>Тип судна
+              <select id="stats-vessel"><option value="all">Усі судна</option></select>
+            </label>
+            <div class="demo-chip official"><i></i> Офіційні агрегати MAIB</div>
+          </div>
+
+          <div class="stat-summary">
+            <div><span>Записів про постраждалих</span><strong id="event-total">—</strong><small>після фільтрації й подавлення</small></div>
+            <div><span>З травмуванням</span><strong id="injury-share">—</strong><small id="injury-ci">95% ДІ: [—]</small></div>
+            <div><span>З летальним наслідком</span><strong id="fatal-share">—</strong><small id="fatal-ci">95% ДІ: [—]</small></div>
+          </div>
+          <div class="sparse-notice-box" id="sparse-notice-box" hidden>
+            <span class="sparse-chip">Малий обсяг вибірки (n &lt; 30): підвищена статистична невизначеність</span>
+          </div>
+
+          <div class="stats-grid">
+            <article class="chart-card">
+              <div class="chart-heading"><div><span>Типи подій</span><h3>Структура вибірки</h3></div><small>% записів</small></div>
+              <div class="event-bars" id="event-bars"></div>
+              <dl class="chart-meta" id="event-chart-meta" aria-live="polite"></dl>
+            </article>
+            <article class="chart-card severity-card">
+              <div class="chart-heading"><div><span>Наслідки</span><h3>Тяжкість інцидентів</h3></div><small>умовний розподіл</small></div>
+              <div class="donut-wrap">
+                <div class="donut" id="severity-donut"><div><strong id="severity-total">—</strong><span>записів</span></div></div>
+                <ul id="severity-legend"></ul>
+              </div>
+              <dl class="chart-meta" id="severity-chart-meta" aria-live="polite"></dl>
+            </article>
+          </div>
+          <p class="source-note">Джерело: <a href="https://maps.dft.gov.uk/maib-data-portal/web-pages/download_files_section.html" target="_blank" rel="noreferrer">MAIB Data Portal</a>, завантажено 10.10.2026. Комбінації з менш ніж 5 записами не публікуються, тому показані підсумки можуть бути нижчими за повні. Дані не містять знаменника експозиції й не дають персональної ймовірності.</p>
+          <section class="official-context" aria-labelledby="official-context-title">
+            <div class="context-heading"><span>Інші офіційні джерела</span><h3 id="official-context-title">Окремий контекст без змішування вибірок</h3></div>
+            <div class="context-grid">
+              <article><strong>2 659</strong><span>подій EMSA / EMCIP у 2024 році</span><p>Європейський огляд: 2 864 залучені судна. Це окрема сукупність, не додана до MAIB.</p><a href="https://www.emsa.europa.eu/emcip/items.html?cid=141&amp;id=5562" target="_blank" rel="noreferrer">Звіт EMSA 2025 ↗</a></article>
+              <article><strong>5</strong><span>аварійних подій в Україні, I півріччя 2025</span><p>1 загибла людина, 1 зникла, травмованих немає; морський, внутрішній і маломірний транспорт разом.</p><a href="https://marad.gov.ua/storage/app/sites/1/uploaded-files/Zvit_1_2025.pdf" target="_blank" rel="noreferrer">Звіт Адміністрації судноплавства ↗</a></article>
+              <article><strong>GISIS</strong><span>міжнародний реєстр IMO</span><p>Використовується як посилання на розслідування. Частина доступу потребує облікового запису й не завантажується автоматично.</p><a href="https://www.imo.org/en/ourwork/msas/pages/casualties.aspx" target="_blank" rel="noreferrer">Сторінка IMO ↗</a></article>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- METHODOLOGY SECTION -->
+      <section class="methodology" id="methodology">
+        <div class="shell">
+          <div class="section-heading">
+            <div><p class="eyebrow">Принципи методики</p><h2>Число має пояснення</h2></div>
+            <p>Публічна версія є завершеним освітнім продуктом, але її експериментальні коефіцієнти не є сертифікованою методикою.</p>
+          </div>
+          <div class="method-grid">
+            <article><span>01</span><h3>Прозорий алгоритм</h3><p>Підсумок складається з версійованих компонентів. AI не обчислює числове значення.</p></article>
+            <article><span>02</span><h3>Правильний знаменник</h3><p>Для статистичного ризику потрібні години, рейси, операції або кількість працівників — не лише події.</p></article>
+            <article><span>03</span><h3>Чіткі межі</h3><p>Це дослідницький інструмент, а не допуск до роботи, медичний висновок чи прогноз долі людини.</p></article>
+          </div>
+
+          <aside class="governance-note" aria-labelledby="prohibited-use-title">
+            <div><span>Пілотне обмеження</span><h3 id="prohibited-use-title">Не використовувати для рішень про людину</h3></div>
+            <p>Результат заборонено застосовувати для найму, звільнення, допуску чи розподілу змін, дисциплінарних, страхових або медичних рішень. Він призначений для самостійного навчання, аналізу факторів і демонстрації методики.</p>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <div class="shell footer-shell">
+        <div class="footer-primary-row">
+          <div class="brand inverse"><strong>SeaRisk</strong><small>UA · hypothesis</small></div>
+          <nav class="footer-nav" aria-label="Нижня навігація">
+            <a href="?view=tools#assessment">Оцінювання</a>
+            <a href="?view=tools#cases">Аварії MAIB</a>
+            <a href="#gisis-ecfa">GISIS &amp; ECFA</a>
+            <a href="?view=tools#statistics">Статистика</a>
+            <a href="#methodology">Методика</a>
+          </nav>
+          <a class="back-to-top" href="#top">Нагору ↑</a>
+        </div>
+
+        <div class="footer-academic-badge">
+          <p>
+            <strong>Навчальний проєкт SeaRisk UA</strong> · Аналіз морської безпеки та аварії катера KP-965.
+          </p>
+        </div>
+
+        <details class="footer-disclosure">
+          <summary>Правові застереження, методологія та політика конфіденційності (Zero-Data)</summary>
+          <div class="disclosure-content">
+            <div class="disclosure-block">
+              <h4>Політика повної приватності (Zero-Data Retention)</h4>
+              <p>Сервіс працює виключно на стороні клієнта (Client-Side). Жодні введені дані, параметри анкети, технічні ідентифікатори або cookies не передаються на сервери та не зберігаються після оновлення сторінки. Додаток не використовує трекерів чи комерційної аналітики.</p>
+            </div>
+            <div class="disclosure-block">
+              <h4>Академічний статус і відмова від відповідальності</h4>
+              <p>SeaRisk UA є науково-навчальним прототипом для аналізу факторів ризику та демонстрації математичної моделі. Розрахунки не є сертифікованими оцінками безпеки (ISM Code / SMS), медичними висновками чи офіційним допуском до робіт. Інструмент не замінює обов'язкові суднові чек-листи компанії та конвенційні вимоги капітана.</p>
+            </div>
+            <div class="disclosure-block">
+              <h4>Нормативне підґрунтя</h4>
+              <p>Оцінювання спирається на принципи Конвенції про працю в морському судноплавстві (MLC 2006, Standard A2.3), Міжнародної конвенції ПДНВ (STCW 1978/2010, Section A-VIII/1), деперсоналізовані зведені звіти розслідувань морських аварій (MAIB, EMSA) та Правила контролю суден з метою забезпечення безпеки мореплавства (zakon.rada.gov.ua/laws/show/z0353-04).</p>
+            </div>
+          </div>
+        </details>
+
+        <div class="footer-meta-line">
+          <small>SeaRisk UA v1.1.0 · © 2026. Відкритий академічний код (Open Source). Дані анкети не залишають браузер.</small>
+        </div>
+      </div>
+    </footer>
+
+    <div id="chart-tooltip" class="chart-tooltip" role="tooltip" aria-hidden="true"></div>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

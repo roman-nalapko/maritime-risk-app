@@ -1,0 +1,40 @@
+{
+  "version": "1.1.0",
+  "datasets": [
+    {
+      "id": "maib-affected-person-aggregates-2020-2025",
+      "datasetVersion": "1.0.0",
+      "file": "incidents.maib.aggregate.json",
+      "releaseMode": "aggregate",
+      "reportingPeriod": { "from": 2020, "to": 2025 },
+      "source": {
+        "publisher": "Marine Accident Investigation Branch",
+        "url": "https://maps.dft.gov.uk/maib-data-portal/web-pages/download_files_section.html",
+        "retrievedOn": "2026-10-10",
+        "mappingVersion": "1.0.0",
+        "extracts": {
+          "occurrences": { "rows": 9063, "sha256": "029b2b655831ba33314300c0d730efc03a9731a505499f908254b5b787bd5833" },
+          "vessels": { "rows": 9830, "sha256": "a88eaf0cf007bdd7ac9361dc505f5c22c2cbfb112f2c17227d029e702e146954" },
+          "affectedPersons": { "rows": 3040, "sha256": "2ab4ccb14741f8f181d49ee20117af96dd4237eb40f1e922c9332f72484403ea" }
+        }
+      },
+      "license": {
+        "id": "OGL-3.0",
+        "url": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
+        "status": "approved",
+        "attribution": "Contains public sector information licensed under the Open Government Licence v3.0. Source: Marine Accident Investigation Branch."
+      },
+      "privacy": {
+        "status": "reviewed",
+        "directIdentifiersRemoved": true,
+        "containsRealPeople": true,
+        "publishedAtRecordLevel": false
+      },
+      "quality": {
+        "status": "approved",
+        "minimumCellCount": 5,
+        "limitations": "Descriptive affected-person records only; cells below five are suppressed; no exposure denominator; not an individual probability or incidence rate."
+      }
+    }
+  ]
+}

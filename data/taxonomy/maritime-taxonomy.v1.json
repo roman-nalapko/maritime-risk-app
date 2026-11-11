@@ -1,0 +1,83 @@
+{
+  "id": "SR-UA-TAXONOMY-1.0.0",
+  "version": "1.0.0",
+  "status": "research_review",
+  "publishedOn": "2026-10-09",
+  "axes": {
+    "roles": [
+      "deck_officer", "deck_rating", "engine_officer", "engine_rating",
+      "electro_technical", "pilot", "cadet_trainee", "fishing_crew",
+      "hotel_service", "specialist_onboard", "other_crew",
+      "non_crew_onboard", "shore_worker", "unknown"
+    ],
+    "vessels": [
+      "cargo_dry", "tanker", "passenger", "fishing", "service_offshore",
+      "tug_workboat", "recreational", "other", "unknown"
+    ],
+    "operations": [
+      "navigation_watch", "mooring_anchoring", "cargo_transfer",
+      "machinery_maintenance", "fishing_operation", "embarkation",
+      "bunkering_tank", "emergency_drill", "special_service", "idle_moored",
+      "other", "unknown"
+    ],
+    "exposureUnits": [
+      "worker_hour", "worker_year", "vessel_year", "voyage",
+      "operation_count", "person_onboard_hour", "none"
+    ]
+  },
+  "prototypeMappings": {
+    "roles": {
+      "deck": "deck_rating",
+      "engine": "engine_rating",
+      "officer": "unknown",
+      "port": "shore_worker",
+      "cadet": "cadet_trainee",
+      "diver": "specialist_onboard"
+    },
+    "vessels": {
+      "cargo": "cargo_dry",
+      "tanker": "tanker",
+      "passenger": "passenger",
+      "fishing": "fishing",
+      "service": "service_offshore"
+    },
+    "eventsToOperations": {
+      "mooring": "mooring_anchoring",
+      "machinery": "machinery_maintenance",
+      "collision": "unknown",
+      "fire": "unknown",
+      "fall": "unknown",
+      "overboard": "unknown",
+      "exposure": "unknown"
+    }
+  },
+  "mappingRules": {
+    "preserveOriginalValue": true,
+    "recordTaxonomyVersion": true,
+    "allowInferenceAcrossAxes": false,
+    "unknownIsReportable": true,
+    "otherRequiresOriginalValue": true
+  },
+  "sources": [
+    {
+      "authority": "IMO",
+      "title": "STCW Convention and Code",
+      "url": "https://www.imo.org/en/ourwork/humanelement/pages/stcw-convention.aspx"
+    },
+    {
+      "authority": "IMO",
+      "title": "MSC-MEPC.3/Circ.4/Rev.1",
+      "url": "https://wwwcdn.imo.org/localresources/en/OurWork/IIIS/Documents/Casualty%20documents/4-Rev-1.pdf"
+    },
+    {
+      "authority": "ILO",
+      "title": "ISCO-08",
+      "url": "https://isco.ilo.org/en/isco-08/"
+    },
+    {
+      "authority": "EMSA",
+      "title": "EMCIP taxonomy",
+      "url": "https://emsa.europa.eu/we-do/safety/accident-investigation/item/3024-emcip-taxonomy.html"
+    }
+  ]
+}

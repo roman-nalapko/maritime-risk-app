@@ -1,0 +1,68 @@
+{
+  "version": "1.0.0",
+  "reviewedOn": "2026-10-10",
+  "sources": [
+    {
+      "id": "maib-csv-2026-10-10",
+      "publisher": "Marine Accident Investigation Branch",
+      "landingPage": "https://maps.dft.gov.uk/maib-data-portal/web-pages/download_files_section.html",
+      "access": "public_download",
+      "localStatus": "downloaded_imported_published_as_aggregate",
+      "files": [
+        { "name": "occurrences.csv", "rows": 9063, "sha256": "029b2b655831ba33314300c0d730efc03a9731a505499f908254b5b787bd5833" },
+        { "name": "vessels.csv", "rows": 9830, "sha256": "a88eaf0cf007bdd7ac9361dc505f5c22c2cbfb112f2c17227d029e702e146954" },
+        { "name": "affected_persons.csv", "rows": 3040, "sha256": "2ab4ccb14741f8f181d49ee20117af96dd4237eb40f1e922c9332f72484403ea" }
+      ],
+      "productUse": "Default 2020-2025 affected-person aggregate explorer; cells below five suppressed."
+    },
+    {
+      "id": "emsa-annual-overview-2025-lite",
+      "publisher": "European Maritime Safety Agency",
+      "landingPage": "https://www.emsa.europa.eu/emcip/items.html?cid=141&id=5562",
+      "downloadUrl": "https://www.emsa.europa.eu/emcip/download/8551/5562/23.html",
+      "access": "public_download",
+      "localStatus": "downloaded_reviewed_not_merged",
+      "file": { "name": "annual-overview-2025-lite.pdf", "pages": 64, "sha256": "58a06a2ab90134c1103e44932d22e52209ef70596b0fe338e5e7427c6f15877f" },
+      "reportingPeriod": { "from": 2015, "to": 2024 },
+      "verifiedFacts": { "incidents2024": 2659, "shipsInvolved2024": 2864 },
+      "productUse": "Separate European context and taxonomy review; not concatenated with MAIB."
+    },
+    {
+      "id": "ukraine-water-transport-2025-h1",
+      "publisher": "Shipping Administration of Ukraine",
+      "landingPage": "https://marad.gov.ua/ua/diyalnist/stan-avarijnosti-ta-bezpeki-sudnoplavstva-na-vodnomu-transporti",
+      "downloadUrl": "https://marad.gov.ua/storage/app/sites/1/uploaded-files/Zvit_1_2025.pdf",
+      "access": "public_download",
+      "localStatus": "downloaded_reviewed_not_merged",
+      "file": { "name": "report-2025-h1.pdf", "pages": 27, "sha256": "35b591c3c62b0e7e3da57b0bcccc4fc19fbcb6b5b29ca7094831ab14656f3c8d" },
+      "reportingPeriod": { "from": "2025-01", "to": "2025-06" },
+      "verifiedFacts": { "events": 5, "deaths": 1, "missing": 1, "injured": 0 },
+      "limitations": "Includes maritime, inland-waterway, and small craft events; excludes figures for Crimea and Sevastopol; not comparable to the MAIB affected-person cube."
+    },
+    {
+      "id": "ukraine-water-transport-2024",
+      "publisher": "Shipping Administration of Ukraine",
+      "landingPage": "https://marad.gov.ua/ua/diyalnist/stan-avarijnosti-ta-bezpeki-sudnoplavstva-na-vodnomu-transporti",
+      "downloadUrl": "https://marad.gov.ua/storage/app/sites/1/gromadska-rada/Zvit/Zvit_2024.pdf",
+      "access": "public_download",
+      "localStatus": "downloaded_pending_structured_extraction",
+      "file": { "name": "report-2024.pdf", "pages": 36, "sha256": "464e6379a1cb9ea2f28b9304086be09aa1e93f51d968403ee8a102cd4ddb849d" }
+    },
+    {
+      "id": "imo-gisis-casualties",
+      "publisher": "International Maritime Organization",
+      "landingPage": "https://www.imo.org/en/ourwork/msas/pages/casualties.aspx",
+      "access": "mixed_public_and_authenticated",
+      "localStatus": "not_bulk_downloaded",
+      "productUse": "Official reference link only; no registration, restriction, or access control is bypassed."
+    },
+    {
+      "id": "emsa-emcip-taxonomy",
+      "publisher": "European Maritime Safety Agency",
+      "landingPage": "https://www.emsa.europa.eu/emcip.html",
+      "access": "public_description_restricted_database",
+      "localStatus": "reviewed_as_taxonomy_reference",
+      "productUse": "Reference for technical, human, environmental, and organisational factor families; no restricted database access."
+    }
+  ]
+}

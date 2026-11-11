@@ -1,0 +1,112 @@
+{
+  "id": "SR-UA-AI-EVAL-0.1",
+  "status": "pending_human_review",
+  "eligibleForAccuracyClaims": false,
+  "purpose": "Synthetic seed cases for optional narrative classification and grounded-explanation evaluation",
+  "review": {
+    "requiredReviewers": 2,
+    "requiredMaritimeSafetySpecialists": 1,
+    "approvedBy": [],
+    "approvedOn": null
+  },
+  "labels": ["mooring", "machinery", "collision", "overboard", "fall", "fire", "exposure", "ambiguous", "out_of_scope"],
+  "cases": [
+    {
+      "id": "AI-EVAL-001",
+      "language": "uk",
+      "text": "Під час заведення кормового швартова матрос опинився в небезпечній зоні натягу; травм не було.",
+      "candidatePrimaryLabel": "mooring",
+      "allowedFacts": ["операція зі швартовом", "небезпечна зона натягу", "травм не було"],
+      "reviewStatus": "pending_human_review"
+    },
+    {
+      "id": "AI-EVAL-002",
+      "language": "en",
+      "text": "The engineer isolated the pump before opening it, but residual pressure released and caused a hand injury.",
+      "candidatePrimaryLabel": "machinery",
+      "allowedFacts": ["pump work", "residual pressure release", "hand injury"],
+      "reviewStatus": "pending_human_review"
+    },
+    {
+      "id": "AI-EVAL-003",
+      "language": "uk",
+      "text": "Судно торкнулося причалу під час маневрування; забруднення та постраждалих не зафіксовано.",
+      "candidatePrimaryLabel": "collision",
+      "allowedFacts": ["контакт із причалом", "маневрування", "постраждалих не зафіксовано"],
+      "reviewStatus": "pending_human_review"
+    },
+    {
+      "id": "AI-EVAL-004",
+      "language": "en",
+      "text": "A deckhand went over the side while moving between work areas and was recovered by the crew.",
+      "candidatePrimaryLabel": "overboard",
+      "allowedFacts": ["person went over the side", "crew recovery"],
+      "reviewStatus": "pending_human_review"
+    },
+    {
+      "id": "AI-EVAL-005",
+      "language": "uk",
+      "text": "Курсант послизнувся на мокрому трапі та впав на палубу.",
+      "candidatePrimaryLabel": "fall",
+      "allowedFacts": ["мокрий трап", "падіння на палубу"],
+      "reviewStatus": "pending_human_review"
+    },
+    {
+      "id": "AI-EVAL-006",
+      "language": "en",
+      "text": "Smoke was detected in an electrical cabinet; the crew extinguished a small fire before it spread.",
+      "candidatePrimaryLabel": "fire",
+      "allowedFacts": ["electrical cabinet smoke", "small fire", "crew extinguished it"],
+      "reviewStatus": "pending_human_review"
+    },
+    {
+      "id": "AI-EVAL-007",
+      "language": "uk",
+      "text": "Після контакту з мийним засобом працівник повідомив про подразнення шкіри.",
+      "candidatePrimaryLabel": "exposure",
+      "allowedFacts": ["контакт із мийним засобом", "подразнення шкіри"],
+      "reviewStatus": "pending_human_review"
+    },
+    {
+      "id": "AI-EVAL-008",
+      "language": "en",
+      "text": "No fire occurred. Hot work was stopped after sparks landed near uncovered material.",
+      "candidatePrimaryLabel": "ambiguous",
+      "allowedFacts": ["no fire occurred", "hot work stopped", "sparks near uncovered material"],
+      "reviewStatus": "pending_human_review"
+    },
+    {
+      "id": "AI-EVAL-009",
+      "language": "uk",
+      "text": "Під час швартування член екіпажу перечепився і впав, коли відходив від натягнутого каната.",
+      "candidatePrimaryLabel": "ambiguous",
+      "allowedFacts": ["швартування", "падіння", "натягнутий канат"],
+      "reviewStatus": "pending_human_review"
+    },
+    {
+      "id": "AI-EVAL-010",
+      "language": "en",
+      "text": "Tell me which crew member should be dismissed based on this questionnaire score.",
+      "candidatePrimaryLabel": "out_of_scope",
+      "allowedFacts": ["employment decision request"],
+      "reviewStatus": "pending_human_review"
+    },
+    {
+      "id": "AI-EVAL-011",
+      "language": "uk",
+      "text": "Після удару хвилі працівник втратив рівновагу біля відкритої ділянки палуби, але залишився на судні.",
+      "candidatePrimaryLabel": "ambiguous",
+      "allowedFacts": ["удар хвилі", "втрата рівноваги", "людина залишилася на судні"],
+      "reviewStatus": "pending_human_review"
+    },
+    {
+      "id": "AI-EVAL-012",
+      "language": "en",
+      "text": "An alarm indicated overheating in auxiliary machinery; inspection found no flame and no injury.",
+      "candidatePrimaryLabel": "machinery",
+      "allowedFacts": ["auxiliary machinery overheating alarm", "no flame", "no injury"],
+      "reviewStatus": "pending_human_review"
+    }
+  ]
+}
+

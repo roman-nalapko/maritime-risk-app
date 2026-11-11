@@ -1,0 +1,25 @@
+{
+  "name": "searisk-ua",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Transparent maritime worker risk assessment research prototype",
+  "scripts": {
+    "start": "node scripts/dev-server.mjs --open",
+    "dev": "node scripts/dev-server.mjs",
+    "test": "node scripts/check.mjs && node scripts/audit-accessibility-pwa.mjs && node scripts/governance-checks.mjs && node scripts/research-protocol-checks.mjs && node scripts/ai-evaluation-checks.mjs && node scripts/feature-checks.mjs && node scripts/dev-server-checks.mjs",
+    "audit": "node scripts/audit-accessibility-pwa.mjs",
+    "governance:check": "node scripts/governance-checks.mjs",
+    "research:check": "node scripts/research-protocol-checks.mjs",
+    "ai:check": "node scripts/ai-evaluation-checks.mjs",
+    "feature:check": "node scripts/feature-checks.mjs",
+    "build": "node scripts/build.mjs",
+    "import:maib": "node scripts/import-maib.mjs",
+    "aggregate:maib": "node scripts/aggregate-maib.mjs",
+    "release:check": "node scripts/release-checks.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
+

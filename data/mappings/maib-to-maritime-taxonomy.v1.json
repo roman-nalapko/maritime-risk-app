@@ -1,0 +1,111 @@
+{
+  "id": "SR-UA-MAIB-MAPPING-1.0.0",
+  "version": "1.0.0",
+  "taxonomyVersion": "1.0.0",
+  "source": "MAIB public data portal",
+  "sourceUrl": "https://maps.dft.gov.uk/maib-data-portal/web-pages/download_files_section.html",
+  "profiledOn": "2026-10-09",
+  "sourceSnapshot": {
+    "lastUpdatedAt": "2026-06-29",
+    "declaredReportedFrom": "2020-01-01",
+    "declaredReportedTo": "2026-05-14",
+    "tables": {
+      "occurrences": { "rows": 9063, "primaryKey": "Occurrence_Id", "sha256": "029b2b655831ba33314300c0d730efc03a9731a505499f908254b5b787bd5833" },
+      "vessels": { "rows": 9830, "primaryKey": "Vessel_Profile_Id", "sha256": "a88eaf0cf007bdd7ac9361dc505f5c22c2cbfb112f2c17227d029e702e146954" },
+      "affectedPersons": { "rows": 3040, "primaryKey": "Affected_Person_Id", "sha256": "2ab4ccb14741f8f181d49ee20117af96dd4237eb40f1e922c9332f72484403ea" }
+    }
+  },
+  "vesselType": {
+    "sourceField": "Ship_Craft_Type_L1",
+    "values": {
+      "Cargo ship": "cargo_dry",
+      "Passenger ship": "passenger",
+      "Fishing vessel": "fishing",
+      "Service ship": "service_offshore",
+      "Fixed offshore drilling units": "service_offshore",
+      "Recreational craft": "recreational",
+      "Inland waterway vessel": "other",
+      "Navy ship": "other",
+      "Unknown": "unknown",
+      "": "unknown"
+    }
+  },
+  "role": {
+    "sourceFields": ["Affected_Person_Type", "Rank"],
+    "passengerOverride": "non_crew_onboard",
+    "rankValues": {
+      "Master": "deck_officer",
+      "Chief mate": "deck_officer",
+      "Deck officer": "deck_officer",
+      "Rating as able seafarer deck": "deck_rating",
+      "Rating part of navigational watch": "deck_rating",
+      "Chief engineer officer": "engine_officer",
+      "Second engineer officer": "engine_officer",
+      "Engineer officer": "engine_officer",
+      "Rating as able seafarer engine": "engine_rating",
+      "Rating part of engine-room watch": "engine_rating",
+      "Electro-technical officer": "electro_technical",
+      "Rating electro-technical": "electro_technical",
+      "Pilot": "pilot",
+      "Assistant/Cadet": "cadet_trainee",
+      "Fishing vessel rating": "fishing_crew",
+      "Hotel service staff": "hotel_service",
+      "Other crew member": "other_crew",
+      "Rating": "other_crew",
+      "Other non-crew member": "non_crew_onboard",
+      "Skipper": "unknown",
+      "Unknown": "unknown",
+      "Not available - PCF": "unknown",
+      "": "unknown"
+    }
+  },
+  "operation": {
+    "sourceContextFields": ["Voyage_Segment", "Affected_Person_Deviation_L1", "Affected_Person_Deviation_L2"],
+    "target": "unknown",
+    "reason": "Context and deviation fields do not identify the exact task operation.",
+    "exposureUnit": "none"
+  },
+  "outcome": {
+    "sourceField": "Physical_Condition_L1",
+    "values": {
+      "Death (confirmed)": "fatal",
+      "Missing (death presumed)": "fatal_presumed",
+      "Injured": "injured",
+      "No injury": "no_injury",
+      "": "unknown"
+    }
+  },
+  "eventGroup": {
+    "sourceField": "Main_Event_L1",
+    "values": {
+      "Accident to person(s)": "personal_accident",
+      "Damage / Loss Of Equipment": "equipment_damage",
+      "Loss Of Control": "loss_of_control",
+      "Grounding / Stranding": "grounding_stranding",
+      "Contact": "contact",
+      "Collision": "collision",
+      "Fire / Explosion": "fire_explosion",
+      "Flooding / Foundering": "flooding_foundering",
+      "Capsizing / Listing": "capsizing_listing",
+      "Hull Failure": "hull_failure",
+      "Heavy Weather Damage": "heavy_weather_damage",
+      "Non-accidental Event": "non_accidental_excluded",
+      "Missing": "vessel_missing",
+      "": "unknown"
+    }
+  },
+  "coverageSnapshot": {
+    "vesselType": { "total": 9830, "mapped": 9824, "unknown": 6, "percent": 99.94 },
+    "role": { "total": 3040, "mapped": 2659, "unknown": 381, "percent": 87.47 },
+    "operation": { "total": 9830, "mapped": 0, "unknown": 9830, "percent": 0.0 },
+    "outcome": { "total": 3040, "mapped": 3040, "unknown": 0, "percent": 100.0 },
+    "eventGroup": { "total": 9063, "mapped": 9061, "unknown": 2, "percent": 99.98 }
+  },
+  "rules": {
+    "preserveRawValues": true,
+    "preserveUnknown": true,
+    "inferOperationFromEvent": false,
+    "countCoverageBeforeJoins": true,
+    "domainReviewRequiredFor": ["Skipper", "Inland waterway vessel", "Navy ship", "operation from narrative"]
+  }
+}

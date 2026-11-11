@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/searisk/maib-normalized.schema.json",
+  "version": "1.0.0",
+  "$defs": {
+    "occurrence": {
+      "type": "object",
+      "required": ["schemaVersion", "sourceOccurrenceId", "occurredMonth", "yearReported", "eventGroup", "sourceEvent", "sourceOccurrenceSeverity", "connectedToVesselOperations"],
+      "properties": {
+        "schemaVersion": { "type": "string" },
+        "sourceOccurrenceId": { "type": "string" },
+        "occurredMonth": { "type": ["string", "null"] },
+        "yearReported": { "type": ["integer", "null"] },
+        "eventGroup": { "type": "string" },
+        "sourceEvent": { "type": "object" },
+        "sourceOccurrenceSeverity": { "type": ["string", "null"] },
+        "connectedToVesselOperations": { "type": ["boolean", "null"] }
+      }
+    },
+    "vessel": {
+      "type": "object",
+      "required": ["schemaVersion", "sourceOccurrenceId", "sourceVesselId", "vesselGroup", "sourceShipCraftType", "flagState", "isCommercial", "operationGroup", "exposureUnit"],
+      "properties": {
+        "schemaVersion": { "type": "string" },
+        "sourceOccurrenceId": { "type": "string" },
+        "sourceVesselId": { "type": "string" },
+        "vesselGroup": { "type": "string" },
+        "sourceShipCraftType": { "type": "object" },
+        "flagState": { "type": ["string", "null"] },
+        "isCommercial": { "type": ["boolean", "null"] },
+        "operationGroup": { "type": "string" },
+        "exposureUnit": { "type": "string" }
+      }
+    },
+    "affectedPerson": {
+      "type": "object",
+      "required": ["schemaVersion", "sourceOccurrenceId", "sourceVesselId", "sourceAffectedPersonId", "roleGroup", "sourceRole", "outcome"],
+      "properties": {
+        "schemaVersion": { "type": "string" },
+        "sourceOccurrenceId": { "type": "string" },
+        "sourceVesselId": { "type": "string" },
+        "sourceAffectedPersonId": { "type": "string" },
+        "roleGroup": { "type": "string" },
+        "sourceRole": { "type": "object" },
+        "outcome": { "type": "string" }
+      }
+    }
+  }
+}

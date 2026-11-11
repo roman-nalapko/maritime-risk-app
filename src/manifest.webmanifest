@@ -1,0 +1,18 @@
+{
+  "name": "SeaRisk UA",
+  "short_name": "SeaRisk",
+  "description": "Дослідницька оцінка індивідуального ризику працівника морської галузі",
+  "lang": "uk",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f7f8",
+  "theme_color": "#071521",
+  "icons": [
+    { "src": "icons/searisk-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/searisk-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/searisk.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
+
