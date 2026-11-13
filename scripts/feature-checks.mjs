@@ -774,6 +774,16 @@ assert.match(cssContent, /\.factor-heading\s+strong[^}]*white-space:\s*nowrap/s,
 assert.ok(appContent.includes("wrapTextLines(b.label"), "ECFA labels must use bounded word-aware wrapping");
 assert.ok(appContent.includes("<tspan"), "ECFA wrapped labels must render as explicit SVG lines");
 
+// 37. The prototype result must use progressive disclosure instead of one long panel
+assert.equal((htmlContent.match(/class="analysis-section-btn/g) || []).length, 3, "analysis overview must offer three focused views");
+for (const section of ["overview", "fatigue", "conditions"]) {
+  assert.ok(htmlContent.includes(`data-analysis-target="${section}"`), `analysis must expose the ${section} view`);
+  assert.ok(htmlContent.includes(`data-analysis-group="${section}"`), `analysis content must be assigned to ${section}`);
+}
+assert.ok(appContent.includes("function switchAnalysisSection"), "analysis view controls need one deterministic switcher");
+assert.match(cssContent, /@media \(min-width:\s*900px\)[\s\S]*?\.result-card[^}]*max-height:\s*calc\(100vh - 92px\)/s, "desktop result panel must stay within the viewport");
+assert.match(cssContent, /#pane-radar\[data-analysis-section="overview"\][\s\S]*?display:\s*none/s, "inactive analysis groups must be hidden without removing their controls");
+
 console.log("All platform feature checks passed.");
 
 
