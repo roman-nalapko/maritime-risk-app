@@ -53,6 +53,12 @@ assert.equal(
   "?view=tools&lang=en&theme=day#assessment",
   "the tools link must carry the selected language and theme"
 );
+assert.equal(typeof uiRuntime.wrapTextLines, "function", "diagram labels need a bounded word-aware wrapping helper");
+const wrappedDiagramLabel = uiRuntime.wrapTextLines("Швидкість 22,0 вузла, небезпечне наближення до швартовного буя", 22, 2);
+assert.equal(wrappedDiagramLabel.length, 2, "long diagram labels must use at most two lines");
+assert.ok(wrappedDiagramLabel.every((line) => line.length <= 22), "diagram label lines must remain inside their card width");
+assert.ok(wrappedDiagramLabel[1].endsWith("…"), "truncated diagram labels must disclose omitted text");
+assert.deepEqual(uiRuntime.wrapTextLines("E8 · Після швартування", 14, 1), ["E8 · Після…"], "single-line ECFA tags must truncate inside their card");
 
 assert.equal(GUIDED_STEP_COUNT, 5, "guided assignment must have five steps");
 for (const invalidHash of ["", "#unknown", "#step--1", "#step-0", "#step-6", "#step-99"]) {

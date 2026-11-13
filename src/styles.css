@@ -1056,6 +1056,39 @@ select option { background: var(--surface); color: var(--text-primary); }
 .breakdown-title button { font-size: 11px; color: var(--text-muted); background: none; border: none; cursor: pointer; }
 .breakdown-title button:hover { color: var(--teal); }
 #breakdown-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.factor { min-width: 0; }
+.factor-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 4px 16px;
+  margin-bottom: 5px;
+  font-size: 12px;
+  line-height: 1.35;
+}
+.factor-heading span {
+  min-width: 0;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+.factor-heading strong {
+  color: var(--text-primary);
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+}
+.factor-bar {
+  height: 4px;
+  overflow: hidden;
+  background: var(--overlay);
+  border-radius: 999px;
+}
+.factor-bar i {
+  display: block;
+  height: 100%;
+  background: var(--teal);
+  border-radius: inherit;
+}
 #recommendation-list { margin: 0 0 14px; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
 #recommendation-list li {
   padding: 8px 10px; background: var(--raised); border: 1px solid var(--line);
@@ -2502,6 +2535,8 @@ html[data-view="tools"] .guided-panel { margin-top: 20px; }
 
 @media (max-width: 620px) {
   .bridge-mode-switch { display: none; }
+  .factor-heading { grid-template-columns: 1fr; }
+  .factor-heading strong { text-align: left; white-space: normal; }
   h1 { font-size: 30px; }
   .hero { padding-block: 36px 48px; }
   .field-grid { grid-template-columns: 1fr; }

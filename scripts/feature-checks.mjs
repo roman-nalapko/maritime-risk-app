@@ -768,6 +768,12 @@ assert.ok(htmlContent.includes('const initialTheme = ["cockpit", "red", "day"].i
 assert.ok(appContent.includes("function syncInterfacePreferences"), "view links must carry the active interface preferences");
 assert.ok(appContent.includes('if (initialInterfacePreferences.lang === "en")'), "English must be reapplied after assignment view copy is initialized");
 
+// 36. Dense result labels and ECFA nodes must contain their text
+assert.match(cssContent, /\.factor-heading\s*[^}]*display:\s*grid/s, "factor labels and values need separate layout columns");
+assert.match(cssContent, /\.factor-heading\s+strong[^}]*white-space:\s*nowrap/s, "factor contribution values must remain legible as one unit");
+assert.ok(appContent.includes("wrapTextLines(b.label"), "ECFA labels must use bounded word-aware wrapping");
+assert.ok(appContent.includes("<tspan"), "ECFA wrapped labels must render as explicit SVG lines");
+
 console.log("All platform feature checks passed.");
 
 

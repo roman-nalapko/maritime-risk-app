@@ -55,6 +55,41 @@ export function withInterfacePreferences(href, baseHref, { lang, theme }) {
   return `${targetUrl.search}${targetUrl.hash}`;
 }
 
+function truncateTextLine(value, maxChars) {
+  if (value.length <= maxChars) return value;
+  const slice = value.slice(0, Math.max(1, maxChars - 1));
+  const boundary = slice.lastIndexOf(" ");
+  const visible = boundary >= Math.floor(maxChars * 0.6) ? slice.slice(0, boundary) : slice;
+  return `${visible.trimEnd()}…`;
+}
+
+export function wrapTextLines(value, maxChars = 24, maxLines = 2) {
+  const safeMaxChars = Math.max(4, Math.floor(maxChars));
+  const safeMaxLines = Math.max(1, Math.floor(maxLines));
+  const words = String(value ?? "").trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return [""];
+
+  const lines = [];
+  let current = "";
+  for (let index = 0; index < words.length; index += 1) {
+    const word = words[index];
+    const candidate = current ? `${current} ${word}` : word;
+    if (candidate.length <= safeMaxChars) {
+      current = candidate;
+      continue;
+    }
+    if (lines.length === safeMaxLines - 1) {
+      const remaining = [current, word, ...words.slice(index + 1)].filter(Boolean).join(" ");
+      lines.push(truncateTextLine(remaining, safeMaxChars));
+      return lines;
+    }
+    if (current) lines.push(current);
+    current = word.length > safeMaxChars ? truncateTextLine(word, safeMaxChars) : word;
+  }
+  if (current && lines.length < safeMaxLines) lines.push(current);
+  return lines.slice(0, safeMaxLines);
+}
+
 export async function copyText(clipboard, value) {
   if (!clipboard?.writeText) throw new Error("Clipboard API is unavailable");
   await clipboard.writeText(value);

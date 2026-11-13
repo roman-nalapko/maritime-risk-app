@@ -28,7 +28,8 @@ import {
   initializeModule,
   resolveInterfacePreferences,
   resolveViewMode,
-  withInterfacePreferences
+  withInterfacePreferences,
+  wrapTextLines
 } from "./ui-runtime.js";
 import {
   GUIDED_STEP_COUNT,
@@ -2399,12 +2400,19 @@ function renderEcfaDiagram(activeFilter = "all") {
     const opacity = isDimmed ? "0.22" : "1.0";
     const selectedClass = isSelected ? "selected" : "";
     const bgColor = b.type === "casualty" ? "#190e18" : "#0b1726";
+    const labelMaxChars = Math.max(12, Math.floor((b.w - 16) / 5.3));
+    const tagMaxChars = Math.max(10, Math.floor((b.w - 16) / 5.8));
+    const tagText = wrapTextLines(`${b.id}${b.time ? ` · ${b.time}` : ""}`, tagMaxChars, 1)[0];
+    const labelLines = wrapTextLines(b.label, labelMaxChars, 2);
+    const labelTspans = labelLines.map((line, index) =>
+      `<tspan x="${b.x + 8}" y="${b.y + 29 + index * 13}">${escapeHtml(line)}</tspan>`
+    ).join("");
 
     svg += `<g class="ecfa-node ${selectedClass}" data-node-id="${b.id}" data-node-type="${b.type}" opacity="${opacity}" tabindex="0" role="button" aria-label="${b.id}: ${escapeHtml(b.label)}">
+      <title>${escapeHtml(`${b.id}: ${b.label}`)}</title>
       <rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="6" fill="${bgColor}" stroke="${b.stroke}" stroke-width="${isSelected ? '2.5' : '1.2'}" />
-      <text x="${b.x + 8}" y="${b.y + 15}" fill="${b.tagColor}" font-size="9.5" font-weight="700">${b.id}${b.time ? ' · ' + b.time : ''}</text>
-      <text x="${b.x + 8}" y="${b.y + 29}" fill="#f1f5f9" font-size="8.5" font-weight="600">${escapeHtml(b.label.slice(0, 27))}</text>
-      <text x="${b.x + 8}" y="${b.y + 42}" fill="#94a3b8" font-size="8">${escapeHtml(b.label.slice(27, 54))}${b.label.length > 54 ? '...' : ''}</text>
+      <text x="${b.x + 8}" y="${b.y + 15}" fill="${b.tagColor}" font-size="9.5" font-weight="700">${escapeHtml(tagText)}</text>
+      <text fill="#f1f5f9" font-size="8.5" font-weight="600">${labelTspans}</text>
     </g>`;
   }
 
