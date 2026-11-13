@@ -2,17 +2,17 @@
 
 ## Product statement
 
-SeaRisk UA is a free educational service that turns the KP-965 casualty into a compact, reproducible practical assignment. It connects a digitized case, five contributing-factor controls, a transparent `R = P × S` training index, preventive measures, an ECFA diagram, and cited source material. The extended research tools remain available without becoming the default journey.
+SeaRisk UA is a free educational service for compact, reproducible maritime-safety assignments. It provides a verified KP-965 worked example and a simple custom-scenario path. Both use five contributing-factor controls, a transparent `R = P × S` training index, preventive measures, and a generated conclusion. Official ECFA evidence and cited case material remain explicitly tied to KP-965.
 
 ## Primary user
 
-A cadet or instructor reviewing a worked maritime casualty and the logic behind preventive controls.
+A cadet or instructor reviewing a worked maritime casualty or testing the same preventive-control logic against another port-basin scenario.
 
 ## Primary journey
 
-1. Read the KP-965 casualty facts in plain language.
-2. Review or change exactly five contributing factors and consequence severity.
-3. Observe the raw factor sum, the capped `P`, and the deterministic `R = P × S` result.
+1. Choose the verified KP-965 example or describe a custom maritime incident in plain language.
+2. Review or change exactly five contributing factors and the project training consequence score.
+3. Observe the raw factor sum, the capped factor score `P`, and the deterministic training priority index `R = P × S`.
 4. Read preventive measures together with the factor or threshold that triggered each rule.
 5. Copy or print a deterministic conclusion and optionally open ECFA, sources, JSON, or Python evidence.
 6. Open `?view=tools` only when the questionnaire, MAIB aggregates, or research utilities are needed.
@@ -21,7 +21,7 @@ A cadet or instructor reviewing a worked maritime casualty and the logic behind 
 
 The prototype is a responsive single-page application with two URL modes:
 
-- **Assignment (default):** one entry action and five hash-addressable steps for facts, causes, calculation, prevention, and conclusion/evidence.
+- **Assignment (default):** two clear entry actions and five hash-addressable steps for facts, causes, calculation, prevention, and conclusion/evidence. Custom inputs remain in memory only.
 - **Tools (`?view=tools`):** questionnaire, prototype result, incident explorer, and the existing research utilities.
 - **Methodology/footer:** definitions, application/model versions, privacy, and limitations.
 
@@ -30,7 +30,12 @@ The prototype is a responsive single-page application with two URL modes:
 - All calculations run locally.
 - No account, registration, or personal data is required.
 - The default route is useful without completing a personal questionnaire.
+- A user can switch between the verified KP-965 example and a bounded custom incident scenario without registration or persistence.
+- Custom scenarios never inherit KP-965 ECFA, official-source, JSON, or Python evidence.
 - The assignment exposes exactly five factor switches and labels its numeric weights as training assumptions.
+- The assignment defines `P` as a factor score, `S` as a training consequence score, and `R` as a training priority index.
+- Project bands (`R < 6`, `6 ≤ R < 10`, `R ≥ 10`) are never presented as official IMO FSA or ALARP thresholds.
+- Official GISIS/ECFA classification remains visually and conceptually separate from the project-specific numeric index.
 - The UI shows the raw factor sum before the `P = 5` ceiling and explains why different inputs can retain the same capped score.
 - Each generated mitigation names its real factor, threshold, or fallback trigger.
 - The conclusion is deterministic for the current controls and remains available through copy fallback and print/PDF.

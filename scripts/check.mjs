@@ -5,7 +5,7 @@ import path from "node:path";
 import { calculateRisk, categoryFor } from "../src/model.js";
 import { approvedValue, COEFFICIENTS, REGISTRY_ID, REQUIRED_METADATA, validateRegistry } from "../src/coefficients.js";
 import { copyText, copyTextOrFallback, formatEngineeringIndex, initializeModule, resolveViewMode } from "../src/ui-runtime.js";
-import { GUIDED_STEP_COUNT, buildAssignmentConclusion, guidedStepHash, resolveGuidedStep } from "../src/guided-assignment.js";
+import { GUIDED_STEP_COUNT, buildAssignmentConclusion, buildScenarioPriorityAlert, guidedStepHash, normalizeIncidentScenario, resolveGuidedStep } from "../src/guided-assignment.js";
 import { normalizeTables, parseDelimited, stableJson, validateNormalized } from "./import-maib.mjs";
 import { aggregateMaib } from "./aggregate-maib.mjs";
 import { runReleaseChecks, validateReleaseDataset } from "./release-checks.mjs";
@@ -48,26 +48,26 @@ assert.equal(guidedStepHash(42), "", "invalid step numbers must fail closed to e
 
 const baselineConclusionInput = {
   riskResult: {
-    probabilityScore: 5,
+    factorScore: 5,
     severityCode: 3,
-    riskIndex: 15,
-    riskCategoryLabelUk: "Критичний (Неприйнятний)"
+    priorityIndex: 15,
+    riskCategoryLabelUk: "Високий пріоритет"
   },
   activeFactorLabels: ["перевищення швидкості", "відсутність другого спостерігача"],
   mitigationActions: ["обмежити швидкість до 10 вузлів", "запровадити подвійне спостереження"]
 };
 const baselineConclusion = buildAssignmentConclusion(baselineConclusionInput);
-for (const expectedText of ["KP-965", "P = 5", "S = 3", "R = 15", "Критичний", "перевищення швидкості", "обмежити швидкість до 10 вузлів"]) {
+for (const expectedText of ["KP-965", "P = 5", "S = 3", "R = 15", "Високий пріоритет", "перевищення швидкості", "обмежити швидкість до 10 вузлів", "навчальний індекс пріоритету"]) {
   assert.ok(baselineConclusion.includes(expectedText), `baseline conclusion must include ${expectedText}`);
 }
 assert.equal(buildAssignmentConclusion(baselineConclusionInput), baselineConclusion, "conclusion generation must be deterministic");
 
 const modifiedConclusion = buildAssignmentConclusion({
   riskResult: {
-    probabilityScore: 3,
+    factorScore: 3,
     severityCode: 2,
-    riskIndex: 6,
-    riskCategoryLabelUk: "Підвищений (ALARP)"
+    priorityIndex: 6,
+    riskCategoryLabelUk: "Підвищений пріоритет"
   },
   activeFactorLabels: ["неефективне використання радара"],
   mitigationActions: ["налаштувати шкалу радара"]
@@ -75,6 +75,38 @@ const modifiedConclusion = buildAssignmentConclusion({
 assert.ok(modifiedConclusion.includes("P = 3") && modifiedConclusion.includes("S = 2") && modifiedConclusion.includes("R = 6"), "modified conclusion must use passed scenario values");
 assert.ok(modifiedConclusion.includes("навчальний бал факторів"), "conclusion must explain P as an educational factor score");
 assert.doesNotMatch(modifiedConclusion, /ймовірність\s+P|P\s*—\s*ймовірність/i, "conclusion must never call P a probability");
+
+const customScenario = normalizeIncidentScenario({
+  title: "  Посадка на мілину теплохода Atlas  ",
+  vessel: "  Atlas  ",
+  event: "  Посадка на мілину  ",
+  location: "  Дніпровський лиман  ",
+  summary: "  Судно відхилилося від безпечного маршруту.  "
+});
+assert.deepEqual(customScenario, {
+  title: "Посадка на мілину теплохода Atlas",
+  vessel: "Atlas",
+  event: "Посадка на мілину",
+  location: "Дніпровський лиман",
+  summary: "Судно відхилилося від безпечного маршруту."
+}, "custom scenario fields must be normalized without inventing facts");
+const boundedScenario = normalizeIncidentScenario({ title: "x".repeat(140), summary: "y".repeat(700) });
+assert.equal(boundedScenario.title.length, 100, "custom scenario title must have a stable 100-character boundary");
+assert.equal(boundedScenario.summary.length, 500, "custom scenario summary must have a stable 500-character boundary");
+assert.equal(boundedScenario.vessel, "Судно або об’єкт не вказано", "missing vessel must remain explicitly unknown");
+
+const customConclusion = buildAssignmentConclusion({
+  ...baselineConclusionInput,
+  scenario: customScenario
+});
+assert.ok(customConclusion.includes("Посадка на мілину теплохода Atlas"), "custom conclusion must identify the active scenario");
+assert.doesNotMatch(customConclusion, /KP-965/, "custom conclusion must not inherit the worked example identity");
+const customAlert = buildScenarioPriorityAlert({
+  riskResult: baselineConclusionInput.riskResult,
+  activeFactorLabels: ["небезпечна швидкість", "недоліки процедур"]
+});
+assert.ok(customAlert.includes("R = 15") && customAlert.includes("небезпечна швидкість") && customAlert.includes("недоліки процедур"), "custom alert must name the calculated priority and active factors");
+assert.doesNotMatch(customAlert, /втом|радар|MAIIS|KP-965/i, "custom alert must not add inactive or case-specific factors");
 
 const copiedValues = [];
 assert.equal(await copyText({ async writeText(value) { copiedValues.push(value); } }, "baseline-script"), true);
@@ -231,7 +263,7 @@ const css = await readFile(path.join(root, "src/styles.css"), "utf8");
 const serviceWorker = await readFile(path.join(root, "src/sw.js"), "utf8");
 const packageMetadata = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
 const readme = await readFile(path.join(root, "README.md"), "utf8");
-const applicationVersion = "1.1.0";
+const applicationVersion = "1.2.0";
 assert.equal(packageMetadata.version, applicationVersion, "package version must match the guided public release");
 assert.match(serviceWorker, new RegExp(`searisk-ua-v${applicationVersion.replaceAll(".", "\\.")}`), "service-worker cache must match the application release");
 assert.match(readme, new RegExp(`Status \\(v${applicationVersion.replaceAll(".", "\\.")}\\)`), "README status must expose the application release");
@@ -242,8 +274,9 @@ assert.match(html, /Демонстраційний індекс прототип
 assert.match(html, /Реєстр 0\.1\.0/i, "coefficient registry version must be visible");
 assert.match(html, /SR-UA-PROTOTYPE-0\.1/i, "the provisional model identifier must not change with the app release");
 assert.match(readme, /five-step guided review/i, "README must document the first-visit journey");
-assert.match(readme, /raw factor sum/i, "README must explain the capped probability score");
+assert.match(readme, /factor score/i, "README must explain the bounded factor score");
 assert.match(readme, /no account|no registration/i, "README must preserve the no-registration boundary");
+assert.match(readme, /Навчальний проєкт групи 511/i, "README must identify the academic group without naming individuals");
 assert.match(html, /model-status/, "result must expose model status");
 assert.match(html, /uncertainty-status/, "result must expose uncertainty status");
 assert.match(html, /component-evidence/, "result must expose component evidence details");

@@ -22,6 +22,25 @@ The current output is an **educational demonstration index, not a probability**.
 
 The last three are not interchangeable.
 
+## Reusable port-basin training index
+
+The verified KP-965 example and the custom-scenario path use the same separate, deterministic teaching calculation:
+
+```text
+P = min(5, 1 + sum(active project weights))
+S = selected training consequence score from 1 to 5
+R = P × S
+```
+
+- `P` is a **factor score**, not a frequency or occurrence probability.
+- `S` is a **project training score**, not the GISIS Table 5 casualty-classification code.
+- `R` is a **training priority index** used to order preventive attention.
+- The numeric weights, the ceiling at 5, and the bands at 6 and 10 are project assumptions. They are not official IMO FSA or ALARP thresholds.
+
+IMO MSC-MEPC.3/Circ.4/Rev.1 and Resolution A.1075(28) support the casualty-classification and ECFA parts of the assignment. Their citation does not validate the project's numeric weights or bands.
+
+For a custom scenario, the user supplies plain-language incident facts, selects only applicable factors, and chooses the project consequence score. Those inputs generate a training-priority result and rule-based measures. They do not create an official GISIS record or ECFA investigation; the verified KP-965 evidence remains hidden in that mode.
+
 Roles, vessels, operations, events, and exposure units follow [maritime taxonomy v1.0.0](methodology/maritime-taxonomy.md). Unknown values are retained explicitly and must not be inferred from another taxonomy axis.
 
 The [denominator and uncertainty review](methodology/exposure-and-uncertainty.md) records a no-go decision for personal statistical rates from currently identified public MAIB/DfT data. Until compatible exposure is available, real incident data supports descriptive counts, recorded-event shares, and conditional severity only.

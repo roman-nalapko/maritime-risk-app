@@ -27,7 +27,7 @@ The application is a static site. At runtime, the browser loads versioned assets
 ```text
 Browser
 ├── Presentation layer
-│   ├── Assignment view: facts → factors → raw P / capped P × S → measures → conclusion
+│   ├── Assignment view: verified KP-965 example or custom scenario → factors → raw P / capped P × S → measures → conclusion
 │   └── Optional tools view
 │       ├── Questionnaire and risk result
 │       └── Incident explorer
@@ -72,7 +72,7 @@ Raw records are not shipped to the browser unless their licence, privacy status,
 | Recommendations | Produce deterministic, controllable actions | Prototype complete |
 | Incident explorer | Filter MAIB affected-person counts and outcome distribution | Official aggregate v1.0 |
 | Coefficient registry | Store values with units, scope, provenance, and review status | Implemented, registry `0.1.0`; coefficients remain provisional |
-| KP-965 assignment | Guide five steps, expose raw/capped scores and mitigation triggers, generate a conclusion, display ECFA, and export evidence | Implemented in `1.0.0` |
+| Incident assignment | Guide five steps for the verified KP-965 example or an in-memory custom scenario; expose raw/capped scores and mitigation triggers; generate a conclusion; keep KP-965 ECFA and exports case-specific | Implemented in `1.2.0` |
 | Import pipeline | Normalize official incident sources | MAIB CSV pipeline complete |
 | Statistical layer | Rates, denominators, uncertainty, sparse-data warnings | Planned |
 | Optional AI | Reviewed tagging, retrieval, grounded explanation | Deferred |
@@ -87,7 +87,7 @@ Raw records are not shipped to the browser unless their licence, privacy status,
 
 ## Versioning
 
-- Application: `1.1.0` (package, visible footer, and service-worker cache identity).
+- Application: `1.2.0` (package, visible footer, release manifest, and service-worker cache identity).
 - Model: independent identifier `SR-UA-PROTOTYPE-0.1` (still provisional).
 - Coefficient registry: independent version `0.1.0`.
 - Dataset: source and retrieval period, for example `MAIB-2021-2025@2026-10-09`.

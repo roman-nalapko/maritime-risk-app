@@ -119,13 +119,13 @@ assert.ok(retrieval.disclaimer.includes("не є персональною ймо
 // 7. Test IMO Formal Safety Assessment (FSA) Matrix Evaluation
 const baseProfile = { role: "deck", hours: 2000, night: 20, ppe: true, watchSystem: "4on8off", vesselType: "container" };
 const fsaNormal = evaluateFsaMatrix(calculateRisk(baseProfile), baseProfile);
-assert.ok(["acceptable", "alarp", "unacceptable"].includes(fsaNormal.region), "FSA matrix region must be valid");
+assert.ok(["low", "elevated", "high"].includes(fsaNormal.region), "Training matrix band must use project-priority terminology");
 assert.ok(fsaNormal.ri >= 2 && fsaNormal.ri <= 8, "Risk Index must be in 2..8 range");
 
 const extremeProfile = { role: "engine", hours: 3200, night: 60, ppe: false, watchSystem: "6on6off", vesselType: "tanker" };
 const fsaExtreme = evaluateFsaMatrix(calculateRisk(extremeProfile), extremeProfile);
 assert.ok(fsaExtreme.ri > fsaNormal.ri, "High risk profile must have higher Risk Index");
-assert.ok(fsaExtreme.region === "unacceptable" || fsaExtreme.region === "alarp", "High risk must fall in ALARP or Unacceptable region");
+assert.ok(fsaExtreme.region === "high" || fsaExtreme.region === "elevated", "High prototype index must fall in an elevated or high training band");
 
 // 8. Test Marginal Sensitivity & Elasticity Analysis
 const sensList = calculateSensitivity(extremeProfile);
@@ -344,9 +344,12 @@ const appContent = await readFile(path.join(root, "src/app.js"), "utf8");
 const runtimeContent = await readFile(path.join(root, "src/ui-runtime.js"), "utf8");
 const publicCopy = `${htmlContent}\n${appContent}`;
 assert.doesNotMatch(publicCopy, /Автор розробки|Lead Developer/i, "public UI copy must use neutral project attribution");
+assert.ok(publicCopy.includes("Навчальний проєкт групи 511"), "public UI must identify the academic group without naming individuals");
+assert.equal(KP965_GISIS_RECORD.projectAttribution, "Academic project of Group 511", "JSON export must identify the academic group");
 
 // Assignment-first root view contract (Issue #38)
 assert.ok(htmlContent.includes('id="start-guided-review-btn"'), "root view must expose a stable guided-review action");
+assert.ok(htmlContent.includes('id="start-custom-scenario-btn"'), "root view must expose a direct custom-scenario action");
 assert.ok(htmlContent.includes('href="#step-1"'), "assignment primary action must start with the incident facts");
 assert.ok(htmlContent.includes('?view=tools#assessment'), "root view must preserve a route to the full research tools");
 assert.ok(htmlContent.includes("Чому сталася аварія і як її запобігти"), "hero must explain the assignment outcome in plain language");
@@ -434,6 +437,11 @@ assert.ok(cssContent.includes("padding: 0 38px 0 14px;"), "styles.css must set s
 assert.equal(KP965_GISIS_RECORD.casualtyId, "KP965-KOPER-2026", "KP-965 casualty ID must match");
 assert.equal(KP965_GISIS_RECORD.vessel.name, "KP-965", "Vessel name must be KP-965");
 assert.equal(KP965_GISIS_RECORD.vessel.voyageSpeedKnots, 22.0, "KP-965 incident speed was 22.0 knots");
+assert.equal(KP965_GISIS_RECORD.timeLocal, "02:16:48 LT (UTC+2)", "KP-965 local casualty time must match the MAIIS report");
+assert.equal(KP965_GISIS_RECORD.timeUtc, "00:16:48Z", "KP-965 UTC casualty time must be derived from the report's UTC+2 local time");
+assert.equal(KP965_GISIS_RECORD.vessel.lengthOverall, 10.8, "KP-965 length must match the MAIIS vessel particulars");
+assert.equal(KP965_GISIS_RECORD.vessel.breadth, 3.32, "KP-965 breadth must match the MAIIS vessel particulars");
+assert.equal(KP965_GISIS_RECORD.personsOnBoard.length, 3, "KP-965 record must preserve all three persons aboard");
 assert.equal(KP965_GISIS_RECORD.location.code, 3, "Table 3 Location must be Code 3 (Port)");
 assert.equal(KP965_GISIS_RECORD.casualtyEvent.code, 6, "Table 4 Casualty Event must be Code 6 (Contact)");
 assert.equal(KP965_GISIS_RECORD.severity.code, 2, "Table 5 Severity must be Code 2 (Marine casualty)");
@@ -446,17 +454,33 @@ assert.ok(KP965_GISIS_RECORD.errorTypes.some((e) => e.code === 1), "Must include
 assert.ok(KP965_GISIS_RECORD.temporaryPersonFactors.some((f) => f.code === 2), "Must include Table 20 fatigue");
 assert.ok(KP965_GISIS_RECORD.operationalFactors.some((f) => f.code === "22.6"), "Must include Table 22 speed awareness factor");
 assert.ok(KP965_GISIS_RECORD.managementFactors.some((f) => f.code === "23.19"), "Must include Table 23 SMS procedures factor");
+assert.equal(KP965_GISIS_RECORD.humanFactors.fatigueFinding, "possible_not_independently_established", "Fatigue must retain the report's uncertainty");
+assert.equal(KP965_GISIS_RECORD.humanFactors.timePressureFinding, "not_established", "Time pressure must not be presented as established evidence");
+assert.equal(KP965_GISIS_RECORD.navigationEquipment.radarOperational, true, "The record must state that the radar was operational");
+assert.equal(KP965_GISIS_RECORD.navigationEquipment.effectiveRadarCrossCheckDemonstrated, false, "The record must distinguish operational equipment from an unproven cross-check");
 
 // ECFA Diagram structure check (IMO Res. A.1075(28) & MAIIS official report Figure 6)
 const ecfa = KP965_GISIS_RECORD.ecfaDiagram;
 assert.equal(ecfa.events.length, 8, "ECFA must include 8 chronological events (E1..E8)");
+assert.deepEqual(
+  ecfa.events.slice(0, 7).map(({ time }) => time),
+  ["02:13:28–02:13:33", "02:15:48", "02:16:30", "02:16:45", "~02:16:48", "02:16:48–02:18:59", "02:18:59"],
+  "ECFA chronology must follow the MAIIS route reconstruction"
+);
 assert.equal(ecfa.accidentEvents.length, 4, "ECFA must include 4 accident events (AE1..AE4)");
 assert.ok(ecfa.casualtyEvent && ecfa.casualtyEvent.id === "CE1", "ECFA must include casualty event (CE1)");
 assert.equal(ecfa.contributingFactors.length, 10, "ECFA must include 10 contributing factors (CF1..CF10)");
 assert.equal(ecfa.safetyDeficiencies.length, 7, "ECFA must include 7 safety deficiencies (SD1..SD7)");
 assert.equal(ecfa.safetyIssues.length, 5, "ECFA must include 5 systemic safety issues (SI1..SI5)");
 assert.equal(ecfa.safetyRecommendations.length, 7, "ECFA must include 7 official MAIIS safety recommendations (SR003..SR009)");
+assert.equal(ecfa.safetyRecommendations[1].id, "SI-MAIIS-SR0004-2026", "Safe-speed recommendation ID must preserve the report identifier");
 assert.ok(ecfa.synthesis && ecfa.synthesis.keyFindingUk, "ECFA must include synthesis key finding");
+
+assert.ok(!htmlContent.includes("Одиночне спостереження рульовим без матроса"), "Guided case must not claim that the operator was alone");
+assert.ok(!htmlContent.includes("Засинання та сповільнення реакції"), "Guided case must not claim that the operator fell asleep");
+assert.ok(!htmlContent.includes("Радар на шкалі 1.5 милі"), "Guided case must not invent an unreported radar range setting");
+assert.ok(!appContent.includes("E1: 02:25"), "Interactive ECFA must not show a precursor after the 02:16:48 casualty");
+assert.ok(!appContent.includes("E4: 02:35"), "Interactive ECFA must not show a precursor after the 02:16:48 casualty");
 
 // 26. Test Port Basin Risk Assessment Model (R = P x S)
 const kp965Scenario = calculatePortBasinRisk({
@@ -471,12 +495,18 @@ const kp965Scenario = calculatePortBasinRisk({
 }, { severityCode: 3 });
 
 assert.equal(kp965Scenario.probabilityScore, 5.0, "KP-965 compound factors clamp to maximum P = 5.0");
-assert.equal(kp965Scenario.severityCode, 3, "Table 5 severity code for marine casualty is 3");
+assert.equal(kp965Scenario.factorScore, 5.0, "Public model output must expose P as a factor score");
+assert.equal(kp965Scenario.rawFactorScore, kp965Scenario.rawProbabilityScore, "Raw factor-score alias must preserve the transparent sum");
+assert.equal(kp965Scenario.consequenceScore, 3, "KP-965 baseline uses project training consequence score S = 3");
 assert.equal(kp965Scenario.riskIndex, 15.0, "KP-965 risk score R = 5.0 x 3 = 15.0");
-assert.equal(kp965Scenario.riskCategory, "critical", "R >= 10 must fall in Critical (Unacceptable) risk zone");
-assert.ok(kp965Scenario.criticalAlertUk.includes("АВТОМАТИЧНЕ ЗАСТЕРЕЖЕННЯ З БЕЗПЕКИ:"), "Must generate coursework automated alert string");
-assert.ok(kp965Scenario.mitigationRules.some((r) => r.ruleId === "RULE-BASIN-SPEED-01"), "Must generate speed limit rule <= 10 kt");
+assert.equal(kp965Scenario.priorityIndex, 15.0, "Public model output must expose R as a training priority index");
+assert.equal(kp965Scenario.riskCategory, "critical", "R >= 10 must fall in the high project-priority band");
+assert.equal(kp965Scenario.riskCategoryLabelUk, "Високий пріоритет", "Highest project band must not be labelled as an official unacceptable-risk threshold");
+assert.doesNotMatch(kp965Scenario.criticalAlertUk, /^АВТОМАТИЧНЕ/i, "Alert body must not duplicate the visible alert heading");
+assert.doesNotMatch(kp965Scenario.criticalAlertUk, /MAIIS|KP-965/i, "reusable alert text must not inherit case-specific evidence");
+assert.ok(kp965Scenario.mitigationRules.some((r) => r.ruleId === "RULE-BASIN-SPEED-01"), "Must generate a safe-speed criteria rule");
 assert.ok(kp965Scenario.mitigationRules.some((r) => r.ruleId === "RULE-DUAL-LOOKOUT-02"), "Must generate dual lookout mandate rule");
+assert.ok(kp965Scenario.mitigationRules.every((rule) => !/MAIIS|KP-965|катер/i.test(`${rule.standard} ${rule.actionUk} ${rule.actionEn}`)), "reusable mitigation rules must not inherit case-specific names or recommendations");
 
 const guidedBaselineScenario = calculatePortBasinRisk({
   excessSpeed: true,
@@ -527,8 +557,8 @@ const thresholdSpeedScenario = calculatePortBasinRisk({
 }, { severityCode: 3 });
 assert.deepEqual(
   thresholdSpeedScenario.mitigationRules.find((rule) => rule.ruleId === "RULE-BASIN-SPEED-01").trigger,
-  { type: "threshold", id: "risk-gte-10", labelUk: "Порогове правило R ≥ 10", labelEn: "Threshold rule R ≥ 10" },
-  "Critical risk must be named as the speed-rule trigger when speed is inactive"
+  { type: "threshold", id: "priority-gte-10", labelUk: "Проєктна смуга R ≥ 10", labelEn: "Project band R ≥ 10" },
+  "High project priority must be named as the speed-rule trigger when speed is inactive"
 );
 
 const thresholdLookoutScenario = calculatePortBasinRisk({
@@ -543,8 +573,8 @@ const thresholdLookoutScenario = calculatePortBasinRisk({
 }, { severityCode: 3 });
 assert.deepEqual(
   thresholdLookoutScenario.mitigationRules.find((rule) => rule.ruleId === "RULE-DUAL-LOOKOUT-02").trigger,
-  { type: "threshold", id: "risk-gte-6", labelUk: "Порогове правило R ≥ 6", labelEn: "Threshold rule R ≥ 6" },
-  "Elevated risk must be named as the lookout-rule trigger when lookout is inactive"
+  { type: "threshold", id: "priority-gte-6", labelUk: "Проєктна смуга R ≥ 6", labelEn: "Project band R ≥ 6" },
+  "Elevated project priority must be named as the lookout-rule trigger when lookout is inactive"
 );
 
 const safeScenario = calculatePortBasinRisk({
@@ -579,7 +609,7 @@ const elevatedScenario = calculatePortBasinRisk({
 }, { severityCode: 3 });
 assert.equal(elevatedScenario.probabilityScore, 3.0, "Single lookout yields P = 1.0 + 2.0 = 3.0");
 assert.equal(elevatedScenario.riskIndex, 9.0, "R = 3.0 x 3 = 9.0");
-assert.equal(elevatedScenario.riskCategory, "elevated", "6 <= R < 10 must be Elevated (ALARP)");
+assert.equal(elevatedScenario.riskCategory, "elevated", "6 <= R < 10 must be the elevated project-priority band");
 
 // 27. Test Standalone Python Assignment Script Generator
 const pyScript = generatePythonAssignmentScript(KP965_GISIS_RECORD, kp965Scenario);
@@ -588,8 +618,15 @@ assert.ok(pyScript.includes("KP-965"), "Python script must cite KP-965 case stud
 assert.ok(pyScript.includes("calculate_port_basin_risk"), "Python script must implement risk function");
 assert.ok(pyScript.includes("R = P x S"), "Python script must implement FSA risk formula");
 assert.ok(pyScript.includes("SI-MAIIS-SR003-2026"), "Python script must print MAIIS recommendations");
+assert.ok(pyScript.includes("SI-MAIIS-SR0004-2026"), "Python script must preserve the safe-speed recommendation identifier from the report");
+assert.doesNotMatch(pyScript, /ліміт швидкості[^\n]+10 вузлів/i, "Python export must not attribute an invented 10-knot limit to the investigation");
+assert.ok(pyScript.includes('"routine_complacency": False'), "Python baseline must not assert routine complacency that the report did not establish");
+assert.ok(pyScript.includes('"person_factors_t20": [2, 4]'), "Python export must omit the unestablished time-pressure factor");
 assert.ok(pyScript.includes("Project: SeaRisk UA educational maritime safety analysis"), "exported coursework must identify the neutral project instead of a person");
+assert.ok(pyScript.includes("Academic group: 511"), "exported coursework must identify the academic group");
 assert.doesNotMatch(pyScript, /Author:\s*Cadet/i, "exported coursework must not assign personal authorship");
+assert.ok(pyScript.includes("Training Priority Index"), "Python export must name R as a training priority index");
+assert.doesNotMatch(pyScript, /IMO FSA Risk Matrix|Probability Score|ALARP - Tolerable|Table 5\)\./i, "Python export must not present project scores and bands as official IMO FSA semantics");
 
 // 28. Test UI & DOM Contract for GISIS IMO & ECFA Module
 assert.ok(htmlContent.includes('id="gisis-ecfa"'), "index.html must have gisis-ecfa section");
@@ -597,7 +634,7 @@ assert.ok(htmlContent.includes('id="port-basin-risk-card"'), "index.html must ha
 assert.ok(htmlContent.includes('id="factor-speed"'), "index.html must have factor-speed checkbox");
 assert.ok(htmlContent.includes('id="factor-lookout"'), "index.html must have factor-lookout checkbox");
 assert.ok(htmlContent.includes('id="factor-training"'), "index.html must have factor-training checkbox");
-assert.equal((htmlContent.match(/id="factor-[^"]+"/g) || []).length, 5, "assignment must expose exactly five factor switches");
+assert.equal((htmlContent.match(/<input type="checkbox" id="factor-[^"]+"/g) || []).length, 5, "assignment must expose exactly five factor switches");
 assert.ok(htmlContent.includes('id="gisis-critical-alert"'), "index.html must have gisis-critical-alert box");
 assert.ok(htmlContent.includes('id="gisis-severity-select"'), "index.html must have gisis-severity-select");
 assert.ok(htmlContent.includes('id="gisis-risk-display"'), "index.html must have gisis-risk-display");
@@ -625,7 +662,14 @@ assert.ok(appContent.includes("renderEcfaDiagram"), "app.js must implement rende
 assert.ok(appContent.includes("initGisisEcfaModule"), "app.js must implement initGisisEcfaModule");
 
 // 29. Assignment narrative, evidence, and truthful export contract (Issue #38)
-assert.ok(htmlContent.includes("KP-965 (GRP, L = 14.2 м)"), "assignment must identify the worked vessel");
+assert.ok(htmlContent.includes("KP-965 (GRP, L = 10,80 м)"), "assignment must identify the worked vessel using report-backed dimensions");
+assert.ok(htmlContent.includes("ПРОЄКТНА НАВЧАЛЬНА МОДЕЛЬ · R = P × S"), "assignment must label the calculation as a project training model");
+assert.ok(htmlContent.includes("Бал факторів (P)"), "assignment must label P as a factor score");
+assert.ok(htmlContent.includes("Навчальний індекс пріоритету (R)"), "assignment must label R as a training priority index");
+assert.equal((htmlContent.match(/<span>Бал наслідків \(S\)<\/span>/g) ?? []).length, 1, "assignment must render the consequence label once");
+assert.equal((htmlContent.match(/id="injury-share"/g) ?? []).length, 1, "statistics must expose one injury-share output");
+assert.equal((htmlContent.match(/id="injury-ci"/g) ?? []).length, 1, "statistics must expose one injury interval output");
+assert.ok(!htmlContent.includes("ALARP критерій"), "assignment must not label project thresholds as ALARP criteria");
 assert.ok(htmlContent.includes("Басейн I порту Копер"), "assignment must identify the worked location");
 assert.ok(htmlContent.includes("KP-965 = 22 вузли"), "assignment must expose the incident speed");
 assert.ok(htmlContent.indexOf('id="gisis-mitigation-title"') < htmlContent.indexOf('id="ecfa-diagram-card"'), "generated measures must precede the ECFA diagram");
@@ -669,6 +713,13 @@ assert.ok(htmlContent.includes('id="gisis-raw-prob-display"'), "guided score mus
 assert.ok(htmlContent.includes('id="gisis-cap-explanation"'), "guided score must explain the P ceiling");
 assert.ok(htmlContent.includes('id="assignment-conclusion"'), "final step must render a deterministic conclusion");
 assert.ok(htmlContent.includes('id="assignment-conclusion-fallback"') && htmlContent.includes('id="assignment-conclusion-preview"'), "clipboard denial must expose the complete conclusion manually");
+for (const customScenarioId of ["incident-mode-kp965", "incident-mode-custom", "custom-incident-form", "custom-incident-title", "custom-incident-vessel", "custom-incident-event", "custom-incident-location", "custom-incident-summary", "apply-custom-scenario-btn", "custom-scenario-status"]) {
+  assert.ok(htmlContent.includes(`id="${customScenarioId}"`), `custom incident flow must expose ${customScenarioId}`);
+}
+assert.match(htmlContent, /id="custom-scenario-status"[^>]*aria-live="polite"/, "custom scenario apply action must announce its result");
+assert.ok(htmlContent.includes('data-kp965-only-evidence'), "official KP-965 evidence must have an explicit visibility boundary");
+assert.ok(appContent.includes("setIncidentMode"), "app must switch between the verified example and custom scenario state");
+assert.ok(appContent.includes("applyCustomIncidentScenario"), "app must apply normalized custom scenario input explicitly");
 for (const stableId of ["factor-speed", "factor-lookout", "factor-fatigue", "factor-radar", "factor-training", "ecfa-diagram-card", "download-gisis-json-btn", "copy-python-script-btn", "assignment-sources"]) {
   assert.equal((htmlContent.match(new RegExp(`id="${stableId}"`, "g")) || []).length, 1, `${stableId} must remain a single source of truth`);
 }

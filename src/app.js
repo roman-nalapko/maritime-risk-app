@@ -26,7 +26,9 @@ import { copyTextOrFallback, formatEngineeringIndex, initializeModule, resolveVi
 import {
   GUIDED_STEP_COUNT,
   buildAssignmentConclusion,
+  buildScenarioPriorityAlert,
   guidedStepHash,
+  normalizeIncidentScenario,
   resolveGuidedStep
 } from "./guided-assignment.js";
 
@@ -356,14 +358,14 @@ const fsaRowsByLang = {
 
 const fsaRegionsByLang = {
   uk: {
-    acceptable: { short: "Прийнятний", title: "Broadly Acceptable (Прийнятний)", action: "Ризик знаходиться у межах норми. Дотримуватися стандартних суднових процедур безпеки (SMS)." },
-    alarp: { short: "Зона ALARP", title: "ALARP (As Low As Reasonably Practicable)", action: "Зона ALARP: ризик допустимий виключно за умови реалізації активних заходів зниження (носіння ЗІЗ, нормалізація сну)." },
-    unacceptable: { short: "Неприпустимий", title: "Unacceptable / Intolerable (Неприпустимий)", action: "Критичний рівень! Негайне зупинення робіт за процедурою Stop Work Authority, перегляд штатного розкладу та відпочинку." }
+    low: { short: "Низький", title: "Низький навчальний пріоритет", action: "Підтримувати стандартні суднові процедури безпеки та контролювати зміни факторів." },
+    elevated: { short: "Підвищений", title: "Підвищений навчальний пріоритет", action: "Розглянути додаткові заходи: ЗІЗ, коригування графіка відпочинку та посилення операційного контролю." },
+    high: { short: "Високий", title: "Високий навчальний пріоритет", action: "Першочергово перевірити організацію робіт, графік відпочинку, склад вахти та доступні захисні бар’єри." }
   },
   en: {
-    acceptable: { short: "Acceptable", title: "Broadly Acceptable", action: "Risk is within standard operational thresholds. Maintain shipboard Safety Management System (SMS) compliance." },
-    alarp: { short: "ALARP Zone", title: "ALARP (As Low As Reasonably Practicable)", action: "ALARP region: risk tolerable only under active risk control mitigations (mandatory certified PPE, fatigue prevention)." },
-    unacceptable: { short: "Unacceptable", title: "Unacceptable / Intolerable", action: "Critical risk! Immediate Stop Work Authority intervention, revision of watch schedules and rest periods." }
+    low: { short: "Low", title: "Low training priority", action: "Maintain standard shipboard safety procedures and monitor changes in the factors." },
+    elevated: { short: "Elevated", title: "Elevated training priority", action: "Consider additional controls such as PPE, rest-schedule adjustments, and stronger operational supervision." },
+    high: { short: "High", title: "High training priority", action: "Prioritize review of work organization, rest schedules, watch composition, and available safety barriers." }
   }
 };
 
@@ -380,7 +382,8 @@ function renderFsaMatrix(result, input) {
 
   if (badge) {
     badge.textContent = `RI = ${fsa.ri} · ${regData.short}`;
-    badge.className = `fsa-matrix-badge fsa-${fsa.region}`;
+    const styleRegion = { low: "acceptable", elevated: "alarp", high: "unacceptable" }[fsa.region];
+    badge.className = `fsa-matrix-badge fsa-${styleRegion}`;
   }
   if (title) title.textContent = `${t.fsaRiskIndex} RI = ${fsa.ri} (${regData.title})`;
   if (action) action.textContent = regData.action;
@@ -1346,7 +1349,7 @@ function renderRisk(result, input, scenarioName = activeScenario, isInitial = fa
   // Marginal Sensitivity Analysis (Tornado ranking)
   renderSensitivity(input);
 
-  // IMO FSA Risk Matrix Evaluation
+  // Project training matrix inspired by the FI + SI structure used in FSA
   renderFsaMatrix(result, input);
 
   // Epic 1: Circadian Fatigue & Sleep Debt
@@ -1680,17 +1683,43 @@ $("#download-csv-btn")?.addEventListener("click", () => {
 let currentEcfaFilter = "all";
 let currentSelectedEcfaNode = "AE1";
 let currentPortBasinRisk = null;
+let currentIncidentMode = "kp965";
+let currentIncidentScenario = null;
+
+const KP965_INCIDENT_VIEW = Object.freeze({
+  vessel: "KP-965 (GRP, L = 10,80 м)",
+  event: "Навал на буй 2/I (до контакту: 19,2 вузла за AIS)",
+  location: "Басейн I порту Копер (Словенія)",
+  source: "Звіт MAIIS · EMCIP 2026/002821 · Nat. No. 373-14/2026-2430",
+  summary: "катер ішов уночі портовим басейном зі швидкістю близько 22 вузлів і навалився на буй. Судно було пошкоджене, але подія не призвела до загибелі людей."
+});
+
+const KP965_FACTOR_COPY = Object.freeze({
+  speed: ["Перевищення швидкості (v > 15 вузлів, KP-965 = 22 вузли)", "COLREG Rule 6 / Небезпечна швидкість у стисненому басейні [+2.0]"],
+  lookout: ["Неефективне спільне спостереження та взаємний контроль", "Другий підготовлений член екіпажу мав обмежений огляд і не мав прямого доступу до дисплеїв; лоцман пасивно спостерігав [+2.0]"],
+  fatigue: ["Можливе зниження пильності під час нічної роботи", "Короткий сон розглянуто як можливий фактор; самостійну роль втоми не встановлено [+1.0]"],
+  radar: ["Навігаційне обладнання не спрацювало як ефективний бар’єр", "Радар і плотер працювали, але буй не відображався на електронному дисплеї, а ефективну радарну перевірку не підтверджено [+1.5]"],
+  training: ["Недоліки навчання та відсутність чек-лістів (SOP / Training)", "Tables 22-23 / Відсутність відстежуваних тренінгів та розподілу дій [+1.0]"]
+});
+
+const CUSTOM_FACTOR_COPY = Object.freeze({
+  speed: ["Небезпечна або надмірна швидкість", "Швидкість не відповідала видимості, простору для маневру чи умовам акваторії [+2.0]"],
+  lookout: ["Неефективне спостереження та взаємний контроль", "Небезпеку не виявили або не підтвердили вчасно іншим членом команди [+2.0]"],
+  fatigue: ["Можливе зниження пильності", "Нічна робота, недосипання або тривале навантаження могли вплинути на увагу [+1.0]"],
+  radar: ["Навігаційне обладнання не стало ефективним бар’єром", "Радар, плотер, карта або інші засоби не допомогли вчасно виявити небезпеку [+1.5]"],
+  training: ["Недоліки підготовки, процедур або чек-лістів", "Ролі, порядок дій чи перевірка компетентності були визначені недостатньо [+1.0]"]
+});
 let currentGuidedStep = 0;
 
 const ECFA_NODE_METADATA = {
   E1: {
     category: { uk: "Хронологічна подія", en: "Chronological Event" },
-    title: { uk: "E1: 02:25 — Відшвартування від танкера", en: "E1: 02:25 — Disembarkation from Tanker" },
+    title: { uk: "E1: 02:13:28–02:13:33 — Перехід лоцмана на KP-965", en: "E1: 02:13:28–02:13:33 — Pilot transfer to KP-965" },
     desc: {
-      uk: "Завершення висадки лоцмана на якірній стоянці та початок переходу катера KP-965 до бази.",
-      en: "Completion of pilot transfer at anchorage and start of transit of pilot craft KP-965 back to base."
+      uk: "Лоцман перейшов з т/х ANJI SOUNDNESS на катер KP-965 для подальшої доставки до MSC CAITLIN II.",
+      en: "The pilot transferred from M/V ANJI SOUNDNESS to KP-965 for onward transfer to MSC CAITLIN II."
     },
-    ref: "IMO Res. A.960 (Pilot Boarding / Craft Operations)",
+    ref: "MAIIS Final Safety Report, Table 2",
     mitigation: {
       uk: "Дотримання регламенту нічних лоцманських операцій та перевірка розкладу переходу",
       en: "Adhere to nocturnal pilot transfer SOPs and confirm transit plan"
@@ -1698,12 +1727,12 @@ const ECFA_NODE_METADATA = {
   },
   E2: {
     category: { uk: "Хронологічна подія", en: "Chronological Event" },
-    title: { uk: "E2: 02:30 — Вхід у Басейн I порту Копер", en: "E2: 02:30 — Entry into Basin I" },
+    title: { uk: "E2: 02:15:48 — 22,0 вузла; 721 м до буя", en: "E2: 02:15:48 — 22.0 kt; 721 m from buoy" },
     desc: {
-      uk: "Перетин лінії молу та вхід у стиснену внутрішню акваторію Басейну I.",
-      en: "Passing breakwater entrance into the restricted internal waters of Basin I."
+      uk: "Дані AIS зафіксували швидкість 22,0 вузла приблизно за 721 м до буя 2/I.",
+      en: "AIS recorded 22.0 knots approximately 721 m from buoy 2/I."
     },
-    ref: "Port of Koper Navigation Regulations (Art. 12)",
+    ref: "MAIIS Final Safety Report, Table 2",
     mitigation: {
       uk: "Обов'язковий перехід на режим маневрування у стиснених водах (Basin mode)",
       en: "Mandatory transition to restricted basin maneuvering mode"
@@ -1711,25 +1740,25 @@ const ECFA_NODE_METADATA = {
   },
   E3: {
     category: { uk: "Хронологічна подія", en: "Chronological Event" },
-    title: { uk: "E3: 02:32 — Набір швидкості до 22.0 вузлів", en: "E3: 02:32 — Acceleration to 22.0 kt" },
+    title: { uk: "E3: 02:16:30 — 21,3 вузла; 212 м до буя", en: "E3: 02:16:30 — 21.3 kt; 212 m from buoy" },
     desc: {
-      uk: "Рульовий перевів рукоятки управління двигунами на повний хід у нічний час всередині басейну.",
-      en: "Coxswain advanced throttles to maximum cruising speed inside restricted port basin at night."
+      uk: "Дані AIS зафіксували швидкість 21,3 вузла приблизно за 212 м до буя 2/I.",
+      en: "AIS recorded 21.3 knots approximately 212 m from buoy 2/I."
     },
-    ref: "COLREG Rule 6 (Safe Speed) & Port Speed Regulations",
+    ref: "MAIIS Final Safety Report, Table 2",
     mitigation: {
-      uk: "Встановлення апаратного/програмного обмеження швидкості до 10 вузлів у басейні",
-      en: "Enforce hardware or software governor limiting basin speed to <= 10 knots"
+      uk: "Визначити операційні критерії безпечної швидкості для нічного руху між басейнами",
+      en: "Define operational safe-speed criteria for night transit between port basins"
     }
   },
   E4: {
     category: { uk: "Хронологічна подія", en: "Chronological Event" },
-    title: { uk: "E4: 02:35 — Рух на фоні берегових вогнів", en: "E4: 02:35 — Navigation against shore glare" },
+    title: { uk: "E4: 02:16:45 — 19,2 вузла; 54,6 м до буя", en: "E4: 02:16:45 — 19.2 kt; 54.6 m from buoy" },
     desc: {
-      uk: "Катер слідував уздовж контейнерного терміналу з інтенсивним прожекторним освітленням берега.",
-      en: "Vessel transited along container terminal berths with intense high-mast floodlight glare."
+      uk: "Остання точка AIS перед контактом: SOG 19,2 вузла, COG 133,2°, відстань до буя 54,6 м.",
+      en: "Last pre-contact AIS point: SOG 19.2 knots, COG 133.2°, 54.6 m from the buoy."
     },
-    ref: "IMO MSC.192(79) & Night Vision Ergonomics",
+    ref: "MAIIS Final Safety Report, Table 2",
     mitigation: {
       uk: "Використання тепловізорів FLIR та антиблікового тонування вітрового скла",
       en: "Equip craft with FLIR thermal imaging and anti-reflective windscreen shielding"
@@ -1739,8 +1768,8 @@ const ECFA_NODE_METADATA = {
     category: { uk: "Хронологічна подія", en: "Chronological Event" },
     title: { uk: "E5: ~02:16:48 — Навал на буй 2/I лівою вилицею носа", en: "E5: ~02:16:48 — Allision with Buoy 2/I" },
     desc: {
-      uk: "На швидкості близько 22 вузлів катер здійснив контакт лівою вилицею носової частини зі швартовним буєм 2/I у Басейні I.",
-      en: "At ~22 knots pilot boat allided with mooring buoy 2/I with the port bow in Basin I of Port of Koper."
+      uk: "Катер здійснив контакт носовою частиною зі швартовним буєм 2/I. Точну швидкість у момент контакту встановити неможливо через інтервали AIS.",
+      en: "The pilot boat contacted mooring buoy 2/I with its forward section. Exact impact speed could not be determined because of AIS reporting intervals."
     },
     ref: "MAIIS Final Safety Report & IMO Res. A.1075(28)",
     mitigation: {
@@ -1791,13 +1820,13 @@ const ECFA_NODE_METADATA = {
     category: { uk: "Аварійна точка (Accident Event)", en: "Accident Event" },
     title: { uk: "AE1: Швартовний буй 2/I розпізнано занадто пізно", en: "AE1: Mooring buoy 2/I recognised too late" },
     desc: {
-      uk: "Судноводій помітив темний силует буя 2/I лише в останні секунди перед контактом через високу швидкість та нічну засвітку.",
-      en: "Coxswain sighted dark silhouette of mooring buoy 2/I only seconds before impact due to high transit speed and shore glare."
+      uk: "Другий підготовлений член екіпажу виявив буй приблизно за 20–30 м і попередив судноводія; залишеної відстані вже не вистачило для зупинки або ухилення.",
+      en: "The additional trained person detected the buoy at approximately 20–30 m and warned the operator; the remaining distance was insufficient to stop or avoid contact."
     },
     ref: "COLREG Rule 5 & 6 / MAIIS Chapter 2.1",
     mitigation: {
-      uk: "Встановлення ліміту швидкості ≤ 10 вузлів у басейні та дублюючий радарний контроль",
-      en: "Enforce <= 10 kt speed limit in basin and mandatory radar cross-checking"
+      uk: "Визначення критеріїв безпечної швидкості та обов’язкова перехресна перевірка навігаційних небезпек",
+      en: "Define safe-speed criteria and require cross-checking of navigational hazards"
     }
   },
   AE2: {
@@ -1861,8 +1890,8 @@ const ECFA_NODE_METADATA = {
     },
     ref: "COLREG Rule 6 (Safe Speed) & MAIIS Finding 1",
     mitigation: {
-      uk: "Встановлення чіткого операційного ліміту швидкості ≤ 10 вузлів у басейнах порту",
-      en: "Enforce operational speed limit <= 10 knots within all port basins"
+      uk: "Визначення чітких операційних критеріїв безпечної швидкості в басейнах порту",
+      en: "Define clear operational safe-speed criteria for port-basin transits"
     }
   },
   CF2: {
@@ -1945,10 +1974,10 @@ const ECFA_NODE_METADATA = {
   },
   CF8: {
     category: { uk: "Фактор сприяння (Human)", en: "Contributing Factor (Human)" },
-    title: { uk: "CF8: Зниження пильності через нічний час (02:16 LT)", en: "CF8: Reduced alertness / circadian nadir" },
+    title: { uk: "CF8: Можливе зниження пильності", en: "CF8: Possible reduced alertness" },
     desc: {
-      uk: "Інцидент стався у пік біологічного спаду активності людини (циркадний надир 02:00–04:00), що знизило швидкість реакції.",
-      en: "Occurrence coincided with circadian trough of physiological alertness, depressing reaction speed."
+      uk: "Короткий фактичний сон і особисті обставини розглянуто як можливі чинники продуктивності; втому як самостійний фактор не встановлено.",
+      en: "Short actual sleep and personal concerns were possible performance-shaping factors; fatigue was not established as an independent factor."
     },
     ref: "IMO MSC/Circ.1598 (Fatigue Mitigation Guidelines)",
     mitigation: {
@@ -1989,10 +2018,10 @@ const ECFA_NODE_METADATA = {
       uk: "Операційні вимоги СУБ щодо безпечної швидкості та контролю руху катерів у внутрішніх басейнах порту були відсутні.",
       en: "Operational SMS requirements for speed management and safe transit of pilot craft in internal port were inadequate."
     },
-    ref: "MAIIS Safety Deficiency No. 1 / Recommendation SR004",
+    ref: "MAIIS Safety Deficiency No. 2 / Recommendation SR0004",
     mitigation: {
-      uk: "Впровадження обов'язкового швидкісного регламенту ≤ 10 вузлів для службових катерів у басейнах",
-      en: "Enforce formal operational directive: <= 10 knots speed cap for service craft in basins"
+      uk: "Визначити та впровадити операційні критерії безпечної швидкості з урахуванням реальних умов переходу",
+      en: "Define and implement operational safe-speed criteria for the actual transit conditions"
     }
   },
   SD2: {
@@ -2002,7 +2031,7 @@ const ECFA_NODE_METADATA = {
       uk: "Відсутня надійна документована система початкового, періодичного та практичного навчання судноводіїв і матросів.",
       en: "No reliable documented system for initial, recurrent and practical verification training for crews."
     },
-    ref: "MAIIS Safety Deficiency No. 2 / Recommendations SR003 & SR008",
+    ref: "MAIIS Safety Deficiency No. 1 / Recommendations SR003 & SR008",
     mitigation: {
       uk: "Розробка стандартизованої програми тренажерної підготовки з маневрування у стиснених водах",
       en: "Develop standardized simulator training curriculum for confined basin maneuvering"
@@ -2030,8 +2059,8 @@ const ECFA_NODE_METADATA = {
     },
     ref: "MAIIS Safety Deficiency No. 4 / Recommendation SR006",
     mitigation: {
-      uk: "Впровадження СОП з налаштування радарних шкал (0.5–0.75 NM) та постійного плотерного супроводу",
-      en: "Implement SOP mandating 0.5-0.75 NM radar range scales and active chart cross-check"
+      uk: "Стандартизувати вибір належного масштабу радара/плотера та обов’язкову перехресну перевірку положення і небезпек",
+      en: "Standardize appropriate radar/plotter scale selection and mandatory cross-checking of position and hazards"
     }
   },
   SD5: {
@@ -2369,31 +2398,161 @@ function renderEcfaDiagram(activeFilter = "all") {
 
 const GUIDED_FACTOR_LABELS = {
   "factor-speed": "перевищення швидкості",
-  "factor-lookout": "одиночне спостереження",
-  "factor-fatigue": "циркадний надир і перевтома",
-  "factor-radar": "неефективне використання радара",
+  "factor-lookout": "неефективне спільне спостереження",
+  "factor-fatigue": "можливе зниження пильності",
+  "factor-radar": "навігаційне обладнання не спрацювало як бар’єр",
   "factor-training": "недоліки навчання та процедур"
 };
+
+function readCustomIncidentScenario() {
+  return normalizeIncidentScenario({
+    title: $("#custom-incident-title")?.value,
+    vessel: $("#custom-incident-vessel")?.value,
+    event: $("#custom-incident-event")?.value,
+    location: $("#custom-incident-location")?.value,
+    summary: $("#custom-incident-summary")?.value
+  });
+}
+
+function renderIncidentScenario() {
+  const isCustom = currentIncidentMode === "custom";
+  const scenario = currentIncidentScenario ?? normalizeIncidentScenario();
+  const view = isCustom
+    ? { ...scenario, source: "Введено користувачем · локальний навчальний сценарій" }
+    : KP965_INCIDENT_VIEW;
+
+  const factVessel = $("#incident-fact-vessel");
+  const factEvent = $("#incident-fact-event");
+  const factLocation = $("#incident-fact-location");
+  const factSource = $("#incident-fact-source");
+  const summary = $("#incident-plain-summary");
+  if (factVessel) factVessel.textContent = view.vessel;
+  if (factEvent) factEvent.textContent = view.event;
+  if (factLocation) factLocation.textContent = view.location;
+  if (factSource) factSource.textContent = view.source;
+  if (summary) summary.textContent = view.summary;
+
+  const stepIntro = $("#incident-step-intro");
+  const stepTwoIntro = $("#step-2 .guided-step-heading p");
+  if (stepIntro) {
+    stepIntro.textContent = isCustom
+      ? "Зафіксуйте короткі факти власного сценарію. Тут не потрібно вказувати персональні дані або шукати винного."
+      : "Спочатку зафіксуємо факти без пошуку винного: де, коли та за яких умов стався навал.";
+  }
+  if (stepTwoIntro) {
+    stepTwoIntro.textContent = isCustom
+      ? "Позначте лише ті фактори, які справді стосуються вашого сценарію. Якщо даних немає, залиште фактор вимкненим."
+      : "Позначте фактори, які підтверджені матеріалами кейсу. У базовому сценарії KP-965 увімкнені всі п’ять.";
+  }
+
+  const factorCopy = isCustom ? CUSTOM_FACTOR_COPY : KP965_FACTOR_COPY;
+  Object.entries(factorCopy).forEach(([key, [title, detail]]) => {
+    const titleEl = $(`#factor-${key}-title`);
+    const detailEl = $(`#factor-${key}-detail`);
+    if (titleEl) titleEl.textContent = title;
+    if (detailEl) detailEl.textContent = detail;
+  });
+
+  const mainTitle = $("#gisis-main-title");
+  const mainLead = $("#gisis-main-lead");
+  const calcIntro = $("#gisis-calc-intro");
+  const eyebrow = $("#gisis-eyebrow");
+  const stepFiveTitle = $("#step-5-title");
+  const stepFiveIntro = $("#step-5 .guided-step-heading p");
+  const stepFiveProgress = $("[data-guided-progress='5']");
+  if (isCustom) {
+    if (eyebrow) eyebrow.textContent = "ВЛАСНИЙ СЦЕНАРІЙ · ПРОЄКТНА НАВЧАЛЬНА МОДЕЛЬ";
+    if (mainTitle) mainTitle.textContent = "Навчальна оцінка власного морського сценарію";
+    if (mainLead) mainLead.textContent = "Опишіть подію, оберіть підтверджені фактори й отримайте прозорий навчальний індекс пріоритету та перелік превентивних заходів.";
+    if (calcIntro) calcIntro.textContent = "Оберіть до п’яти факторів сценарію. Алгоритм додасть їхні проєктні ваги, обмежить бал P до 5, помножить його на навчальний бал наслідків S та запропонує заходи.";
+    if (stepFiveTitle) stepFiveTitle.textContent = "Висновок і межі";
+    if (stepFiveIntro) stepFiveIntro.textContent = "Отримайте готовий висновок і перевірте межі застосування навчального розрахунку.";
+    if (stepFiveProgress) stepFiveProgress.innerHTML = "<span>5</span> Висновок і межі";
+  } else {
+    const translations = I18N[currentLang];
+    if (eyebrow) eyebrow.textContent = translations.gisisEyebrow;
+    if (mainTitle) mainTitle.textContent = translations.gisisMainTitle;
+    if (mainLead) mainLead.textContent = translations.gisisMainLead;
+    if (calcIntro) calcIntro.textContent = translations.gisisCalcIntro;
+    if (stepFiveTitle) stepFiveTitle.textContent = "Висновок і докази";
+    if (stepFiveIntro) stepFiveIntro.textContent = "Отримайте короткий висновок для пояснення роботи, а за потреби відкрийте повну ECFA-схему та джерела.";
+    if (stepFiveProgress) stepFiveProgress.innerHTML = "<span>5</span> Висновок і докази";
+  }
+
+  document.querySelectorAll("[data-kp965-only-evidence]").forEach((element) => {
+    element.hidden = isCustom;
+    if (isCustom) element.removeAttribute("open");
+  });
+  const evidenceNote = $("#custom-evidence-note");
+  if (evidenceNote) evidenceNote.hidden = !isCustom;
+}
+
+function setIncidentMode(mode, { resetFactors = true } = {}) {
+  const nextMode = mode === "custom" ? "custom" : "kp965";
+  const changed = currentIncidentMode !== nextMode;
+  currentIncidentMode = nextMode;
+
+  const customForm = $("#custom-incident-form");
+  if (customForm) customForm.hidden = nextMode !== "custom";
+  for (const [id, active] of [["incident-mode-kp965", nextMode === "kp965"], ["incident-mode-custom", nextMode === "custom"]]) {
+    const button = $(`#${id}`);
+    button?.classList.toggle("is-active", active);
+    button?.setAttribute("aria-pressed", String(active));
+  }
+
+  if (resetFactors && changed) {
+    for (const id of Object.keys(GUIDED_FACTOR_LABELS)) {
+      const control = $(`#${id}`);
+      if (control) control.checked = nextMode === "kp965";
+    }
+    const consequence = $("#gisis-severity-select");
+    if (consequence) consequence.value = nextMode === "kp965" ? "3" : "1";
+  }
+
+  currentIncidentScenario = nextMode === "custom" ? readCustomIncidentScenario() : null;
+  const status = $("#custom-scenario-status");
+  if (status && nextMode === "custom") {
+    status.textContent = "Заповніть відомі факти, застосуйте сценарій і перейдіть до вибору факторів.";
+  }
+  renderIncidentScenario();
+  renderPortBasinRisk();
+}
+
+function applyCustomIncidentScenario(event) {
+  event?.preventDefault();
+  currentIncidentMode = "custom";
+  currentIncidentScenario = readCustomIncidentScenario();
+  renderIncidentScenario();
+  renderPortBasinRisk();
+  const status = $("#custom-scenario-status");
+  if (status) status.textContent = `Сценарій «${currentIncidentScenario.title}» застосовано. Далі оберіть підтверджені фактори.`;
+}
 
 function renderGuidedAssignment(riskResult = currentPortBasinRisk) {
   if (!riskResult) return;
 
-  const rawScore = Number(riskResult.rawProbabilityScore ?? riskResult.probabilityScore);
+  const rawScore = Number(riskResult.rawFactorScore ?? riskResult.rawProbabilityScore ?? riskResult.factorScore ?? riskResult.probabilityScore);
+  const factorScore = Number(riskResult.factorScore ?? riskResult.probabilityScore);
   const rawDisplay = $("#gisis-raw-prob-display");
   if (rawDisplay) rawDisplay.textContent = rawScore.toFixed(1);
 
   const capExplanation = $("#gisis-cap-explanation");
   if (capExplanation) {
-    capExplanation.textContent = rawScore > riskResult.probabilityScore
-      ? `Сума ваг факторів ${rawScore.toFixed(1)} перевищує межу шкали, тому P обмежено до ${riskResult.probabilityScore.toFixed(1)}.`
-      : `Сума ваг факторів дорівнює ${rawScore.toFixed(1)}, тому P = ${riskResult.probabilityScore.toFixed(1)} без додаткового обмеження.`;
+    capExplanation.textContent = rawScore > factorScore
+      ? `Сума проєктних ваг ${rawScore.toFixed(1)} перевищує межу навчальної шкали, тому P обмежено до ${factorScore.toFixed(1)}.`
+      : `Сума проєктних ваг дорівнює ${rawScore.toFixed(1)}, тому P = ${factorScore.toFixed(1)} без додаткового обмеження.`;
   }
 
   const activeFactorLabels = Object.entries(GUIDED_FACTOR_LABELS)
     .filter(([id]) => $(`#${id}`)?.checked)
     .map(([, label]) => label);
   const mitigationActions = riskResult.mitigationRules.map((rule) => rule.actionUk);
-  const conclusion = buildAssignmentConclusion({ riskResult, activeFactorLabels, mitigationActions });
+  const conclusion = buildAssignmentConclusion({
+    riskResult,
+    activeFactorLabels,
+    mitigationActions,
+    scenario: currentIncidentMode === "custom" ? currentIncidentScenario : null
+  });
   const conclusionEl = $("#assignment-conclusion");
   if (conclusionEl) conclusionEl.textContent = conclusion;
 }
@@ -2456,6 +2615,9 @@ function enterGuidedAssignment(event) {
   const targetStep = resolveGuidedStep(event.currentTarget.getAttribute("href"));
   if (!targetStep) return;
   event.preventDefault();
+  if (event.currentTarget.dataset.incidentEntry) {
+    setIncidentMode(event.currentTarget.dataset.incidentEntry);
+  }
   const targetHash = guidedStepHash(targetStep);
   history.pushState(null, "", targetHash);
   showGuidedStep(targetStep, { focus: false });
@@ -2489,8 +2651,10 @@ function initGuidedAssignment() {
   });
   $("#copy-assignment-conclusion-btn")?.addEventListener("click", copyAssignmentConclusion);
   $("#print-assignment-btn")?.addEventListener("click", () => {
-    $("#guided-ecfa-details")?.setAttribute("open", "");
-    $("#guided-evidence-details")?.setAttribute("open", "");
+    if (currentIncidentMode === "kp965") {
+      $("#guided-ecfa-details")?.setAttribute("open", "");
+      $("#guided-evidence-details")?.setAttribute("open", "");
+    }
     window.print();
   });
   handleHash(false);
@@ -2512,13 +2676,13 @@ function renderPortBasinRisk() {
   currentPortBasinRisk = calculatePortBasinRisk(factors, { severityCode });
 
   const probDisp = $("#gisis-prob-display");
-  if (probDisp) probDisp.textContent = `${currentPortBasinRisk.probabilityScore.toFixed(1)} / 5.0`;
+  if (probDisp) probDisp.textContent = `${currentPortBasinRisk.factorScore.toFixed(1)} / 5.0`;
 
   const sevDisp = $("#gisis-sev-display");
-  if (sevDisp) sevDisp.textContent = `${currentPortBasinRisk.severityCode} / 5`;
+  if (sevDisp) sevDisp.textContent = `${currentPortBasinRisk.consequenceScore} / 5`;
 
   const riskDisp = $("#gisis-risk-display");
-  if (riskDisp) riskDisp.textContent = currentPortBasinRisk.riskIndex.toFixed(1);
+  if (riskDisp) riskDisp.textContent = currentPortBasinRisk.priorityIndex.toFixed(1);
 
   const badge = $("#gisis-risk-badge");
   if (badge) {
@@ -2530,9 +2694,16 @@ function renderPortBasinRisk() {
   const alertBox = $("#gisis-critical-alert");
   const alertText = $("#gisis-critical-alert-text");
   if (alertBox && alertText) {
-    if (currentPortBasinRisk.riskIndex >= 10.0 && currentPortBasinRisk.criticalAlertUk) {
+    if (currentPortBasinRisk.priorityIndex >= 10.0 && currentPortBasinRisk.criticalAlertUk) {
       alertBox.removeAttribute("hidden");
-      alertText.textContent = currentLang === "en" ? currentPortBasinRisk.criticalAlertEn : currentPortBasinRisk.criticalAlertUk;
+      alertText.textContent = currentIncidentMode === "custom"
+        ? buildScenarioPriorityAlert({
+            riskResult: currentPortBasinRisk,
+            activeFactorLabels: Object.entries(GUIDED_FACTOR_LABELS)
+              .filter(([id]) => $(`#${id}`)?.checked)
+              .map(([, label]) => label)
+          })
+        : (currentLang === "en" ? currentPortBasinRisk.criticalAlertEn : currentPortBasinRisk.criticalAlertUk);
     } else {
       alertBox.setAttribute("hidden", "");
     }
@@ -2593,6 +2764,9 @@ function initGisisEcfaModule() {
     $(`#${id}`)?.addEventListener("change", renderPortBasinRisk);
   });
   $("#gisis-severity-select")?.addEventListener("change", renderPortBasinRisk);
+  $("#incident-mode-kp965")?.addEventListener("click", () => setIncidentMode("kp965"));
+  $("#incident-mode-custom")?.addEventListener("click", () => setIncidentMode("custom"));
+  $("#custom-incident-form")?.addEventListener("submit", applyCustomIncidentScenario);
 
   document.querySelectorAll(".ecfa-filter-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -2670,7 +2844,7 @@ function initGisisEcfaModule() {
     }
   });
 
-  renderPortBasinRisk();
+  setIncidentMode("kp965", { resetFactors: false });
   renderEcfaDiagram(currentEcfaFilter);
   selectEcfaNode("AE1");
   initGuidedAssignment();
@@ -2902,12 +3076,12 @@ const I18N = {
     qrBadge: "Без мережі",
     qrLead: "Скануйте з екрана для миттєвої передачі параметрів безпеки вахтовому помічнику (Relieving Officer) без Інтернету чи супутникового каналу.",
     qrMetaText: "Деперсоналізований оптичний зріз вахти",
-    fsaKicker: "IMO FSA METHODOLOGY · MSC-MEPC.2/CIRC.12",
-    fsaTitle: "Матриця ризиків IMO FSA",
+    fsaKicker: "НАВЧАЛЬНА МАТРИЦЯ FI + SI · ЗА МОТИВАМИ ПРИНЦИПІВ IMO FSA",
+    fsaTitle: "Навчальна матриця пріоритетів",
     fsaBadge: "Оцінка матриці",
     fsaHeaderCell: "Наслідки ↓ / Частота →",
     fsaMarker: "● ВИ",
-    fsaRiskIndex: "Індекс ризику",
+    fsaRiskIndex: "Навчальний індекс пріоритету",
     academicKicker: "Експорт для публікації",
     academicTitle: "Експорт наукових артефактів (LaTeX / BibTeX / CSV)",
     academicLead: "Таблиці та цитування для курсових, дипломних або наукових робіт.",
@@ -2998,7 +3172,7 @@ const I18N = {
     govTitle: "Не використовувати для рішень про людину",
     govText: "Результат заборонено застосовувати для найму, звільнення, допуску чи розподілу змін, дисциплінарних, страхових або медичних рішень. Він призначений для самостійного навчання, аналізу факторів і демонстрації методики.",
     backToTop: "Нагору ↑",
-    footerAuthor: "Навчальний проєкт SeaRisk UA · Аналіз морської безпеки та аварії катера KP-965.",
+    footerAuthor: "Навчальний проєкт групи 511 · SeaRisk UA · Аналіз морської безпеки та аварії катера KP-965.",
     footerDisclosureSummary: "Правові застереження, методологія та політика конфіденційності (Zero-Data)",
     disc1H4: "Політика повної приватності (Zero-Data Retention)",
     disc1P: "Сервіс працює виключно на стороні клієнта (Client-Side). Жодні введені дані, параметри анкети, технічні ідентифікатори або cookies не передаються на сервери та не зберігаються після оновлення сторінки. Додаток не використовує трекерів чи комерційної аналітики.",
@@ -3006,7 +3180,7 @@ const I18N = {
     disc2P: "SeaRisk UA є науково-навчальним прототипом для аналізу факторів ризику та демонстрації математичної моделі. Розрахунки не є сертифікованими оцінками безпеки (ISM Code / SMS), медичними висновками чи офіційним допуском до робіт. Інструмент не замінює обов'язкові суднові чек-листи компанії та конвенційні вимоги капітана.",
     disc3H4: "Нормативне підґрунтя",
     disc3P: "Оцінювання спирається на принципи Конвенції про працю в морському судноплавстві (MLC 2006, Standard A2.3), Міжнародної конвенції ПДНВ (STCW 1978/2010, Section A-VIII/1) та деперсоналізовані зведені звіти розслідувань морських аварій (MAIB, EMSA).",
-    footerCopyright: "SeaRisk UA v1.1.0 · © 2026. Відкритий академічний код (Open Source). Дані анкети не залишають браузер.",
+    footerCopyright: "SeaRisk UA v1.2.0 · © 2026. Відкритий академічний код (Open Source). Дані анкети не залишають браузер.",
     announceResult: "Результат оновлено. Оцінка ризику",
     announceCategory: "Категорія",
     riskCats: { minimal: "Мінімальний", low: "Низький", moderate: "Помірний", high: "Високий", extreme: "Дуже високий" },
@@ -3019,9 +3193,9 @@ const I18N = {
     gisisEyebrow: "IMO Res. A.1075(28) & MSC-MEPC.3/Circ.4/Rev.1",
     gisisMainTitle: "Оцифрування аварій GISIS IMO та аналіз ECFA",
     gisisMainLead: "Практичне дослідження аварії лоцманського катера KP-965 (Копер, 14.04.2026): цифрові класифікатори Додатка 5, причинно-наслідкова схема ECFA, розрахунок матриці ризику портових басейнів (R = P × S) та автоматична генерація превентивних правил безпеки.",
-    gisisCalcKicker: "IMO FSA METHODOLOGY · R = P × S",
+    gisisCalcKicker: "ПРОЄКТНА НАВЧАЛЬНА МОДЕЛЬ · R = P × S",
     gisisCalcTitle: "Автоматизована оцінка ризику акваторій",
-    gisisCalcIntro: "Оберіть п’ять ключових факторів кейсу. Алгоритм обчислить умовний бал імовірності P, помножить його на тяжкість S та запропонує превентивні заходи.",
+    gisisCalcIntro: "Оберіть п’ять ключових факторів кейсу. Алгоритм обчислить навчальний бал факторів P, помножить його на навчальний бал наслідків S та запропонує превентивні заходи.",
     gisisMitigationTitle: "Автоматично згенеровані превентивні заходи безпеки:",
     ecfaKicker: "IMO RES. A.1075(28) · КАСКАДНИЙ ПРИЧИННИЙ АНАЛІЗ",
     ecfaTitle: "Інтерактивна векторна діаграма ECFA",
@@ -3258,12 +3432,12 @@ const I18N = {
     qrBadge: "No Network Needed",
     qrLead: "Scan on screen for instant watch safety parameter transfer to the Relieving Officer without Internet or satellite link.",
     qrMetaText: "Depersonalized optical watch snapshot",
-    fsaKicker: "IMO FSA METHODOLOGY · MSC-MEPC.2/CIRC.12",
-    fsaTitle: "IMO FSA Risk Matrix",
+    fsaKicker: "TRAINING FI + SI MATRIX · INSPIRED BY IMO FSA PRINCIPLES",
+    fsaTitle: "Training Priority Matrix",
     fsaBadge: "Matrix Evaluation",
     fsaHeaderCell: "Severity ↓ / Frequency →",
     fsaMarker: "● YOU",
-    fsaRiskIndex: "Risk Index",
+    fsaRiskIndex: "Training Priority Index",
     academicKicker: "Publication Export",
     academicTitle: "Export Academic Artifacts (LaTeX / BibTeX / CSV)",
     academicLead: "Tables and citations for coursework, degree dissertations, or research papers.",
@@ -3354,7 +3528,7 @@ const I18N = {
     govTitle: "Never Use for Employment or Legal Decisions",
     govText: "The result must never be used for hiring, firing, shift allocation, disciplinary, insurance, or medical decisions. Intended exclusively for independent learning, factor exploration, and methodology demonstration.",
     backToTop: "Top ↑",
-    footerAuthor: "SeaRisk UA educational project · Maritime safety and KP-965 casualty analysis.",
+    footerAuthor: "Academic project of Group 511 · SeaRisk UA · Maritime safety and KP-965 casualty analysis.",
     footerDisclosureSummary: "Legal Disclaimers, Methodology & Zero-Data Retention Policy",
     disc1H4: "Zero-Data Retention Policy",
     disc1P: "The service operates 100% on the client side. No personal data, questionnaire parameters, or cookies are transmitted to servers or retained after closing the page. Zero commercial analytics or tracking.",
@@ -3362,7 +3536,7 @@ const I18N = {
     disc2P: "SeaRisk UA is an educational research prototype for maritime safety factor analysis. Results do not constitute certified SMS / ISM Code safety assessments, clinical fitness decisions, or official watch clearances.",
     disc3H4: "Regulatory Framework",
     disc3P: "Evaluations reflect principles from the Maritime Labour Convention (MLC 2006 Standard A2.3), STCW 1978/2010 Section A-VIII/1, and official maritime casualty investigation reports (MAIB, EMSA).",
-    footerCopyright: "SeaRisk UA v1.1.0 · © 2026. Open Source Academic Code. Questionnaire data never leaves the browser.",
+    footerCopyright: "SeaRisk UA v1.2.0 · © 2026. Open Source Academic Code. Questionnaire data never leaves the browser.",
     announceResult: "Result updated. Calculated risk index",
     announceCategory: "Category",
     riskCats: { minimal: "Minimal", low: "Low", moderate: "Moderate", high: "High", extreme: "Extreme" },
@@ -3375,9 +3549,9 @@ const I18N = {
     gisisEyebrow: "IMO Res. A.1075(28) & MSC-MEPC.3/Circ.4/Rev.1",
     gisisMainTitle: "GISIS IMO Casualty Digitization & ECFA Analysis",
     gisisMainLead: "Practical investigation case study of pilot craft KP-965 allision (Port of Koper, 14.04.2026): Appendix 5 taxonomies, ECFA causal graph, port basin risk calculation (R = P × S), and automated safety mitigations.",
-    gisisCalcKicker: "IMO FSA METHODOLOGY · R = P × S",
+    gisisCalcKicker: "PROJECT TRAINING MODEL · R = P × S",
     gisisCalcTitle: "Automated Port Basin Risk Assessment",
-    gisisCalcIntro: "Navigation risk index derived from frequency likelihood score (P, 1–5 scale) and consequence severity (S under Table 5, 1–5 scale).",
+    gisisCalcIntro: "Project training index derived from a bounded factor score P and a training consequence score S. It is not an occurrence probability or an official IMO threshold.",
     gisisMitigationTitle: "Automated Preventive Safety Mitigations:",
     ecfaKicker: "IMO RES. A.1075(28) · CASUALTY CAUSAL FACTOR ANALYSIS",
     ecfaTitle: "Interactive Vector ECFA Diagram",
@@ -3423,8 +3597,8 @@ const glossaryByLang = {
   uk: [
     { term: "MLC 2006", def: "Конвенція МОП про працю в морському судноплавстві. Встановлює обов'язкові ліміти: не менше 10 год відпочинку на добу та 77 год за 7 днів." },
     { term: "STCW (ПДНВ)", def: "Міжнародна конвенція про підготовку і дипломування моряків та несення вахти (Розділ A-VIII/1: придатність до несення ходової вахти)." },
-    { term: "IMO FSA", def: "Formal Safety Assessment (MSC-MEPC.2/Circ.12) — формалізована оцінка безпеки суден та екіпажу на основі матриць частоти та важкості наслідків." },
-    { term: "ALARP", def: "As Low As Reasonably Practicable — фундаментальний принцип безпеки: зниження ризику до практично досяжного рівня через технічні та організаційні заходи." },
+    { term: "IMO FSA", def: "Formal Safety Assessment (MSC-MEPC.2/Circ.12) — структурований процес оцінювання безпеки. Проєктні ваги та смуги SeaRisk UA не є офіційними порогами IMO FSA." },
+    { term: "ALARP", def: "As Low As Reasonably Practicable — загальний принцип зниження ризику, а не назва смуги навчального індексу SeaRisk UA." },
     { term: "IMO MSC/Circ.1598", def: "Керівні рекомендації IMO з управління судновою втомою (Fatigue Management Guidelines)." },
     { term: "ISGOTT", def: "International Safety Guide for Oil Tankers and Terminals — стандарт безпеки газового середовища, статичної електрики та наливних операцій." },
     { term: "IMSBC Code", def: "International Maritime Solid Bulk Cargoes Code — вимоги до перевезення навалювальних вантажів, схильних до розрідження або виділення газів." },
@@ -3438,8 +3612,8 @@ const glossaryByLang = {
   en: [
     { term: "MLC 2006", def: "Maritime Labour Convention (ILO). Enforces mandatory limits: minimum 10 hours rest per 24 hours and 77 hours per 7 days." },
     { term: "STCW 1978/2010", def: "Standards of Training, Certification and Watchkeeping for Seafarers (Section A-VIII/1: fitness for duty and watchkeeping standards)." },
-    { term: "IMO FSA", def: "Formal Safety Assessment (MSC-MEPC.2/Circ.12) — structured methodology using frequency-severity matrices to evaluate risk control options." },
-    { term: "ALARP", def: "As Low As Reasonably Practicable — safety principle stating that risk must be mitigated until further reduction costs are grossly disproportionate." },
+    { term: "IMO FSA", def: "Formal Safety Assessment (MSC-MEPC.2/Circ.12) is a structured safety-assessment process. SeaRisk UA project weights and bands are not official IMO FSA thresholds." },
+    { term: "ALARP", def: "As Low As Reasonably Practicable is a general risk-reduction principle, not a SeaRisk UA training-index band." },
     { term: "IMO MSC/Circ.1598", def: "IMO Guidelines on Fatigue Mitigation and Management for shipboard operations and crew scheduling." },
     { term: "ISGOTT", def: "International Safety Guide for Oil Tankers and Terminals — benchmark for flammable atmosphere control, static electricity, and transfer operations." },
     { term: "IMSBC Code", def: "International Maritime Solid Bulk Cargoes Code — mandatory rules for bulk cargoes subject to liquefaction or chemical gas evolution." },
@@ -4070,6 +4244,8 @@ function setLanguage(lang) {
   // Re-render calculation results
   const input = currentInput();
   renderRisk(calculateRisk(input), input, activeScenario, $("#result-panel")?.dataset.initial === "true");
+  renderIncidentScenario();
+  if (currentPortBasinRisk) renderPortBasinRisk();
 }
 
 function applyViewMode(search = window.location.search) {

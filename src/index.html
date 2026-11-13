@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#07111c" />
+    <meta name="author" content="Academic project of Group 511" />
     <meta
       name="description"
       content="Дослідницький прототип прозорої оцінки індивідуального ризику працівника морської галузі."
@@ -36,7 +37,7 @@
           </span>
           <span>
             <span class="brand-name"><strong>SeaRisk</strong> UA</span>
-            <span class="brand-sub">прототип</span>
+            <span class="brand-sub">проєкт групи 511</span>
           </span>
         </a>
 
@@ -79,7 +80,8 @@
               розрахунку ризику, превентивних заходів і готового висновку для практичної роботи.
             </p>
             <div class="hero-actions">
-              <a class="button button-primary" id="start-guided-review-btn" href="#step-1" data-guided-entry>Почати розбір</a>
+              <a class="button button-primary" id="start-guided-review-btn" href="#step-1" data-guided-entry data-incident-entry="kp965">Почати розбір</a>
+              <a class="button button-secondary assignment-custom-link" id="start-custom-scenario-btn" href="#step-1" data-guided-entry data-incident-entry="custom">Власний сценарій</a>
               <a class="text-link assignment-sources-link" href="#step-5" data-guided-entry>Висновок і докази ↗</a>
               <a class="text-link assignment-tools-link" href="?view=tools#assessment">Додаткові дослідницькі інструменти</a>
             </div>
@@ -713,13 +715,13 @@
                 <div class="fsa-matrix-section" id="fsa-matrix-section">
                   <div class="fsa-matrix-header">
                     <div>
-                      <span class="fsa-matrix-kicker">IMO FSA METHODOLOGY · MSC-MEPC.2/CIRC.12</span>
-                      <h3>Матриця ризиків IMO FSA</h3>
+                      <span class="fsa-matrix-kicker">НАВЧАЛЬНА МАТРИЦЯ FI + SI · ЗА МОТИВАМИ ПРИНЦИПІВ IMO FSA</span>
+                      <h3>Навчальна матриця пріоритетів</h3>
                     </div>
                     <span class="fsa-matrix-badge" id="fsa-matrix-badge">Оцінка матриці</span>
                   </div>
                   <div class="fsa-matrix-grid-wrap">
-                    <div class="fsa-matrix-grid" id="fsa-matrix-grid" role="region" aria-label="Таблиця оцінки ризику IMO FSA"></div>
+                    <div class="fsa-matrix-grid" id="fsa-matrix-grid" role="region" aria-label="Проєктна таблиця навчальних пріоритетів"></div>
                   </div>
                   <div class="fsa-matrix-footer">
                     <strong id="fsa-region-title">—</strong>
@@ -796,8 +798,8 @@
                   <dl class="glossary-list">
                     <div><dt>MLC 2006</dt><dd>Конвенція МОП про працю в морському судноплавстві. Встановлює обов'язкові ліміти: не менше 10 год відпочинку на добу та 77 год за 7 днів.</dd></div>
                     <div><dt>STCW (ПДНВ)</dt><dd>Міжнародна конвенція про підготовку і дипломування моряків та несення вахти (Розділ A-VIII/1: придатність до несення ходової вахти).</dd></div>
-                    <div><dt>IMO FSA</dt><dd>Formal Safety Assessment (MSC-MEPC.2/Circ.12) — формалізована оцінка безпеки суден та екіпажу на основі матриць частоти та важкості наслідків.</dd></div>
-                    <div><dt>ALARP</dt><dd>As Low As Reasonably Practicable — фундаментальний принцип безпеки: зниження ризику до практично досяжного рівня через технічні та організаційні заходи.</dd></div>
+                    <div><dt>IMO FSA</dt><dd>Formal Safety Assessment (MSC-MEPC.2/Circ.12) — структурований процес оцінювання безпеки. Проєктні ваги та смуги SeaRisk UA не є офіційними порогами IMO FSA.</dd></div>
+                    <div><dt>ALARP</dt><dd>As Low As Reasonably Practicable — загальний принцип зниження ризику. Він не є назвою смуги навчального індексу SeaRisk UA.</dd></div>
                     <div><dt>IMO MSC/Circ.1598</dt><dd>Керівні рекомендації IMO з управління судновою втомою (Fatigue Management Guidelines).</dd></div>
                     <div><dt>ISGOTT</dt><dd>International Safety Guide for Oil Tankers and Terminals — стандарт безпеки газового середовища, статичної електрики та наливних операцій.</dd></div>
                     <div><dt>IMSBC Code</dt><dd>International Maritime Solid Bulk Cargoes Code — вимоги до перевезення навалювальних вантажів, схильних до розрідження або виділення газів.</dd></div>
@@ -1042,23 +1044,54 @@
             <div class="guided-step-heading">
               <span>Крок 1 із 5</span>
               <h3 id="step-1-title" tabindex="-1">Що сталося</h3>
-              <p>Спочатку зафіксуємо факти без пошуку винного: де, коли та за яких умов стався навал.</p>
+              <p id="incident-step-intro">Спочатку зафіксуємо факти без пошуку винного: де, коли та за яких умов стався навал.</p>
             </div>
+            <div class="incident-mode-selector" role="group" aria-label="Режим аналізу морського інциденту">
+              <button type="button" id="incident-mode-kp965" class="incident-mode-button is-active" aria-pressed="true">Приклад KP-965</button>
+              <button type="button" id="incident-mode-custom" class="incident-mode-button" aria-pressed="false">Власний сценарій</button>
+            </div>
+            <form class="custom-incident-form" id="custom-incident-form" hidden novalidate>
+              <div class="custom-incident-form-heading">
+                <h4>Опишіть подію своїми словами</h4>
+                <p>Достатньо коротких фактів. Дані залишаються лише в цій вкладці браузера.</p>
+              </div>
+              <div class="custom-incident-fields">
+                <label for="custom-incident-title">Назва сценарію
+                  <input id="custom-incident-title" name="title" type="text" maxlength="100" placeholder="Наприклад, посадка судна на мілину" />
+                </label>
+                <label for="custom-incident-vessel">Судно або об’єкт
+                  <input id="custom-incident-vessel" name="vessel" type="text" maxlength="80" placeholder="Наприклад, теплохід Atlas" />
+                </label>
+                <label for="custom-incident-event">Що сталося
+                  <input id="custom-incident-event" name="event" type="text" maxlength="120" placeholder="Наприклад, посадка на мілину" />
+                </label>
+                <label for="custom-incident-location">Де сталося
+                  <input id="custom-incident-location" name="location" type="text" maxlength="100" placeholder="Наприклад, Дніпровський лиман" />
+                </label>
+                <label class="custom-incident-summary-field" for="custom-incident-summary">Короткий опис
+                  <textarea id="custom-incident-summary" name="summary" maxlength="500" rows="3" placeholder="Кілька речень про послідовність подій і наслідки"></textarea>
+                </label>
+              </div>
+              <div class="custom-incident-form-actions">
+                <button type="submit" class="button button-primary" id="apply-custom-scenario-btn">Застосувати сценарій</button>
+                <p id="custom-scenario-status" role="status" aria-live="polite">Заповніть відомі факти, потім оберіть фактори на наступному кроці.</p>
+              </div>
+            </form>
           <div class="gisis-case-strip" aria-label="Параметри оцифрованого кейсу">
             <div class="gisis-case-pill">
-              <span>Судно:</span> <strong>KP-965 (GRP, L = 14.2 м)</strong>
+              <span>Судно:</span> <strong id="incident-fact-vessel">KP-965 (GRP, L = 10,80 м)</strong>
             </div>
             <div class="gisis-case-pill">
-              <span>Подія:</span> <strong>Навал на буй 2/I (v = 22.0 вузлів)</strong>
+              <span>Подія:</span> <strong id="incident-fact-event">Навал на буй 2/I (до контакту: 19,2 вузла за AIS)</strong>
             </div>
             <div class="gisis-case-pill">
-              <span>Акваторія:</span> <strong>Басейн I порту Копер (Словенія)</strong>
+              <span>Акваторія:</span> <strong id="incident-fact-location">Басейн I порту Копер (Словенія)</strong>
             </div>
             <div class="gisis-case-pill">
-              <span>Міжнародний реєстр:</span> <strong>EMCIP 2026/002821 · GISIS C1001092</strong>
+              <span>Джерело:</span> <strong id="incident-fact-source">Звіт MAIIS · EMCIP 2026/002821 · Nat. No. 373-14/2026-2430</strong>
             </div>
           </div>
-            <p class="guided-plain-summary"><strong>Простими словами:</strong> катер ішов уночі портовим басейном зі швидкістю близько 22 вузлів і навалився на буй. Судно було пошкоджене, але подія не призвела до загибелі людей.</p>
+            <p class="guided-plain-summary"><strong>Простими словами:</strong> <span id="incident-plain-summary">катер ішов уночі портовим басейном зі швидкістю близько 22 вузлів і навалився на буй. Судно було пошкоджене, але подія не призвела до загибелі людей.</span></p>
             <div class="guided-actions guided-actions-end">
               <a class="button button-primary" href="#step-2" data-guided-next>Далі: знайти причини</a>
             </div>
@@ -1075,13 +1108,13 @@
                 </div>
               <div class="gisis-card-header">
                 <div>
-                  <span class="gisis-kicker" id="gisis-calc-kicker">IMO FSA METHODOLOGY · R = P × S</span>
+                  <span class="gisis-kicker" id="gisis-calc-kicker">ПРОЄКТНА НАВЧАЛЬНА МОДЕЛЬ · R = P × S</span>
                   <h3 id="gisis-calc-title">Автоматизована оцінка ризику акваторій</h3>
                 </div>
                 <span class="gisis-card-badge">Акваторії та басейни</span>
               </div>
               <p class="gisis-card-intro" id="gisis-calc-intro">
-                Оберіть п’ять ключових факторів кейсу. Алгоритм обчислить умовний бал імовірності P, помножить його на тяжкість S та запропонує превентивні заходи.
+                Оберіть п’ять ключових факторів кейсу. Алгоритм обчислить навчальний бал факторів P, помножить його на навчальний бал наслідків S та запропонує превентивні заходи.
               </p>
 
               <div class="gisis-factors-form" role="group" aria-labelledby="gisis-factors-legend">
@@ -1090,49 +1123,49 @@
                   <label class="gisis-checkbox-item">
                     <input type="checkbox" id="factor-speed" checked />
                     <span class="gisis-checkbox-label">
-                      <strong>Перевищення швидкості (v &gt; 15 вузлів, KP-965 = 22 вузли)</strong>
-                      <small>COLREG Rule 6 / Небезпечна швидкість у стисненому басейні [+2.0]</small>
+                      <strong id="factor-speed-title">Перевищення швидкості (v &gt; 15 вузлів, KP-965 = 22 вузли)</strong>
+                      <small id="factor-speed-detail">COLREG Rule 6 / Небезпечна швидкість у стисненому басейні [+2.0]</small>
                     </span>
                   </label>
                   <label class="gisis-checkbox-item">
                     <input type="checkbox" id="factor-lookout" checked />
                     <span class="gisis-checkbox-label">
-                      <strong>Одиночне спостереження рульовим без матроса (Solo watch)</strong>
-                      <small>COLREG Rule 5 / Матрос сидів у каюті без огляду горизонту [+2.0]</small>
+                      <strong id="factor-lookout-title">Неефективне спільне спостереження та взаємний контроль</strong>
+                      <small id="factor-lookout-detail">Другий підготовлений член екіпажу мав обмежений огляд і не мав прямого доступу до дисплеїв; лоцман пасивно спостерігав [+2.0]</small>
                     </span>
                   </label>
                   <label class="gisis-checkbox-item">
                     <input type="checkbox" id="factor-fatigue" checked />
                     <span class="gisis-checkbox-label">
-                      <strong>Циркадний надир (02:16 LT) та накопичена перевтома</strong>
-                      <small>IMO MSC/Circ.1598 / Засинання та сповільнення реакції [+1.0]</small>
+                      <strong id="factor-fatigue-title">Можливе зниження пильності під час нічної роботи</strong>
+                      <small id="factor-fatigue-detail">Короткий сон розглянуто як можливий фактор; самостійну роль втоми не встановлено [+1.0]</small>
                     </span>
                   </label>
                   <label class="gisis-checkbox-item">
                     <input type="checkbox" id="factor-radar" checked />
                     <span class="gisis-checkbox-label">
-                      <strong>Нехтування радаром або відсутність буя на екрані плотера</strong>
-                      <small>Table 19 Error Type 1 / Радар на шкалі 1.5 милі без контролю дистанції [+1.5]</small>
+                      <strong id="factor-radar-title">Навігаційне обладнання не спрацювало як ефективний бар’єр</strong>
+                      <small id="factor-radar-detail">Радар і плотер працювали, але буй не відображався на електронному дисплеї, а ефективну радарну перевірку не підтверджено [+1.5]</small>
                     </span>
                   </label>
                   <label class="gisis-checkbox-item">
                     <input type="checkbox" id="factor-training" checked />
                     <span class="gisis-checkbox-label">
-                      <strong>Недоліки навчання та відсутність чек-лістів (SOP / Training)</strong>
-                      <small>Tables 22-23 / Відсутність відстежуваних тренінгів та розподілу дій [+1.0]</small>
+                      <strong id="factor-training-title">Недоліки навчання та відсутність чек-лістів (SOP / Training)</strong>
+                      <small id="factor-training-detail">Tables 22-23 / Відсутність відстежуваних тренінгів та розподілу дій [+1.0]</small>
                     </span>
                   </label>
                 </div>
 
                 <div class="gisis-severity-row">
                   <label for="gisis-severity-select">
-                    <strong>Ступінь важкості наслідків (Severity S, Table 5):</strong>
+                    <strong>Навчальний бал наслідків (S, проєктна шкала 1–5):</strong>
                     <select id="gisis-severity-select">
-                      <option value="1">1: Незначний інцидент (Minor incident / без зупинки)</option>
-                      <option value="2">2: Серйозний інцидент (Minor damage / без травм)</option>
-                      <option value="3" selected>3: Морська аварія — пошкодження корпусу та гвинтів (KP-965)</option>
-                      <option value="4">4: Дуже серйозна аварія з конструктивною загибеллю</option>
-                      <option value="5">5: Катастрофа / людські жертви або повне затоплення</option>
+                      <option value="1">1: Незначні наслідки без переривання операції</option>
+                      <option value="2">2: Помірні наслідки або незначне пошкодження</option>
+                      <option value="3" selected>3: Суттєве пошкодження, що потребує ремонту</option>
+                      <option value="4">4: Важкі наслідки або значне пошкодження судна</option>
+                      <option value="5">5: Катастрофічні наслідки, загибель людей або втрата судна</option>
                     </select>
                   </label>
                 </div>
@@ -1148,7 +1181,7 @@
                 <div class="guided-step-heading">
                   <span>Крок 3 із 5</span>
                   <h3 id="step-3-title" tabindex="-1">Як працює оцінка</h3>
-                  <p>Ваги активних факторів додаються, але шкала ймовірності обмежена значенням 5. Потім P множиться на тяжкість S.</p>
+                  <p>Проєктні ваги активних факторів додаються, але бал P обмежений значенням 5. Потім P множиться на навчальний бал наслідків S.</p>
                 </div>
               <div class="guided-score-explanation" aria-live="polite">
                 <div><span>Сума ваг до обмеження</span><strong id="gisis-raw-prob-display">8.5</strong></div>
@@ -1156,32 +1189,32 @@
               </div>
               <div class="gisis-score-summary">
                 <div class="gisis-stat-cell">
-                  <span>Ймовірність (P)</span>
+                  <span>Бал факторів (P)</span>
                   <strong id="gisis-prob-display">5.0 / 5.0</strong>
-                  <small>Частота загрози</small>
+                  <small>Проєктна шкала 1–5</small>
                 </div>
                 <div class="gisis-stat-cell">
-                  <span>Тяжкість (S)</span>
+                  <span>Бал наслідків (S)</span>
                   <strong id="gisis-sev-display">3 / 5</strong>
-                  <small>Table 5 Severity</small>
+                  <small>Проєктна шкала 1–5</small>
                 </div>
                 <div class="gisis-stat-cell">
-                  <span>Індекс ризику (R)</span>
+                  <span>Навчальний індекс пріоритету (R)</span>
                   <strong id="gisis-risk-display">15.0</strong>
                   <small>R = P × S</small>
                 </div>
                 <div class="gisis-stat-cell">
                   <span>Категорія безпеки</span>
-                  <strong id="gisis-risk-badge" class="gisis-risk-critical">Критичний (Неприйнятний)</strong>
-                  <small>ALARP критерій</small>
+                  <strong id="gisis-risk-badge" class="gisis-risk-critical">Високий пріоритет</strong>
+                  <small>Проєктна навчальна смуга</small>
                 </div>
               </div>
 
               <div class="gisis-critical-alert-box" id="gisis-critical-alert" role="alert">
                 <div class="alert-icon" aria-hidden="true">⚠️</div>
                 <div class="alert-content">
-                  <strong id="gisis-critical-alert-title">АВТОМАТИЧНЕ ЗАСТЕРЕЖЕННЯ З БЕЗПЕКИ:</strong>
-                  <p id="gisis-critical-alert-text">Виявлено високий рівень ризику Зіткнення/Контакту (R = 15.0). Для нівелювання вимагається: 1) Встановити програмний ліміт швидкості катерів у басейні порту до 10 вузлів; 2) Обов’язкове дублювання візуального спостереження другим членом екіпажу з прямим доступом до радара.</p>
+                  <strong id="gisis-critical-alert-title">АВТОМАТИЧНЕ НАВЧАЛЬНЕ ЗАСТЕРЕЖЕННЯ:</strong>
+                  <p id="gisis-critical-alert-text">Сценарій має високий навчальний пріоритет (R = 15,0). Потрібно перевірити безпечну швидкість, організацію спостереження та використання навігаційного обладнання.</p>
                 </div>
               </div>
 
@@ -1234,7 +1267,8 @@
               </div>
             </div>
 
-            <details class="guided-disclosure" id="guided-ecfa-details">
+            <p class="custom-evidence-note" id="custom-evidence-note" hidden>Для власного сценарію доступні розрахунок, заходи та висновок. Офіційна ECFA-схема, джерела й експорти нижче належать лише перевіреному прикладу KP-965, тому в цьому режимі вони приховані.</p>
+            <details class="guided-disclosure" id="guided-ecfa-details" data-kp965-only-evidence>
               <summary>Відкрити повну діаграму ECFA</summary>
             <div class="ecfa-diagram-card" id="ecfa-diagram-card">
               <div class="gisis-card-header">
@@ -1277,7 +1311,7 @@
                   </div>
                   <div>
                     <span>Превентивна дія:</span>
-                    <strong id="ecfa-selected-node-mitigation">Впровадження програмного ліміту швидкості ≤ 10 вузлів у басейні</strong>
+                    <strong id="ecfa-selected-node-mitigation">Визначення критеріїв безпечної швидкості та перехресна перевірка небезпек</strong>
                   </div>
                 </div>
               </div>
@@ -1312,7 +1346,7 @@
 
 
           <!-- GISIS DIGITAL RECORD & PYTHON SCRIPT EXPORT -->
-          <details class="guided-disclosure" id="guided-evidence-details">
+          <details class="guided-disclosure" id="guided-evidence-details" data-kp965-only-evidence>
             <summary>Відкрити джерела та файли для перевірки</summary>
           <div class="gisis-export-card" id="gisis-export-card">
             <div class="gisis-card-header">
@@ -1463,7 +1497,7 @@
 
         <div class="footer-academic-badge">
           <p>
-            <strong>Навчальний проєкт SeaRisk UA</strong> · Аналіз морської безпеки та аварії катера KP-965.
+            <strong>Навчальний проєкт групи 511 · SeaRisk UA</strong> · Аналіз морської безпеки та аварії катера KP-965.
           </p>
         </div>
 
@@ -1486,7 +1520,7 @@
         </details>
 
         <div class="footer-meta-line">
-          <small>SeaRisk UA v1.1.0 · © 2026. Відкритий академічний код (Open Source). Дані анкети не залишають браузер.</small>
+          <small>SeaRisk UA v1.2.0 · © 2026. Відкритий академічний код (Open Source). Дані анкети не залишають браузер.</small>
         </div>
       </div>
     </footer>

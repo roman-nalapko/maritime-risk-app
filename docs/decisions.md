@@ -218,6 +218,22 @@ Develop an automated port basin navigation risk model ($R = P \times S$) with de
 
 **Consequence:** All computations and SVG generation are 100% pure client-side in-memory JavaScript with zero external runtime dependencies and zero data retention. Checkboxes and buttons use standard accessible semantics without infringing on the strict 5 `role="switch"` questionnaire rule. Students can download `KP-965-gisis-record.json` and copy an autonomous Python script for their practical work. Verified with unit and DOM contract tests in `scripts/feature-checks.mjs` (Tests 25–28).
 
+## ADR-026: Separate official IMO analysis from the project training index
+
+**Decision:** Keep the deterministic `R = P × S` teaching calculation, but define `P` as a bounded factor score, `S` as a project training consequence score, and `R` as a training priority index. The weights and numeric bands are project assumptions. They must not be labelled as occurrence probabilities or official IMO FSA/ALARP thresholds. The earlier numeric-language implication in ADR-025 is superseded by this decision.
+
+**Why:** The cited IMO documents support casualty classification, causal analysis, and structured safety assessment, but they do not establish the project's factor weights, multiplication of these ordinal scores, or the project bands at 6 and 10.
+
+**Consequence:** UI copy, generated conclusions, alerts, and Python exports distinguish official GISIS/ECFA content from the project-specific teaching calculation. Compatibility field names remain available internally while public aliases use factor-score and priority-index terminology.
+
+## ADR-027: Reuse the teaching index without reusing case-specific evidence
+
+**Decision:** Keep KP-965 as the verified worked example and add an in-memory custom incident mode that accepts bounded plain-language facts, five factor choices, and a 1–5 project consequence score. Reuse the deterministic training-index and mitigation-rule engine, but hide KP-965 ECFA, sources, JSON, and Python exports while a custom scenario is active.
+
+**Why:** The assignment requires an algorithm that can be demonstrated beyond one casualty, while official classification and causal evidence cannot be inferred from a few user-entered fields. Separating reusable calculation from verified evidence makes the scope understandable and prevents a custom scenario from appearing to be an IMO investigation.
+
+**Consequence:** Custom inputs remain in page memory, produce a scenario-specific conclusion, and are discarded when the tab closes. Returning to the worked example restores its five factors, consequence score, official evidence, and exports. The output remains a project training priority index rather than a probability or navigational decision.
+
 
 
 

@@ -1,8 +1,12 @@
 # SeaRisk UA
 
-SeaRisk UA is a browser-only educational PWA for a worked maritime safety assignment. The default page digitizes the KP-965 pilot-boat casualty, explains an ECFA chain, calculates a transparent training index `R = P × S`, and generates preventive measures.
+**Навчальний проєкт групи 511.**
 
-> **Status (v1.1.0):** classroom handoff release with a one-command local launch, neutral project attribution, reliable online updates, and a flash-free guided first paint. The risk score remains a provisional training model, not an IMO-approved probability or a navigational decision system.
+SeaRisk UA is a browser-only educational PWA for maritime-safety assignments. The default page offers a verified KP-965 worked example and a simple custom-scenario mode. Both paths calculate a transparent training priority index `R = P × S` and generate preventive measures; only the KP-965 path includes official case-specific ECFA evidence and exports.
+
+> **Status (v1.2.0):** reusable-scenario classroom release with a one-command local launch, neutral group attribution, reliable online updates, and a five-step guided flow. Its numeric output is a project-specific training priority index, not an occurrence probability, an official IMO FSA/ALARP threshold, or a navigational decision system.
+
+For the guided assignment, `P` is a bounded factor score, `S` is a project training consequence score, and `R` is a relative priority index for preventive measures. The project uses official IMO material for casualty classification and causal analysis; the numeric weights and bands are explicit project assumptions.
 
 ## Open the ready site
 
@@ -10,13 +14,14 @@ Use the published version without installing anything:
 
 **[Open SeaRisk UA](https://roman-nalapko.github.io/maritime-risk-app/)**
 
-No account or registration is required. For a presentation, open the link and select **Почати розбір**. The site walks through the KP-965 case in five steps and ends with a ready coursework conclusion, sources, and export actions.
+No account or registration is required. For a presentation, open the link and select **Почати розбір** for the verified KP-965 example or **Власний сценарій** for another maritime incident. Both paths end with a generated conclusion; KP-965 additionally exposes its official sources, ECFA, JSON, and Python evidence.
 
 ## What is included
 
 - five-step guided review of the KP-965 case, from incident facts to a reusable conclusion;
+- in-memory custom scenario with bounded incident facts, the same five explainable factors, preventive measures, and a generated conclusion;
 - exactly five explainable factor controls and a visible raw factor sum before the `P = 5` scale cap;
-- transparent `R = P × S` calculation and rule-based preventive measures;
+- transparent project-specific `R = P × S` training calculation and rule-based preventive measures;
 - deterministic coursework conclusion with local copy, manual fallback, and print/PDF actions;
 - keyboard-accessible ECFA diagram and a compact source list;
 - reproducible GISIS-style JSON and baseline Python exports;
@@ -52,9 +57,10 @@ npm start
 ## Presentation routes
 
 - `http://127.0.0.1:4173/` — the recommended five-step KP-965 presentation;
+- `http://127.0.0.1:4173/#step-1` → **Власний сценарій** — a reusable incident analysis without case-specific evidence;
 - `http://127.0.0.1:4173/?view=tools#assessment` — the extended research tools.
 
-The normal presentation is: incident facts → causal factors → transparent `R = P × S` calculation → preventive measures → conclusion and evidence. The extended tools remain available, but they are not required to explain the assignment.
+The normal presentation is: incident facts → causal factors → transparent training-priority calculation → preventive measures → conclusion and evidence. The extended tools remain available, but they are not required to explain the assignment.
 
 ## Troubleshooting
 
