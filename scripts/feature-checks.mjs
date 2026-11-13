@@ -774,6 +774,13 @@ assert.match(cssContent, /\.factor-heading\s+strong[^}]*white-space:\s*nowrap/s,
 assert.ok(appContent.includes("wrapTextLines(b.label"), "ECFA labels must use bounded word-aware wrapping");
 assert.ok(appContent.includes("<tspan"), "ECFA wrapped labels must render as explicit SVG lines");
 
+// 37. Browser PDF output must be a concise, printable report
+assert.match(cssContent, /@page\s*\{[^}]*size:\s*A4/s, "print output must declare an A4 page");
+assert.match(cssContent, /@media print[\s\S]*?\.skip-link[^}]*display:\s*none\s*!important/s, "print output must hide the screen-only skip link");
+assert.match(cssContent, /@media print[\s\S]*?\.assessment-form[^}]*display:\s*none\s*!important/s, "print output must omit the questionnaire form");
+assert.match(cssContent, /html\[data-view="tools"\]\s+\.gisis-ecfa-section[^}]*display:\s*none\s*!important/s, "result PDF must not append the unrelated assignment flow");
+assert.match(cssContent, /@media print[\s\S]*?--bg:\s*#ffffff/s, "print output must use a light paper-friendly palette");
+
 console.log("All platform feature checks passed.");
 
 

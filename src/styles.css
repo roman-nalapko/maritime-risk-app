@@ -1368,8 +1368,75 @@ details[open] summary { border-bottom: 1px solid var(--line); }
 
 /* Print block */
 .print-audit-block { display: none; }
+@page { size: A4; margin: 14mm; }
 @media print {
-  .print-audit-block { display: block; page-break-before: always; padding: 20px; font-size: 12px; }
+  :root {
+    color-scheme: light;
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --raised: #f1f5f9;
+    --overlay: #e8eef4;
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    --line: #cbd5e1;
+    --line-mid: #94a3b8;
+    --teal: #087a72;
+    --teal-dim: rgba(8,122,114,0.1);
+  }
+  *, *::before, *::after { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  html, body, .workspace { background: #ffffff !important; color: #0f172a !important; }
+  body { margin: 0; }
+  .skip-link,
+  .site-header,
+  .hero,
+  .trust-strip,
+  .workspace .section-heading,
+  .assessment-form,
+  .cases-section,
+  .statistics,
+  .methodology,
+  .site-footer,
+  .gisis-ecfa-section,
+  .result-tabs-nav,
+  .report-actions,
+  .chart-tooltip { display: none !important; }
+  .workspace { padding: 0 !important; }
+  .workspace > .shell { width: 100%; }
+  .assessment-grid { display: block; }
+  .result-card {
+    position: static;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+    background: #ffffff;
+  }
+  .result-card button,
+  .result-card .button,
+  .result-card .button-ghost { display: none !important; }
+  .result-header { padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+  .result-initial-banner { display: none; }
+  .result-tab-pane[hidden] { display: none !important; }
+  .live-radar-box,
+  .benchmark-box,
+  .circadian-card,
+  .weather-hazard-card,
+  .breakdown,
+  .recommendations,
+  .grounded-retrieval-box,
+  .profile-summary,
+  .what-if-card,
+  .sensitivity-section,
+  .checklist-section,
+  details { break-inside: avoid; }
+  .print-audit-block {
+    display: block;
+    break-inside: avoid;
+    margin-top: 24px;
+    padding: 18px 0 0;
+    border-top: 2px solid #0f172a;
+    font-size: 12px;
+  }
   .print-audit-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
   .p-doc-type { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #546e7f; display: block; margin-bottom: 4px; }
   .p-doc-title { font-size: 15px; font-weight: 700; color: #0f172a; }
@@ -1377,9 +1444,6 @@ details[open] summary { border-bottom: 1px solid var(--line); }
   .print-signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 30px 0; }
   .sig-line { height: 1px; background: #0f172a; margin: 30px 0 6px; }
   .print-audit-disclaimer { font-size: 10px; color: #546e7f; line-height: 1.55; }
-  .site-header, .hero, .trust-strip, .cases-section, .statistics, .methodology, .site-footer, .result-tabs-nav, .report-actions { display: none !important; }
-  .assessment-grid { display: block; }
-  .result-card { position: static; box-shadow: none; }
 }
 
 /* ── Cases Section ── */
@@ -2268,17 +2332,16 @@ html[data-view="tools"] .guided-panel { margin-top: 20px; }
 }
 
 @media print {
-  .site-header,
-  .hero,
-  .guided-progress,
-  .guided-actions,
-  .incident-mode-selector,
-  .custom-incident-form,
-  .assignment-tools-link { display: none !important; }
-  .guided-panel[hidden] { display: block !important; }
-  .gisis-ecfa-section { display: block !important; padding: 0; }
-  .guided-panel,
-  .assignment-conclusion-card { border-color: #bbb; box-shadow: none; break-inside: avoid; }
+  html[data-view="assignment"] .guided-progress,
+  html[data-view="assignment"] .guided-actions,
+  html[data-view="assignment"] .incident-mode-selector,
+  html[data-view="assignment"] .custom-incident-form,
+  html[data-view="assignment"] .assignment-tools-link { display: none !important; }
+  html[data-view="assignment"] .guided-panel[hidden] { display: block !important; }
+  html[data-view="assignment"] .gisis-ecfa-section { display: block !important; padding: 0; }
+  html[data-view="tools"] .gisis-ecfa-section { display: none !important; }
+  html[data-view="assignment"] .guided-panel,
+  html[data-view="assignment"] .assignment-conclusion-card { border-color: #bbb; box-shadow: none; break-inside: avoid; }
 }
 
 /* ── Statistics Section ── */

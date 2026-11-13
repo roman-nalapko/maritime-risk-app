@@ -1471,16 +1471,14 @@ $("#import-profile-input")?.addEventListener("change", (event) => {
 $("#print-report").addEventListener("click", () => window.print());
 
 let printDetailsState = [];
-let printTabsState = [];
 window.addEventListener("beforeprint", () => {
-  printDetailsState = [...document.querySelectorAll("#result-panel details")].map((details) => details.open);
-  document.querySelectorAll("#result-panel details").forEach((details) => { details.open = true; });
-  printTabsState = [...document.querySelectorAll(".result-tab-pane")].map((pane) => pane.hidden);
-  document.querySelectorAll(".result-tab-pane").forEach((pane) => { pane.hidden = false; });
+  const activePrintPane = document.querySelector(".result-tab-pane:not([hidden])");
+  printDetailsState = [...(activePrintPane?.querySelectorAll("details") ?? [])].map((details) => ({ details, open: details.open }));
+  printDetailsState.forEach(({ details }) => { details.open = true; });
 });
 window.addEventListener("afterprint", () => {
-  document.querySelectorAll("#result-panel details").forEach((details, index) => { details.open = printDetailsState[index]; });
-  document.querySelectorAll(".result-tab-pane").forEach((pane, index) => { pane.hidden = printTabsState[index] ?? false; });
+  printDetailsState.forEach(({ details, open }) => { details.open = open; });
+  printDetailsState = [];
 });
 
 // Bridge Lighting Mode Switcher (IMO MSC.252 / IEC 62288)
@@ -3146,7 +3144,7 @@ const I18N = {
     evidenceUnit: "Одиниця", evidencePop: "популяція", evidencePeriod: "період",
     formulaCopy: "Формула: 1 − (1 − Rздоров'я) × (1 − Rробота) × (1 − Rспосіб життя). Значення округлено до трьох значущих цифр.",
     printReportBtn: "Друк / зберегти PDF",
-    printReportSmall: "Діалог друку відкривається локально у браузері.",
+    printReportSmall: "До PDF потраплять зведення та відкрита вкладка результату.",
     pDocType: "МОРСЬКИЙ САМОАУДИТ ВАХТИ",
     pDocTitle: "КАРТКА ПЕРЕВІРКИ ФАКТОРІВ РИЗИКУ (SAFETY WATCHKEEPING)",
     pDocStamp: "Локальний самоаудит",
@@ -3502,7 +3500,7 @@ const I18N = {
     evidenceUnit: "Unit", evidencePop: "population", evidencePeriod: "period",
     formulaCopy: "Formula: 1 − (1 − Rhealth) × (1 − Rjob) × (1 − Rlifestyle). Rounded to three significant digits.",
     printReportBtn: "Print / Save PDF",
-    printReportSmall: "Print dialogue opens locally in your browser.",
+    printReportSmall: "The PDF includes the summary and the currently open result tab.",
     pDocType: "MARITIME WATCH AUDIT",
     pDocTitle: "SAFETY WATCHKEEPING FACTOR VERIFICATION CARD",
     pDocStamp: "Local Self-Audit",

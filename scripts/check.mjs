@@ -311,7 +311,8 @@ assert.match(html, /id="profile-summary-list"/, "result must expose the active i
 assert.match(html, /Орієнтовна оцінка/, "result needs a visible approximate-result disclaimer");
 assert.match(html, /id="print-report"/, "result needs a local print/PDF action");
 assert.match(app, /window\.print\(\)/, "report action must use the local browser print flow");
-assert.match(app, /beforeprint/, "print flow must expose collapsed evidence and assumptions");
+assert.match(app, /const activePrintPane = document\.querySelector\("\.result-tab-pane:not\(\[hidden\]\)"\)/, "print flow must scope expanded details to the active result tab");
+assert.doesNotMatch(app, /document\.querySelectorAll\("\.result-tab-pane"\)\.forEach\(\(pane\) => \{ pane\.hidden = false;/, "print flow must not expand every result tab into one oversized PDF");
 assert.match(css, /@media print/, "print report needs a dedicated layout");
 assert.match(html, /event-chart-meta/, "event chart must expose source and filter metadata");
 assert.match(html, /severity-chart-meta/, "severity chart must expose source and filter metadata");
