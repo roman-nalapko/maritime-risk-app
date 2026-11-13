@@ -754,6 +754,14 @@ assert.match(cssContent, /\.site-nav\s+a\s*[^}]*white-space:\s*nowrap/s, "deskto
 assert.match(cssContent, /@media \(max-width:\s*1170px\)[\s\S]*?\.site-nav[^}]*display:\s*none/s, "navigation must hide before the header runs out of horizontal space");
 assert.match(cssContent, /@media \(min-width:\s*1440px\)[\s\S]*?\.status-pill[^}]*display:\s*flex/s, "the research status pill must appear only when the full header fits");
 
+// 34. Language updates must target theme controls, never the document root
+for (const mode of ["cockpit", "red", "day"]) {
+  assert.ok(
+    appContent.includes(`document.querySelector('.bridge-mode-btn[data-bridge-mode="${mode}"]')`),
+    `language switching must scope the ${mode} label lookup to a bridge-mode button`
+  );
+}
+
 console.log("All platform feature checks passed.");
 
 

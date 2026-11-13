@@ -3667,11 +3667,11 @@ function setLanguage(lang) {
     link.textContent = navLabels[link.dataset.navKey] ?? link.textContent;
   });
 
-  const bMode1 = document.querySelector('[data-bridge-mode="cockpit"]');
+  const bMode1 = document.querySelector('.bridge-mode-btn[data-bridge-mode="cockpit"]');
   if (bMode1) bMode1.textContent = t.bridgeCockpit;
-  const bMode2 = document.querySelector('[data-bridge-mode="red"]');
+  const bMode2 = document.querySelector('.bridge-mode-btn[data-bridge-mode="red"]');
   if (bMode2) bMode2.textContent = t.bridgeRed;
-  const bMode3 = document.querySelector('[data-bridge-mode="day"]');
+  const bMode3 = document.querySelector('.bridge-mode-btn[data-bridge-mode="day"]');
   if (bMode3) bMode3.textContent = t.bridgeDay;
 
   const statusPill = document.querySelector(".status-pill");
