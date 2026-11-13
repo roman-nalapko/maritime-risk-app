@@ -232,6 +232,7 @@ html[data-bridge-mode="day"] .site-header {
   background: rgba(255,255,255,0.95);
 }
 .header-shell {
+  width: min(1440px, calc(100% - 32px));
   height: 100%;
   display: flex;
   align-items: center;
@@ -258,6 +259,7 @@ html[data-bridge-mode="day"] .site-header {
 
 .site-nav {
   display: flex;
+  flex-wrap: nowrap;
   gap: 2px;
 }
 .site-nav a {
@@ -268,6 +270,7 @@ html[data-bridge-mode="day"] .site-header {
   font-weight: 500;
   text-decoration: none;
   transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
 }
 .site-nav a:hover { color: var(--text-primary); background: var(--line); }
 .site-nav a.tools-return-link { color: var(--teal); font-weight: 600; }
@@ -340,7 +343,7 @@ html[data-bridge-mode="day"] .site-header {
   box-shadow: 0 0 6px var(--teal-glow);
   flex-shrink: 0;
 }
-@media (min-width: 960px) { .status-pill { display: flex; } }
+@media (min-width: 1440px) { .status-pill { display: flex; } }
 
 /* ── Assignment-first root view ── */
 html[data-view="assignment"] .workspace,
@@ -2493,8 +2496,11 @@ html[data-view="tools"] .guided-panel { margin-top: 20px; }
   .section-heading { align-items: flex-start; flex-direction: column; }
 }
 
-@media (max-width: 620px) {
+@media (max-width: 1170px) {
   .site-nav { display: none; }
+}
+
+@media (max-width: 620px) {
   .bridge-mode-switch { display: none; }
   h1 { font-size: 30px; }
   .hero { padding-block: 36px 48px; }

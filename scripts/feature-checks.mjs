@@ -749,6 +749,11 @@ assert.ok(appContent.includes("function enterGuidedAssignment"), "the hero must 
 assert.ok(appContent.includes("entryPanel?.scrollIntoView"), "entry actions must bring the newly revealed first or final step into view");
 assert.ok(appContent.includes('register("./sw.js", { updateViaCache: "none" })'), "service-worker updates must bypass the browser HTTP cache");
 
+// 33. Header navigation must remain visually stable at desktop widths
+assert.match(cssContent, /\.site-nav\s+a\s*[^}]*white-space:\s*nowrap/s, "desktop navigation labels must stay on one line");
+assert.match(cssContent, /@media \(max-width:\s*1170px\)[\s\S]*?\.site-nav[^}]*display:\s*none/s, "navigation must hide before the header runs out of horizontal space");
+assert.match(cssContent, /@media \(min-width:\s*1440px\)[\s\S]*?\.status-pill[^}]*display:\s*flex/s, "the research status pill must appear only when the full header fits");
+
 console.log("All platform feature checks passed.");
 
 
