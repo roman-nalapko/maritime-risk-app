@@ -747,22 +747,6 @@ select option { background: var(--surface); color: var(--text-primary); }
   position: sticky;
   top: 76px;
 }
-@media (min-width: 900px) {
-  .result-card {
-    max-height: calc(100vh - 92px);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-gutter: stable;
-  }
-  .result-card::-webkit-scrollbar { width: 8px; }
-  .result-card::-webkit-scrollbar-thumb { background: var(--line-mid); border-radius: 999px; }
-  .result-tabs-nav {
-    position: sticky;
-    top: 0;
-    z-index: 4;
-    box-shadow: 0 8px 18px var(--surface);
-  }
-}
 .result-header {
   display: flex;
   align-items: center;
@@ -911,56 +895,6 @@ select option { background: var(--surface); color: var(--text-primary); }
   background: var(--surface);
   color: var(--teal);
   border-color: var(--line-mid);
-}
-
-.analysis-section-nav {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
-  margin-bottom: 14px;
-}
-.analysis-section-btn {
-  min-width: 0;
-  min-height: 48px;
-  padding: 7px 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 1px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--raised);
-  color: var(--text-secondary);
-  text-align: left;
-  cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, color 0.15s;
-}
-.analysis-section-btn strong {
-  font-size: 11.5px;
-  color: var(--text-primary);
-}
-.analysis-section-btn small {
-  max-width: 100%;
-  overflow: hidden;
-  color: var(--text-muted);
-  font-size: 9.5px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.analysis-section-btn:hover { border-color: var(--line-mid); color: var(--text-primary); }
-.analysis-section-btn.active,
-.analysis-section-btn[aria-pressed="true"] {
-  border-color: rgba(29,184,168,0.45);
-  background: var(--teal-dim);
-}
-.analysis-section-btn.active strong,
-.analysis-section-btn[aria-pressed="true"] strong { color: var(--teal); }
-
-#pane-radar[data-analysis-section="overview"] [data-analysis-group]:not([data-analysis-group="overview"]),
-#pane-radar[data-analysis-section="fatigue"] [data-analysis-group]:not([data-analysis-group="fatigue"]),
-#pane-radar[data-analysis-section="conditions"] [data-analysis-group]:not([data-analysis-group="conditions"]) {
-  display: none;
 }
 
 /* ── Tab Panes ── */
@@ -2601,8 +2535,6 @@ html[data-view="tools"] .guided-panel { margin-top: 20px; }
 
 @media (max-width: 620px) {
   .bridge-mode-switch { display: none; }
-  .analysis-section-btn { min-height: 44px; align-items: center; text-align: center; }
-  .analysis-section-btn small { display: none; }
   .factor-heading { grid-template-columns: 1fr; }
   .factor-heading strong { text-align: left; white-space: normal; }
   h1 { font-size: 30px; }

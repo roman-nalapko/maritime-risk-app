@@ -1537,22 +1537,6 @@ document.querySelectorAll(".result-tab-btn").forEach((btn) => {
   });
 });
 
-function switchAnalysisSection(target) {
-  if (!["overview", "fatigue", "conditions"].includes(target)) return;
-  const pane = $("#pane-radar");
-  if (!pane) return;
-  pane.dataset.analysisSection = target;
-  document.querySelectorAll(".analysis-section-btn").forEach((button) => {
-    const isActive = button.dataset.analysisTarget === target;
-    button.classList.toggle("active", isActive);
-    button.setAttribute("aria-pressed", String(isActive));
-  });
-}
-
-document.querySelectorAll(".analysis-section-btn").forEach((button) => {
-  button.addEventListener("click", () => switchAnalysisSection(button.dataset.analysisTarget));
-});
-
 // MAIB Real Accident Case Studies
 const MAIB_CASE_STUDIES = {
   "vasco-de-gama": {
@@ -2977,12 +2961,6 @@ const I18N = {
     privacyNote: "Приватність: вводьте лише власні дані й лише добровільно. Значення обробляються в цьому браузері, не зберігаються та не надсилаються. Не вводьте ПІБ, контакти чи дані іншої людини.",
     formFooterNote: "Результат є дослідницькою оцінкою, а не медичним чи професійним висновком.",
     resKicker: "Демонстраційний індекс прототипу",
-    analysisOverviewTitle: "Головне",
-    analysisOverviewDesc: "Радар і фактори",
-    analysisFatigueTitle: "Втома",
-    analysisFatigueDesc: "Вахти й навантаження",
-    analysisConditionsTitle: "Умови",
-    analysisConditionsDesc: "Погода й докази",
     registryLabel: "Реєстр",
     previewBold: "Попередній перегляд.",
     previewText: "Показано розрахунок для дефолтних значень форми. Заповніть анкету та натисніть «Розрахувати ризик», щоб побачити свій результат.",
@@ -3339,12 +3317,6 @@ const I18N = {
     privacyNote: "Privacy: Enter only your own data and purely voluntarily. Values are computed locally in this browser, never stored, and never sent remotely. Do not enter names or third-party details.",
     formFooterNote: "The output is a research estimate, not a medical or occupational certification.",
     resKicker: "Provisional Research Safety Metric",
-    analysisOverviewTitle: "Overview",
-    analysisOverviewDesc: "Radar and factors",
-    analysisFatigueTitle: "Fatigue",
-    analysisFatigueDesc: "Watches and workload",
-    analysisConditionsTitle: "Conditions",
-    analysisConditionsDesc: "Weather and evidence",
     registryLabel: "Registry",
     previewBold: "Preview mode.",
     previewText: "Showing calculation for default values. Fill out the questionnaire and click «Calculate Risk Index» to see your result.",
@@ -3971,19 +3943,6 @@ function setLanguage(lang, { syncUrl = true } = {}) {
   if (tabChecklist) tabChecklist.textContent = t.checklistTab;
   const tabMethod = $("#tab-btn-method");
   if (tabMethod) tabMethod.textContent = t.methodTab;
-  const analysisButtons = document.querySelectorAll(".analysis-section-btn");
-  const analysisLabels = [
-    [t.analysisOverviewTitle, t.analysisOverviewDesc],
-    [t.analysisFatigueTitle, t.analysisFatigueDesc],
-    [t.analysisConditionsTitle, t.analysisConditionsDesc]
-  ];
-  analysisButtons.forEach((button, index) => {
-    const [title, description] = analysisLabels[index] ?? [];
-    const strong = button.querySelector("strong");
-    const small = button.querySelector("small");
-    if (strong && title) strong.textContent = title;
-    if (small && description) small.textContent = description;
-  });
 
   // Live Radar Box
   const liveRHeadH3 = document.querySelector(".live-radar-header h3");

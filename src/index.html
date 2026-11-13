@@ -306,20 +306,8 @@
               </nav>
 
               <!-- PANE: RADAR/ANALYSIS -->
-              <div class="result-tab-pane" id="pane-radar" data-tab-pane="radar" data-analysis-section="overview" role="tabpanel" aria-labelledby="tab-btn-radar">
-                <div class="analysis-section-nav" role="group" aria-label="Частина аналізу">
-                  <button type="button" class="analysis-section-btn active" data-analysis-target="overview" aria-pressed="true">
-                    <strong>Головне</strong><small>Радар і фактори</small>
-                  </button>
-                  <button type="button" class="analysis-section-btn" data-analysis-target="fatigue" aria-pressed="false">
-                    <strong>Втома</strong><small>Вахти й навантаження</small>
-                  </button>
-                  <button type="button" class="analysis-section-btn" data-analysis-target="conditions" aria-pressed="false">
-                    <strong>Умови</strong><small>Погода й докази</small>
-                  </button>
-                </div>
-
-                <div class="mlc-advice-card" id="mlc-advice-card" data-analysis-group="fatigue" hidden>
+              <div class="result-tab-pane" id="pane-radar" data-tab-pane="radar" role="tabpanel" aria-labelledby="tab-btn-radar">
+                <div class="mlc-advice-card" id="mlc-advice-card" hidden>
                   <div class="mlc-advice-heading">
                     <span class="mlc-tag">MLC 2006 · STCW</span>
                     <h4>Контроль навантаження та втоми</h4>
@@ -327,7 +315,7 @@
                   <ul id="mlc-findings-list"></ul>
                 </div>
 
-                <div class="live-radar-box" id="live-radar-box" data-analysis-group="overview">
+                <div class="live-radar-box" id="live-radar-box">
                   <div class="live-radar-header">
                     <h3>Профіль факторів</h3>
                     <small>Нормований радар поточного розрахунку</small>
@@ -356,7 +344,7 @@
                   </div>
                 </div>
 
-                <div class="benchmark-box" id="benchmark-box" data-analysis-group="fatigue">
+                <div class="benchmark-box" id="benchmark-box">
                   <div class="benchmark-header">
                     <span class="benchmark-tag">ГАЛУЗЕВИЙ ОРІЄНТИР · BIMCO / ICS</span>
                     <h4>Порівняння зі світовим флотом</h4>
@@ -382,7 +370,7 @@
                   <small class="benchmark-note">Орієнтири базуються на узагальнених даних звітів BIMCO/ICS Seafarer Workforce. Не є персональною нормою.</small>
                 </div>
 
-                <div class="circadian-card" id="circadian-card" data-analysis-group="fatigue">
+                <div class="circadian-card" id="circadian-card">
                   <div class="circadian-header">
                     <div>
                       <span class="circadian-kicker">IMO MSC/Circ.1598</span>
@@ -415,7 +403,7 @@
                   <ul class="circadian-recs" id="circadian-recs"></ul>
                 </div>
 
-                <div class="weather-hazard-card" id="weather-hazard-card" data-analysis-group="conditions">
+                <div class="weather-hazard-card" id="weather-hazard-card">
                   <div class="weather-header">
                     <div>
                       <span class="weather-kicker">ГІДРОМЕТЕОРОЛОГІЧНІ НЕБЕЗПЕКИ · ISO 2631 / POLAR CODE</span>
@@ -454,17 +442,17 @@
                   <div class="weather-warnings" id="weather-warnings"></div>
                 </div>
 
-                <div class="breakdown" data-analysis-group="overview">
+                <div class="breakdown">
                   <div class="breakdown-title"><h3>Внесок факторів</h3><button type="button" id="details-toggle" aria-expanded="true">Сховати деталі</button></div>
                   <div id="breakdown-list"></div>
                 </div>
 
-                <div class="recommendations" data-analysis-group="overview">
+                <div class="recommendations">
                   <h3>Що варто контролювати</h3>
                   <ul id="recommendation-list"></ul>
                 </div>
 
-                <div class="grounded-retrieval-box" id="grounded-retrieval-box" data-analysis-group="conditions">
+                <div class="grounded-retrieval-box" id="grounded-retrieval-box">
                   <div class="grounded-header">
                     <div>
                       <span class="grounded-kicker">Вибірка MAIB</span>
@@ -485,7 +473,7 @@
                   <small class="grounded-disclaimer" id="grounded-disclaimer">Це статистика записів про постраждалих у вибірці MAIB, а не персональна ймовірність настання події.</small>
                 </div>
 
-                <section class="profile-summary" data-analysis-group="conditions" aria-labelledby="profile-summary-title">
+                <section class="profile-summary" aria-labelledby="profile-summary-title">
                   <div class="profile-summary-heading"><h3 id="profile-summary-title">Вхідний профіль</h3><span id="scenario-name">Користувацький профіль</span></div>
                   <dl id="profile-summary-list"></dl>
                   <p>Сформовано локально: <time id="report-date">—</time>. Дані не збережено.</p>
