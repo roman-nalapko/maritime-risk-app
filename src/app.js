@@ -22,7 +22,14 @@ import {
   calculatePortBasinRisk,
   generatePythonAssignmentScript
 } from "./model.js";
-import { copyTextOrFallback, formatEngineeringIndex, initializeModule, resolveViewMode } from "./ui-runtime.js";
+import {
+  copyTextOrFallback,
+  formatEngineeringIndex,
+  initializeModule,
+  resolveInterfacePreferences,
+  resolveViewMode,
+  withInterfacePreferences
+} from "./ui-runtime.js";
 import {
   GUIDED_STEP_COUNT,
   buildAssignmentConclusion,
@@ -61,7 +68,7 @@ function hideChartTooltip() {
 const CHECKBOX_FIELDS = ["chronic", "ppe", "previous", "smoking", "alcohol"];
 
 // Tri-lingual Maritime Dictionaries (UA 🇺🇦 / EN 🇬🇧 IMO SMCP / RU 🇷🇺)
-let currentLang = "uk";
+let currentLang = document.documentElement.lang === "en" ? "en" : "uk";
 
 const roleLabelsByLang = {
   uk: {
@@ -1476,17 +1483,38 @@ window.addEventListener("afterprint", () => {
 });
 
 // Bridge Lighting Mode Switcher (IMO MSC.252 / IEC 62288)
+function getBridgeMode() {
+  const mode = document.documentElement.dataset.bridgeMode;
+  return mode === "red" || mode === "day" ? mode : "cockpit";
+}
+
+function syncInterfacePreferences({ replaceUrl = true } = {}) {
+  const preferences = { lang: currentLang, theme: getBridgeMode() };
+  document.querySelectorAll('a[href*="view="]').forEach((link) => {
+    link.setAttribute("href", withInterfacePreferences(link.getAttribute("href"), window.location.href, preferences));
+  });
+
+  if (replaceUrl) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("lang", preferences.lang);
+    url.searchParams.set("theme", preferences.theme);
+    window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
+  }
+}
+
+function setBridgeMode(mode, { syncUrl = true } = {}) {
+  if (!["cockpit", "red", "day"].includes(mode)) return;
+  document.querySelectorAll(".bridge-mode-btn").forEach((button) => {
+    button.classList.toggle("active", button.dataset.bridgeMode === mode);
+  });
+  if (mode === "cockpit") document.documentElement.removeAttribute("data-bridge-mode");
+  else document.documentElement.setAttribute("data-bridge-mode", mode);
+  syncInterfacePreferences({ replaceUrl: syncUrl });
+}
+
 document.querySelectorAll(".bridge-mode-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
-    const mode = btn.dataset.bridgeMode;
-    document.querySelectorAll(".bridge-mode-btn").forEach((b) => {
-      b.classList.toggle("active", b === btn);
-    });
-    if (mode === "cockpit") {
-      document.documentElement.removeAttribute("data-bridge-mode");
-    } else {
-      document.documentElement.setAttribute("data-bridge-mode", mode);
-    }
+    setBridgeMode(btn.dataset.bridgeMode);
   });
 });
 
@@ -3639,7 +3667,7 @@ const officialContextByLang = {
   ],
 };
 
-function setLanguage(lang) {
+function setLanguage(lang, { syncUrl = true } = {}) {
   if (lang !== "uk" && lang !== "en") return;
   if (!I18N[lang]) return;
   currentLang = lang;
@@ -4246,6 +4274,7 @@ function setLanguage(lang) {
   renderRisk(calculateRisk(input), input, activeScenario, $("#result-panel")?.dataset.initial === "true");
   renderIncidentScenario();
   if (currentPortBasinRisk) renderPortBasinRisk();
+  syncInterfacePreferences({ replaceUrl: syncUrl });
 }
 
 function applyViewMode(search = window.location.search) {
@@ -4434,7 +4463,14 @@ async function loadIncidents() {
   }
 }
 
+const initialInterfacePreferences = resolveInterfacePreferences(window.location.search);
+setBridgeMode(initialInterfacePreferences.theme, { syncUrl: false });
 applyViewMode();
+if (initialInterfacePreferences.lang === "en") {
+  setLanguage("en", { syncUrl: false });
+} else {
+  syncInterfacePreferences({ replaceUrl: false });
+}
 
 // Assignment-first startup: optional dashboard failures must not blank GISIS/ECFA.
 initializeModule("assignment", initGisisEcfaModule, $("#ecfa-diagram-wrap"));

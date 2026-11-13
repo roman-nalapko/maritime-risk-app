@@ -5,6 +5,7 @@ import path from "node:path";
 import { calculateRisk, categoryFor } from "../src/model.js";
 import { approvedValue, COEFFICIENTS, REGISTRY_ID, REQUIRED_METADATA, validateRegistry } from "../src/coefficients.js";
 import { copyText, copyTextOrFallback, formatEngineeringIndex, initializeModule, resolveViewMode } from "../src/ui-runtime.js";
+import * as uiRuntime from "../src/ui-runtime.js";
 import { GUIDED_STEP_COUNT, buildAssignmentConclusion, buildScenarioPriorityAlert, guidedStepHash, normalizeIncidentScenario, resolveGuidedStep } from "../src/guided-assignment.js";
 import { normalizeTables, parseDelimited, stableJson, validateNormalized } from "./import-maib.mjs";
 import { aggregateMaib } from "./aggregate-maib.mjs";
@@ -34,6 +35,24 @@ assert.equal(resolveViewMode(""), "assignment", "the root URL must default to th
 assert.equal(resolveViewMode("?view=tools"), "tools", "the explicit tools URL must expose the research suite");
 assert.equal(resolveViewMode("?source=teacher&view=tools"), "tools", "view mode must tolerate unrelated query parameters");
 assert.equal(resolveViewMode("?view=unknown"), "assignment", "unknown view values must fail closed to the assignment");
+
+assert.equal(typeof uiRuntime.resolveInterfacePreferences, "function", "interface preferences need a URL resolver");
+assert.deepEqual(
+  uiRuntime.resolveInterfacePreferences("?view=tools&lang=en&theme=red"),
+  { lang: "en", theme: "red" },
+  "language and theme must round-trip through the page URL"
+);
+assert.deepEqual(
+  uiRuntime.resolveInterfacePreferences("?lang=unknown&theme=unknown"),
+  { lang: "uk", theme: "cockpit" },
+  "unknown interface preferences must fail closed"
+);
+assert.equal(typeof uiRuntime.withInterfacePreferences, "function", "view links need a preference-preserving URL helper");
+assert.equal(
+  uiRuntime.withInterfacePreferences("?view=tools#assessment", "https://example.test/app/", { lang: "en", theme: "day" }),
+  "?view=tools&lang=en&theme=day#assessment",
+  "the tools link must carry the selected language and theme"
+);
 
 assert.equal(GUIDED_STEP_COUNT, 5, "guided assignment must have five steps");
 for (const invalidHash of ["", "#unknown", "#step--1", "#step-0", "#step-6", "#step-99"]) {

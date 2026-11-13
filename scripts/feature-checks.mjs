@@ -762,6 +762,12 @@ for (const mode of ["cockpit", "red", "day"]) {
   );
 }
 
+// 35. View navigation must preserve interface preferences without retaining questionnaire data
+assert.ok(htmlContent.includes('const initialLang = ["uk", "en"].includes(initialParams.get("lang"))'), "the initial language must be restored before rendering");
+assert.ok(htmlContent.includes('const initialTheme = ["cockpit", "red", "day"].includes(initialParams.get("theme"))'), "the initial theme must be restored before CSS renders");
+assert.ok(appContent.includes("function syncInterfacePreferences"), "view links must carry the active interface preferences");
+assert.ok(appContent.includes('if (initialInterfacePreferences.lang === "en")'), "English must be reapplied after assignment view copy is initialized");
+
 console.log("All platform feature checks passed.");
 
 

@@ -13,8 +13,14 @@
     <link rel="icon" href="icons/searisk.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="icons/searisk-192.png" />
     <script>
-      const initialView = new URLSearchParams(window.location.search).get("view");
+      const initialParams = new URLSearchParams(window.location.search);
+      const initialView = initialParams.get("view");
+      const initialLang = ["uk", "en"].includes(initialParams.get("lang")) ? initialParams.get("lang") : "uk";
+      const initialTheme = ["cockpit", "red", "day"].includes(initialParams.get("theme")) ? initialParams.get("theme") : "cockpit";
       const initialStepMatch = window.location.hash.match(/^#step-([1-5])$/);
+      document.documentElement.lang = initialLang;
+      if (initialTheme === "cockpit") document.documentElement.removeAttribute("data-bridge-mode");
+      else document.documentElement.dataset.bridgeMode = initialTheme;
       document.documentElement.dataset.view = initialView === "tools" ? "tools" : "assignment";
       document.documentElement.dataset.guidedStep = initialStepMatch ? initialStepMatch[1] : "0";
     </script>
